@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% load riskdesk_extras %}
+{% block title %}Factor exposures · {{ portfolio.name }}{% endblock %}
+{% block content %}
+<div class="rd-page-title">
+  <h1>Factor exposures</h1>
+  <span class="sub">11-factor ETF model, OLS over {{ n_obs }} days · systematic {{ fd.systematic_vol|pct }} + idiosyncratic {{ fd.idiosyncratic_vol|pct }} = {{ fd.total_vol|pct }} total vol · factor R² {{ fd.portfolio_r2|pct:0 }}</span>
+</div>
+<div class="kpi-grid">
+  <div class="kpi"><div class="label">Market beta</div><div class="value">{{ exposures.beta.MKT|num }}</div><div class="sub">explains {{ exposures.pct_of_total_var.MKT|pct:0 }} of variance</div></div>
+  <div class="kpi"><div class="label">Systematic vol</div><div class="value">{{ fd.systematic_vol|pct }}</div><div class="sub">{{ fd.systematic_share|pct:0 }} of variance</div></div>
+  <div class="kpi"><div class="label">Idiosyncratic vol</div><div class="value">{{ fd.idiosyncratic_vol|pct }}</div><div class="sub">stock-specific</div></div>
+  <div class="kpi"><div class="label">Realised beta</div><div class="value">{{ summary.beta|num }}</div><div class="sub">to {{ summary.benchmark }}, regression</div></div>
+</div>
+<div class="row g-3">
+  <div class="col-12 col-lg-6">
+    <div class="card"><div class="card-header">Portfolio factor betas</div><div class="card-body"><div id="c-beta" class="chart"></div></div></div>
+  </div>
+  <div class="col-12 col-lg-6">
+    <div class="card"><div class="card-header">Contribution to variance by factor <span class="hint">negative = diversifying</span></div><div class="card-body"><div id="c-share" class="chart"></div></div></div>
+  </div>
+  <div class="col-12 col-lg-7">
+    <div class="card"><div class="card-header">Factor table</div>
+      <div class="card-body p-0"><table class="table rd"><thead><tr><th>Factor</th><th>Definition</th><th class="num">Beta</th><th class="num">Factor vol</th><th class="num">Vol contrib</th><th class="num">% of variance</th></tr></thead><tbody>
+      {% for f, r in exposures.iterrows %}
+      <tr><td><b>{{ f }}</b></td><td class="muted small">{{ factor_desc|get_item:f }}</td><td class="num">{{ r.beta|snum }}</td><td class="num">{{ r.factor_vol|pct:0 }}</td><td class="num">{{ r.vol_contrib|spct }}</td><td class="num {{ r.pct_of_total_var|sign_class }}">{{ r.pct_of_total_var|spct }}</td></tr>
+      {% endfor %}
+      <tr class="total"><td colspan="5">Idiosyncratic (stock-specific)</td><td class="num">{{ idio_share|pct }}</td></tr>
+      </tbody></table></div></div>
+  </div>
+  <div class="col-12 col-lg-5">
+    <div class="card"><div class="card-header">Rolling 63-day beta to {{ summary.benchmark }}</div><div class="card-body"><div id="c-roll" class="chart"></div></div></div>
+  </div>
+  <div class="col-12">
+    <div class="card"><div class="card-header">Asset betas heat map <span class="hint">sorted by |weight|; hover for values</span></div><div class="card-body"><div id="c-heat" class="chart chart-lg" style="min-height:{{ betas|length|mul:18|add:120 }}px"></div></div></div>
+  </div>
+  <div class="col-12">
+    <div class="card"><div class="card-header">Asset-level regression</div>
+      <div class="card-body p-0 table-wrap sticky-th"><table class="table rd"><thead><tr><th>Ticker</th><th>Sector</th><th class="num">Weight</th>{% for f in factor_spec %}<th class="num">{{ f }}</th>{% endfor %}<th class="num">R²</th><th class="num">Resid vol</th></tr></thead><tbody>
+      {% for t, r in betas.iterrows %}
+      <tr><td><a class="ticker" href="{% url 'asset_detail' t %}">{{ t }}</a></td><td class="muted">{{ r.sector }}</td><td class="num">{{ r.weight|spct }}</td>
+      {% for f in factor_spec %}<td class="num">{{ r|get_item:f|snum }}</td>{% endfor %}
+      <td class="num">{{ r.r2|pct:0 }}</td><td class="num">{{ r.resid_vol|pct:0 }}</td></tr>
+      {% endfor %}
+      </tbody></table></div></div>
+  </div>
+  <div class="col-12 col-lg-6">
+    <div class="card"><div class="card-header">Factor correlation</div><div class="card-body"><div id="c-fcorr" class="chart"></div></div></div>
+  </div>
+</div>
+{{ charts|json_script:"charts" }}
+{% endblock %}
+{% block scripts %}
+<script>
+(function () {
+  const d = RD.data("charts");
+  RD.bar("c-beta", d.exposures.labels, d.exposures.beta, { fmt: v => v.toFixed(2), tickformat: ".2f" });
+  RD.bar("c-share", d.exposures.labels, d.exposures.share, {});
+  if (d.rolling_beta) RD.line("c-roll", [{ name: "Beta", x: d.rolling_beta.x, y: d.rolling_beta.y }], { tickformat: ".2f", hoverfmt: ".2f" });
+  RD.heatmap("c-heat", d.heatmap.x, d.heatmap.y, d.heatmap.z, { zmin: -1.5, zmax: 1.5 });
+  RD.heatmap("c-fcorr", d.factor_corr.labels, d.factor_corr.labels, d.factor_corr.z, { showText: true });
+})();
+</script>
+{% endblock %}

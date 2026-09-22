@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% load riskdesk_extras %}
+{% block title %}Risk limits · {{ portfolio.name }}{% endblock %}
+{% block content %}
+<div class="rd-page-title"><h1>Risk limits</h1><span class="sub">the mandate, encoded: every page and every what-if is checked against these</span></div>
+<div class="row g-3">
+  <div class="col-12 col-xl-8">
+    <div class="card">
+      <div class="card-header">Current status</div>
+      <div class="card-body p-0">
+        <table class="table rd">
+          <thead><tr><th>Limit</th><th>Metric</th><th>Scope</th><th class="num">Current</th><th class="num">Threshold</th><th class="num">Utilisation</th><th>Status</th><th></th></tr></thead>
+          <tbody>
+          {% for l in limit_results %}
+          <tr>
+            <td>{{ l.label }}</td><td class="muted small">{{ l.metric }}</td><td class="muted small">{{ l.scope|default:"–" }}</td>
+            <td class="num">{{ l.display_value }}</td>
+            <td class="num">{% if l.operator == 'lte' %}≤{% else %}≥{% endif %} {{ l.display_threshold }}</td>
+            <td class="num bar-cell"><div class="bar {% if l.status == 'breach' %}neg{% endif %}" style="width:{% if l.utilization %}{{ l.utilization|mul:100|floatformat:0 }}{% else %}0{% endif %}%;max-width:100%"></div><span>{{ l.utilization|pct:0 }}</span></td>
+            <td><span class="badge text-bg-{{ l.status|status_badge }} badge-soft">{{ l.status }}</span></td>
+            <td><form method="post" action="{% url 'limit_delete' portfolio.id l.id %}">{% csrf_token %}<button class="btn btn-link btn-sm text-danger p-0" title="Remove"><i class="bi bi-x-circle"></i></button></form></td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="8" class="muted">No limits yet.</td></tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="help-block mt-2">
+      Utilisation is current value ÷ threshold (or threshold ÷ value for "must be ≥" limits). Amber at 90%. Percent thresholds are entered as fractions (0.25 = 25%).
+    </div>
+  </div>
+  <div class="col-12 col-xl-4">
+    <div class="card">
+      <div class="card-header">Add a limit</div>
+      <div class="card-body">
+        <form method="post">{% csrf_token %}
+          <div class="mb-2"><label class="form-label">Metric</label>{{ form.metric }}</div>
+          <div class="mb-2"><label class="form-label">Scope</label>{{ form.scope }}<div class="form-text">Ticker, sector ({% for s in sectors %}{{ s }}{% if not forloop.last %}, {% endif %}{% endfor %}), factor (MKT, SIZE, VALUE, MOM, QUALITY, LOWVOL, RATES, CREDIT, USD, GOLD, OIL) or <code>equity</code> for single stocks only.</div></div>
+          <div class="row">
+            <div class="col-6 mb-2"><label class="form-label">Operator</label>{{ form.operator }}</div>
+            <div class="col-6 mb-2"><label class="form-label">Threshold</label>{{ form.threshold }}</div>
+          </div>
+          <div class="mb-2"><label class="form-label">Label</label>{{ form.label }}</div>
+          <div class="form-check mb-3"><input type="checkbox" class="form-check-input" name="is_active" id="id_is_active" checked><label class="form-check-label small" for="id_is_active">Active</label></div>
+          {% for e in form.non_field_errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}
+          <button class="btn btn-primary btn-sm">Add limit</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<script>document.querySelectorAll("form select").forEach(e => e.classList.add("form-select","form-select-sm")); document.querySelectorAll("form input[type=text], form input[type=number]").forEach(e => e.classList.add("form-control","form-control-sm"));</script>
+{% endblock %}

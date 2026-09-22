@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% load riskdesk_extras %}
+{% block title %}Risk decomposition · {{ portfolio.name }}{% endblock %}
+{% block content %}
+<div class="rd-page-title">
+  <h1>Risk decomposition</h1>
+  <span class="sub">Euler decomposition of {{ summary.vol|pct }} annualised volatility · {{ summary.cov_method }} covariance, {{ summary.lookback_days }} days</span>
+</div>
+<div class="row g-3">
+  <div class="col-12 col-xl-7">
+    <div class="card"><div class="card-header">Where the risk sits vs where the money sits <span class="hint">bubble size = market value; above the diagonal = risk hog</span></div>
+      <div class="card-body"><div id="c-bubble" class="chart chart-lg"></div></div></div>
+  </div>
+  <div class="col-12 col-xl-5">
+    <div class="card"><div class="card-header">Risk share by sector</div><div class="card-body"><div id="c-sector" class="chart"></div></div></div>
+    <div class="card mt-3"><div class="card-header">Risk share by asset class</div><div class="card-body"><div id="c-class" class="chart chart-sm"></div></div></div>
+  </div>
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header">Position-level contributions
+        <span class="hint">MCR = change in portfolio vol per unit weight; CCR = weight × MCR (sums to portfolio vol); beta to book = covariance with the portfolio ÷ portfolio variance</span></div>
+      <div class="card-body p-0 table-wrap sticky-th">
+        <table class="table rd">
+          <thead><tr><th>Ticker</th><th>Name</th><th>Sector</th><th class="num">Weight</th><th class="num">Value</th><th class="num">Standalone vol</th><th class="num">Beta to book</th><th class="num">MCR</th><th class="num">CCR</th><th class="num">Risk share</th><th class="num">Risk/weight</th><th class="num">ES contrib</th></tr></thead>
+          <tbody>
+          {% for t, r in rc.iterrows %}
+          <tr>
+            <td><a class="ticker" href="{% url 'asset_detail' t %}">{{ t }}</a></td>
+            <td class="muted">{{ r.name|truncatechars:24 }}</td><td class="muted">{{ r.sector }}</td>
+            <td class="num {{ r.weight|sign_class }}">{{ r.weight|spct }}</td>
+            <td class="num">{{ r.market_value|money }}</td>
+            <td class="num">{{ r.standalone_vol|pct:0 }}</td>
+            <td class="num">{{ r.beta_to_port|num }}</td>
+            <td class="num">{{ r.mcr|num:3 }}</td>
+            <td class="num">{{ r.ccr|pct:2 }}</td>
+            <td class="num bar-cell"><div class="bar {% if r.pct < 0 %}neg{% endif %}" style="width:{{ r.pct|abs_val|mul:300|floatformat:0 }}%;max-width:100%"></div><span>{{ r.pct|spct }}</span></td>
+            <td class="num">{% if r.weight %}{{ r.pct|abs_val|num:2 }}{% endif %}</td>
+            <td class="num">{{ var_contrib.cvar_contrib|get_item:t|pct:2 }}</td>
+          </tr>
+          {% endfor %}
+          <tr class="total"><td colspan="3">Portfolio</td><td class="num">{{ summary.net_exposure|pct }}</td><td class="num">{{ summary.net_value|money }}</td><td class="num">{{ summary.vol|pct }}</td><td class="num">1.00</td><td></td><td class="num">{{ summary.vol|pct:2 }}</td><td class="num">100%</td><td></td><td></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-12 col-lg-6">
+    <div class="card"><div class="card-header">By sector</div>
+      <div class="card-body p-0"><table class="table rd"><thead><tr><th>Sector</th><th class="num">#</th><th class="num">Net</th><th class="num">Gross</th><th class="num">CCR</th><th class="num">Risk share</th></tr></thead><tbody>
+      {% for s, r in sector_rc.iterrows %}<tr><td>{{ s }}</td><td class="num">{{ r.n|floatformat:0 }}</td><td class="num">{{ r.weight|spct }}</td><td class="num">{{ r.gross|pct }}</td><td class="num">{{ r.ccr|pct:2 }}</td><td class="num {{ r.pct|sign_class }}">{{ r.pct|spct }}</td></tr>{% endfor %}
+      </tbody></table></div></div>
+  </div>
+  <div class="col-12 col-lg-6">
+    <div class="card"><div class="card-header">By asset class</div>
+      <div class="card-body p-0"><table class="table rd"><thead><tr><th>Asset class</th><th class="num">#</th><th class="num">Net</th><th class="num">Gross</th><th class="num">CCR</th><th class="num">Risk share</th></tr></thead><tbody>
+      {% for s, r in asset_class_rc.iterrows %}<tr><td>{{ s }}</td><td class="num">{{ r.n|floatformat:0 }}</td><td class="num">{{ r.weight|spct }}</td><td class="num">{{ r.gross|pct }}</td><td class="num">{{ r.ccr|pct:2 }}</td><td class="num {{ r.pct|sign_class }}">{{ r.pct|spct }}</td></tr>{% endfor %}
+      </tbody></table></div></div>
+    <div class="help-block mt-2">A negative risk share means the position is a net hedge: it lowers portfolio volatility at the margin.</div>
+  </div>
+</div>
+{{ charts|json_script:"charts" }}
+{% endblock %}
+{% block scripts %}
+<script>
+(function () {
+  const d = RD.data("charts");
+  RD.bubble("c-bubble", { labels: d.bubble.labels, x: d.bubble.weight, y: d.bubble.risk, size: d.bubble.mv, sector: d.bubble.sector },
+    { xlabel: "Gross weight", ylabel: "Share of portfolio vol", diagonal: Math.max.apply(null, d.bubble.risk.concat(d.bubble.weight)) });
+  RD.groupedBar("c-sector", d.sector.labels, [{ name: "Risk share", values: d.sector.risk, color: "#f28e2b" }, { name: "Gross weight", values: d.sector.gross, color: "#2f6df6" }], { horizontal: true });
+  RD.groupedBar("c-class", d.asset_class.labels, [{ name: "Risk share", values: d.asset_class.risk, color: "#f28e2b" }, { name: "Gross weight", values: d.asset_class.gross, color: "#2f6df6" }], { horizontal: true });
+})();
+</script>
+{% endblock %}

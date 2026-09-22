@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+{% load riskdesk_extras %}
+{% block title %}{{ portfolio.name }}{% endblock %}
+{% block content %}
+{% if empty %}
+<div class="rd-page-title"><h1>{{ portfolio.name }}</h1></div>
+<div class="card"><div class="card-body">This portfolio has no positions. <a href="{% url 'positions' portfolio.id %}">Add positions</a> to see risk analytics.</div></div>
+{% else %}
+{% with s=summary %}
+<div class="rd-page-title">
+  <h1>{{ portfolio.name }}</h1>
+  <span class="sub">as of {{ s.as_of|date:"j M Y" }} · {{ s.lookback_days }}d lookback · {{ s.cov_method }} covariance{% if s.shrinkage %} (shrinkage {{ s.shrinkage|num }}){% endif %} · benchmark {{ s.benchmark }}</span>
+  <div class="ms-auto d-flex gap-2">
+    <a class="btn btn-sm btn-outline-secondary" href="{% url 'report' portfolio.id %}"><i class="bi bi-file-earmark-text me-1"></i>Report</a>
+    <a class="btn btn-sm btn-outline-secondary" href="{% url 'export_risk_xlsx' portfolio.id %}"><i class="bi bi-file-earmark-excel me-1"></i>Excel</a>
+    <a class="btn btn-sm btn-primary" href="{% url 'whatif' portfolio.id %}"><i class="bi bi-arrow-left-right me-1"></i>What-if</a>
+  </div>
+</div>
+
+<div class="kpi-grid">
+  <div class="kpi"><div class="label">NAV</div><div class="value">{{ s.nav|money }}</div><div class="sub">cash {{ s.cash_weight|pct:0 }} · {{ s.n_long }}L / {{ s.n_short }}S</div></div>
+  <div class="kpi"><div class="label">Gross exposure</div><div class="value">{{ s.gross_exposure|pct:0 }}</div><div class="sub">long {{ s.long_exposure|pct:0 }} · short {{ s.short_exposure|abs_val|pct:0 }}</div></div>
+  <div class="kpi"><div class="label">Net exposure</div><div class="value">{{ s.net_exposure|pct:0 }}</div><div class="sub">beta {{ s.beta|num }} to {{ s.benchmark }}</div></div>
+  <div class="kpi"><div class="label">Volatility (ann.)</div><div class="value">{{ s.vol|pct }}</div><div class="sub">realised {{ perf.ann_vol|pct }} over lookback</div></div>
+  <div class="kpi"><div class="label">VaR {{ s.var_confidence|pct:0 }} · {{ s.var_horizon_days }}d</div><div class="value">{{ s.var|pct:2 }}</div><div class="sub">{{ s.var_dollar|money }} · ES {{ s.cvar|pct:2 }}</div></div>
+  <div class="kpi"><div class="label">Sharpe (pro forma)</div><div class="value">{{ s.sharpe|num }}</div><div class="sub">max DD {{ s.max_drawdown|pct }}</div></div>
+  <div class="kpi"><div class="label">YTD / 1M</div><div class="value {{ s.ytd_return|sign_class }}">{{ s.ytd_return|spct }}</div><div class="sub">1M {{ s.ret_1m|spct }}</div></div>
+  <div class="kpi {{ limit_summary.overall }}"><div class="label">Risk limits</div>
+    <div class="value">{% if limit_summary.breach %}<span class="text-danger">{{ limit_summary.breach }} breach{{ limit_summary.breach|pluralize:"es" }}</span>{% elif limit_summary.warn %}<span class="text-warning">{{ limit_summary.warn }} near</span>{% else %}<span class="text-success">OK</span>{% endif %}</div>
+    <div class="sub">{{ limit_summary.total }} limits monitored</div></div>
+</div>
+
+<div class="row g-3">
+  <div class="col-12 col-xl-8">
+    <div class="row g-3">
+      <div class="col-12 col-lg-6">
+        <div class="card h-100"><div class="card-header">Sector exposure <span class="hint">net long/short, with share of risk</span></div>
+          <div class="card-body"><div id="c-sector" class="chart"></div></div></div>
+      </div>
+      <div class="col-12 col-lg-6">
+        <div class="card h-100"><div class="card-header">Top risk contributors <span class="hint">share of portfolio volatility</span></div>
+          <div class="card-body"><div id="c-top" class="chart"></div></div></div>
+      </div>
+      <div class="col-12 col-lg-6">
+        <div class="card h-100"><div class="card-header">Factor betas <span class="hint">ETF factor model</span></div>
+          <div class="card-body"><div id="c-factors" class="chart"></div></div></div>
+      </div>
+      <div class="col-12 col-lg-6">
+        <div class="card h-100"><div class="card-header">Pro-forma performance, 1y <span class="hint">current book held constant</span></div>
+          <div class="card-body"><div id="c-cum" class="chart"></div></div></div>
+      </div>
+      <div class="col-12">
+        <div class="card"><div class="card-header d-flex">Risk limits <a class="ms-auto small" href="{% url 'limits' portfolio.id %}">Manage</a></div>
+          <div class="card-body p-0">
+            <table class="table rd">
+              <thead><tr><th>Limit</th><th class="num">Current</th><th class="num">Threshold</th><th class="num">Utilisation</th><th>Status</th></tr></thead>
+              <tbody>
+              {% for l in limit_results %}
+              <tr>
+                <td>{{ l.label }}</td>
+                <td class="num">{{ l.display_value }}</td>
+                <td class="num">{% if l.operator == 'lte' %}≤{% else %}≥{% endif %} {{ l.display_threshold }}</td>
+                <td class="num bar-cell"><div class="bar {% if l.status == 'breach' %}neg{% endif %}" style="width:{% if l.utilization %}{{ l.utilization|mul:100|floatformat:0 }}{% else %}0{% endif %}%;max-width:100%"></div><span>{{ l.utilization|pct:0 }}</span></td>
+                <td><span class="badge text-bg-{{ l.status|status_badge }} badge-soft">{{ l.status }}</span></td>
+              </tr>
+              {% empty %}
+              <tr><td colspan="5" class="muted">No limits defined. <a href="{% url 'limits' portfolio.id %}">Add limits</a> to monitor the book against the mandate.</td></tr>
+              {% endfor %}
+              </tbody>
+            </table>
+          </div></div>
+      </div>
+      <div class="col-12 col-lg-7">
+        <div class="card"><div class="card-header">Largest risk contributors</div>
+          <div class="card-body p-0">
+            <table class="table rd">
+              <thead><tr><th>Ticker</th><th>Sector</th><th class="num">Weight</th><th class="num">Vol</th><th class="num">MCR</th><th class="num">Risk share</th></tr></thead>
+              <tbody>
+              {% for t, r in top_rc.iterrows %}
+              <tr><td><a class="ticker" href="{% url 'asset_detail' t %}">{{ t }}</a></td><td class="muted">{{ r.sector }}</td>
+                <td class="num">{{ r.weight|spct }}</td><td class="num">{{ r.standalone_vol|pct:0 }}</td><td class="num">{{ r.mcr|num:3 }}</td>
+                <td class="num bar-cell"><div class="bar" style="width:{{ r.pct|mul:300|floatformat:0 }}%;max-width:100%"></div><span>{{ r.pct|pct }}</span></td></tr>
+              {% endfor %}
+              </tbody>
+            </table>
+          </div></div>
+      </div>
+      <div class="col-12 col-lg-5">
+        <div class="card"><div class="card-header">Worst stress scenarios</div>
+          <div class="card-body p-0">
+            <table class="table rd">
+              <thead><tr><th>Scenario</th><th class="num">P&amp;L</th><th class="num">$</th></tr></thead>
+              <tbody>
+              {% for d in worst_stress %}
+              <tr><td>{{ d.name }} <span class="muted small">({{ d.kind|slice:":4" }})</span></td><td class="num {{ d.total_pnl|sign_class }}">{{ d.total_pnl|spct }}</td><td class="num">{{ d.total_dollar|money }}</td></tr>
+              {% endfor %}
+              </tbody>
+            </table>
+          </div></div>
+        <div class="card mt-3"><div class="card-header">Concentration</div>
+          <div class="card-body">
+            <div class="row small">
+              <div class="col-6 mb-1"><span class="muted">Effective # positions</span><br><b>{{ concentration.effective_n|num:1 }}</b> of {{ concentration.n_positions }}</div>
+              <div class="col-6 mb-1"><span class="muted">Effective # bets</span><br><b>{{ concentration.enb|num:1 }}</b></div>
+              <div class="col-6 mb-1"><span class="muted">Top-5 share of gross</span><br><b>{{ concentration.top5|pct:0 }}</b></div>
+              <div class="col-6 mb-1"><span class="muted">Diversification ratio</span><br><b>{{ concentration.div_ratio|num }}</b></div>
+              <div class="col-6"><span class="muted">Largest position</span><br><b>{{ concentration.max_weight_ticker }}</b> {{ concentration.max_weight|pct }}</div>
+              <div class="col-6"><span class="muted">HHI</span><br><b>{{ concentration.hhi|num:3 }}</b></div>
+            </div>
+          </div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-12 col-xl-4">
+    <div class="card">
+      <div class="card-header">Actionable insights <span class="hint">{{ insights|length }} generated</span></div>
+      <div class="card-body">
+        {% for i in insights %}
+        <div class="insight {{ i.severity }}">
+          <div class="title"><span class="badge text-bg-{{ i.severity|status_badge }} badge-soft me-1">{{ i.category }}</span>{{ i.title }}</div>
+          <div class="detail">{{ i.detail }}</div>
+          {% if i.action %}<div class="action"><i class="bi bi-arrow-return-right me-1"></i>{{ i.action }}
+            {% if i.whatif %}<a class="badge text-bg-primary text-decoration-none ms-1" href="{% url 'whatif' portfolio.id %}?ticker={{ i.whatif.ticker }}&mode={{ i.whatif.mode }}&value={{ i.whatif.value }}" title="Open the what-if page with this trade pre-filled"><i class="bi bi-play-fill"></i> Try in what-if</a>{% endif %}</div>{% endif %}
+        </div>
+        {% empty %}
+        <div class="muted">Nothing to flag. The book is inside all limits and no concentration or factor rule fired.</div>
+        {% endfor %}
+      </div>
+    </div>
+    <div class="card mt-3"><div class="card-header">Drawdown, 1y <span class="hint">pro forma</span></div>
+      <div class="card-body"><div id="c-dd" class="chart chart-sm"></div></div></div>
+  </div>
+</div>
+{{ charts|json_script:"charts" }}
+{% endwith %}
+{% endif %}
+{% endblock %}
+{% block scripts %}
+{% if not empty %}
+<script>
+(function () {
+  const d = RD.data("charts");
+  RD.groupedBar("c-sector", d.sector_exposure.labels, [
+    { name: "Long", values: d.sector_exposure.long, color: "#2f6df6" },
+    { name: "Short", values: d.sector_exposure.short, color: "#e15759" },
+    { name: "Risk share", values: d.sector_exposure.risk, color: "#f28e2b" }], { horizontal: true });
+  RD.groupedBar("c-top", d.top_risk.labels, [
+    { name: "Risk share", values: d.top_risk.pct, color: "#f28e2b" },
+    { name: "Weight", values: d.top_risk.weight, color: "#2f6df6" }], { horizontal: true });
+  RD.bar("c-factors", d.factors.labels, d.factors.beta, { fmt: v => v.toFixed(2), tickformat: ".2f" });
+  const series = [{ name: "Portfolio", x: d.cum.port.x, y: d.cum.port.y, width: 2 }];
+  if (d.cum.bench) series.push({ name: d.cum.bench_name, x: d.cum.bench.x, y: d.cum.bench.y, color: "#9c9c9c", width: 1.2 });
+  RD.line("c-cum", series);
+  RD.line("c-dd", [{ name: "Drawdown", x: d.drawdown.x, y: d.drawdown.y, color: "#e15759", fill: "tozeroy", fillcolor: "rgba(225,87,89,0.15)" }]);
+})();
+</script>
+{% endif %}
+{% endblock %}

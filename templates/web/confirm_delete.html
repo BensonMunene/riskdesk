@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Delete {{ object }}{% endblock %}
+{% block content %}
+<div class="card" style="max-width:520px">
+  <div class="card-body">
+    <h2 class="h6">Delete {{ kind }} "{{ object }}"?</h2>
+    <p class="muted small">Positions, limits, proposals and snapshots belonging to it will be removed. Market data is kept.</p>
+    <form method="post">{% csrf_token %}
+      <button class="btn btn-danger btn-sm">Delete</button>
+      <a class="btn btn-outline-secondary btn-sm ms-2" href="{% url 'overview' portfolio.id %}">Cancel</a>
+    </form>
+  </div>
+</div>
+{% endblock %}

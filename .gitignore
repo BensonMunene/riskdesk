@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.pytest_cache/
+
+# Django
+db.sqlite3
+staticfiles/
+*.log
+
+# Local config and tooling
+.env
+.playwright-mcp/
+.vscode/
+.idea/
+Thumbs.db
+.DS_Store

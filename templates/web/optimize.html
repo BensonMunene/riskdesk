@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+{% load riskdesk_extras %}
+{% block title %}Optimiser · {{ portfolio.name }}{% endblock %}
+{% block content %}
+<div class="rd-page-title">
+  <h1>Portfolio optimiser</h1>
+  <span class="sub">convex optimisation (cvxpy) on {{ summary.lookback_days }}-day {{ summary.cov_method }} covariance · outputs a trade list you can send to what-if</span>
+</div>
+<div class="row g-3">
+  <div class="col-12 col-xl-4">
+    <div class="card">
+      <div class="card-header">Objective &amp; constraints</div>
+      <div class="card-body">
+        <form method="post" id="opt-form" data-busy="Optimising…">{% csrf_token %}
+          <div class="mb-2"><label class="form-label">Method</label>{{ form.method }}</div>
+          <div class="mb-2"><label class="form-label">Expected returns</label>{{ form.return_model }}<div class="form-text">Only used by return-aware methods. "Shrunk" avoids the corner solutions historical means produce.</div></div>
+          <div class="mb-2"><label class="form-label">Universe</label>{{ form.universe }}</div>
+          <div class="mb-2"><label class="form-label">Candidate tickers</label>{{ form.candidates }}<div class="form-text">e.g. AMD, GS, XLE</div></div>
+          <div class="row">
+            <div class="col-6 mb-2"><label class="form-label">Net exposure (budget)</label>{{ form.budget }}</div>
+            <div class="col-6 mb-2"><label class="form-label">Risk aversion (MV)</label>{{ form.risk_aversion }}</div>
+            <div class="col-6 mb-2"><label class="form-label">Min weight</label>{{ form.w_min }}</div>
+            <div class="col-6 mb-2"><label class="form-label">Max weight</label>{{ form.w_max }}</div>
+            <div class="col-6 mb-2"><label class="form-label">Max gross</label>{{ form.gross_max }}</div>
+            <div class="col-6 mb-2"><label class="form-label">Max per sector</label>{{ form.sector_max }}</div>
+            <div class="col-6 mb-2"><label class="form-label">Max turnover</label>{{ form.turnover_max }}</div>
+            <div class="col-6 mb-2"><label class="form-label">Max vol</label>{{ form.max_vol }}</div>
+            <div class="col-6 mb-2"><label class="form-label">Target (return / vol)</label>{{ form.target }}</div>
+          </div>
+          <div class="form-check mb-1"><input class="form-check-input" type="checkbox" name="long_only" id="id_long_only" {% if form.long_only.value %}checked{% endif %}><label class="form-check-label small" for="id_long_only">Long only</label></div>
+          <div class="form-check mb-2"><input class="form-check-input" type="checkbox" name="keep_hedges" id="id_keep_hedges" {% if form.keep_hedges.value %}checked{% endif %}><label class="form-check-label small" for="id_keep_hedges">Keep ETF hedges / overlays fixed</label></div>
+          <div class="mb-2"><label class="form-label">Black-Litterman views</label>{{ form.bl_views }}<div class="form-text">{{ form.bl_views.help_text }}</div></div>
+          {% for e in form.non_field_errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}
+          <div class="d-flex gap-2 mt-2">
+            <button class="btn btn-primary btn-sm" name="action" value="run"><i class="bi bi-play-fill me-1"></i>Optimise</button>
+            {% if result %}<button class="btn btn-outline-primary btn-sm" name="action" value="send"><i class="bi bi-arrow-right me-1"></i>Send trades to what-if</button>{% endif %}
+          </div>
+        </form>
+      </div>
+    </div>
+    <div class="card mt-3"><div class="card-header">Recent runs</div><div class="card-body p-0"><table class="table rd"><tbody>
+      {% for r in runs %}<tr><td>{{ r.method }}</td><td class="num">vol {{ r.result.vol|pct }}</td><td class="num">SR {{ r.result.sharpe|num }}</td><td class="muted small">{{ r.created_at|date:"j M H:i" }}</td></tr>{% empty %}<tr><td class="muted">None yet.</td></tr>{% endfor %}
+    </tbody></table></div></div>
+  </div>
+
+  <div class="col-12 col-xl-8">
+    {% if result %}
+    {% with r=result.res %}
+    <div class="kpi-grid">
+      <div class="kpi"><div class="label">Status</div><div class="value text-success">{{ r.status }}</div><div class="sub">{{ methods|get_item:r.method }}</div></div>
+      <div class="kpi"><div class="label">Expected return</div><div class="value">{{ r.expected_return|pct }}</div><div class="sub">current {{ result.current.ret|pct }}</div></div>
+      <div class="kpi"><div class="label">Volatility</div><div class="value">{{ r.vol|pct }}</div><div class="sub">current {{ result.current.vol|pct }}</div></div>
+      <div class="kpi"><div class="label">Sharpe</div><div class="value">{{ r.sharpe|num }}</div><div class="sub">current {{ result.current.sharpe|num }}</div></div>
+      <div class="kpi"><div class="label">Trades</div><div class="value">{{ result.trades|length }}</div><div class="sub">one-way turnover {{ result.turnover|pct:0 }}</div></div>
+    </div>
+    <div class="small muted mb-2">Constraints: {% for c in result.cons_desc %}<span class="badge text-bg-light border me-1">{{ c }}</span>{% endfor %}</div>
+    <div class="row g-3">
+      <div class="col-12 col-lg-6"><div class="card"><div class="card-header">Efficient frontier <span class="hint">under the same constraints</span></div><div class="card-body"><div id="c-front" class="chart"></div></div></div></div>
+      <div class="col-12 col-lg-6"><div class="card"><div class="card-header">Weights: current vs proposed</div><div class="card-body"><div id="c-w" class="chart"></div></div></div></div>
+      <div class="col-12">
+        <div class="card"><div class="card-header">Proposed allocation</div>
+          <div class="card-body p-0 table-wrap sticky-th"><table class="table rd"><thead><tr><th>Ticker</th><th>Sector</th><th class="num">Current</th><th class="num">Target</th><th class="num">Δ weight</th><th class="num">Δ shares</th><th class="num">Trade $</th><th class="num">E[r]</th><th class="num">Vol</th><th class="num">Risk share after</th></tr></thead><tbody>
+          {% for t, w in result.weights.iterrows %}
+          <tr class="{% if w.delta|abs_val > 0.0005 %}{% else %}muted{% endif %}"><td class="ticker">{{ t }}</td><td class="muted">{{ w.sector }}</td><td class="num">{{ w.current|spct }}</td><td class="num"><b>{{ w.target|spct }}</b></td><td class="num {{ w.delta|sign_class }}">{{ w.delta|spct }}</td>
+            <td class="num">{{ result.trade_list.delta_shares|get_item:t|floatformat:0 }}</td><td class="num">{{ result.trade_list.trade_value|get_item:t|money }}</td>
+            <td class="num">{{ w.expected_return|pct }}</td><td class="num">{{ w.vol|pct:0 }}</td><td class="num">{{ w.risk_share_after|pct }}</td></tr>
+          {% endfor %}
+          </tbody></table></div></div>
+      </div>
+      <div class="col-12 col-lg-6">
+        <div class="card"><div class="card-header">Book before → after (full re-analysis)</div>
+          <div class="card-body p-0"><table class="table rd"><thead><tr><th>Metric</th><th class="num">Before</th><th class="num">After</th></tr></thead><tbody>
+          {% for m in result.compare.metrics %}<tr><td>{{ m.label }}</td><td class="num">{% if m.fmt == 'pct' %}{{ m.before|spct }}{% elif m.fmt == 'money' %}{{ m.before|money }}{% elif m.fmt == 'int' %}{{ m.before }}{% else %}{{ m.before|num }}{% endif %}</td><td class="num"><b>{% if m.fmt == 'pct' %}{{ m.after|spct }}{% elif m.fmt == 'money' %}{{ m.after|money }}{% elif m.fmt == 'int' %}{{ m.after }}{% else %}{{ m.after|num }}{% endif %}</b></td></tr>{% endfor %}
+          </tbody></table></div></div>
+      </div>
+      <div class="col-12 col-lg-6">
+        <div class="card"><div class="card-header">Limits after</div><div class="card-body p-0"><table class="table rd"><thead><tr><th>Limit</th><th class="num">Before</th><th class="num">After</th></tr></thead><tbody>
+        {% for l in result.compare.limits %}<tr class="{% if l.broken %}table-danger{% elif l.fixed %}table-success{% endif %}"><td>{{ l.label }}</td><td class="num">{{ l.before }} <span class="badge text-bg-{{ l.status_before|status_badge }} badge-soft">{{ l.status_before }}</span></td><td class="num">{{ l.after }} <span class="badge text-bg-{{ l.status_after|status_badge }} badge-soft">{{ l.status_after }}</span></td></tr>{% endfor %}
+        </tbody></table></div></div>
+        <div class="card mt-3"><div class="card-header">Risk share before vs after</div><div class="card-body"><div id="c-rc" class="chart"></div></div></div>
+      </div>
+      {% if result.bl %}
+      <div class="col-12"><div class="card"><div class="card-header">Black-Litterman: equilibrium vs posterior returns</div>
+        <div class="card-body p-0"><table class="table rd"><thead><tr><th>Ticker</th><th class="num">Prior (implied)</th><th class="num">Posterior</th><th class="num">Shift</th></tr></thead><tbody>
+        {% for t, v in result.bl.prior.items %}<tr><td class="ticker">{{ t }}</td><td class="num">{{ v|pct }}</td><td class="num">{{ result.bl.posterior|get_item:t|pct }}</td><td class="num">{{ result.bl.shift|get_item:t|spct }}</td></tr>{% endfor %}
+        </tbody></table></div>
+        <div class="card-body small muted border-top">Views: {% for v in result.bl.views %}{{ v.assets }} → {{ v.return|pct }} (conf {{ v.confidence }}){% if not forloop.last %}; {% endif %}{% empty %}none (posterior = equilibrium){% endfor %}</div></div></div>
+      {% endif %}
+    </div>
+    {{ result.charts|json_script:"charts" }}
+    {% endwith %}
+    {% else %}
+    <div class="card"><div class="card-body">
+      <h2 class="h6">Methods</h2>
+      <table class="table rd"><tbody>{% for k, v in methods.items %}<tr><td><code>{{ k }}</code></td><td>{{ v }}</td></tr>{% endfor %}</tbody></table>
+      <div class="help-block mt-2">All methods share the same constraint set: bounds, net/gross exposure, sector caps, turnover vs the current book, a volatility cap and fixed hedges. Max-Sharpe is solved by a golden-section search along the constrained frontier, so it honours every constraint exactly. Risk parity and max-diversification are long-only by construction.</div>
+    </div></div>
+    {% endif %}
+  </div>
+</div>
+<script>document.querySelectorAll("#opt-form select").forEach(e => e.classList.add("form-select","form-select-sm")); document.querySelectorAll("#opt-form input[type=text], #opt-form input[type=number], #opt-form textarea").forEach(e => e.classList.add("form-control","form-control-sm"));</script>
+{% endblock %}
+{% block scripts %}
+{% if result %}
+<script>
+(function () {
+  const d = RD.data("charts");
+  const pts = [];
+  if (d.frontier.vol.length) pts.push({ name: "Frontier", x: d.frontier.vol, y: d.frontier.ret, text: d.frontier.vol.map(() => "frontier"), mode: "lines+markers", marker: { size: 5 }, line: { color: "#2f6df6" } });
+  pts.push({ name: "Assets", x: d.frontier.assets.vol, y: d.frontier.assets.ret, text: d.frontier.assets.labels, mode: "markers+text", marker: { color: "#bbb", size: 6 } });
+  pts.push({ name: "Current", x: [d.frontier.cur.vol], y: [d.frontier.cur.ret], text: ["Current"], mode: "markers+text", marker: { color: "#f28e2b", size: 12, symbol: "diamond" } });
+  pts.push({ name: "Optimised", x: [d.frontier.opt.vol], y: [d.frontier.opt.ret], text: ["Optimised"], mode: "markers+text", marker: { color: "#59a14f", size: 12, symbol: "star" } });
+  RD.scatter("c-front", pts);
+  RD.groupedBar("c-w", d.weights.labels, [{ name: "Current", values: d.weights.current, color: "#bbb" }, { name: "Target", values: d.weights.target }], {});
+  RD.groupedBar("c-rc", d.rc.labels, [{ name: "Before", values: d.rc.before, color: "#bbb" }, { name: "After", values: d.rc.after }], {});
+})();
+</script>
+{% endif %}
+{% endblock %}

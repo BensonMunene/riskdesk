@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% load riskdesk_extras %}
+{% block title %}{{ asset.ticker }}{% endblock %}
+{% block content %}
+<div class="rd-page-title"><h1>{{ asset.ticker }} <span class="muted fw-normal">{{ asset.name }}</span></h1><span class="sub">{{ asset.asset_class }}{% if asset.sector %} · {{ asset.sector }}{% endif %}{% if asset.industry %} · {{ asset.industry }}{% endif %}{% if asset.market_cap %} · mkt cap {{ asset.market_cap|money }}{% endif %}</span></div>
+<div class="kpi-grid">
+  <div class="kpi"><div class="label">Last price</div><div class="value">{{ stats.price|num }}</div></div>
+  <div class="kpi"><div class="label">1m / 1y</div><div class="value {{ stats.ret_1y|sign_class }}">{{ stats.ret_1m|spct:0 }} / {{ stats.ret_1y|spct:0 }}</div></div>
+  <div class="kpi"><div class="label">Vol 1y</div><div class="value">{{ stats.vol_1y|pct:0 }}</div><div class="sub">max DD 1y {{ stats.max_dd_1y|pct:0 }}</div></div>
+  <div class="kpi"><div class="label">Market beta</div><div class="value">{{ stats.beta|num }}</div><div class="sub">factor R² {{ stats.r2|pct:0 }}</div></div>
+  <div class="kpi"><div class="label">Idiosyncratic vol</div><div class="value">{{ stats.resid_vol|pct:0 }}</div></div>
+  <div class="kpi"><div class="label">ADV</div><div class="value">{{ stats.adv_dollar|money }}</div><div class="sub">30-day</div></div>
+  <div class="kpi"><div class="label">Worst day</div><div class="value text-danger">{{ stats.worst_day|spct }}</div><div class="sub">{{ stats.worst_day_date }}</div></div>
+</div>
+<div class="row g-3">
+  <div class="col-12 col-lg-8"><div class="card"><div class="card-header">Price, 3y</div><div class="card-body"><div id="c-px" class="chart"></div></div></div>
+    <div class="card mt-3"><div class="card-header">Rolling 21-day volatility</div><div class="card-body"><div id="c-vol" class="chart chart-sm"></div></div></div></div>
+  <div class="col-12 col-lg-4">
+    <div class="card"><div class="card-header">Factor betas <span class="hint">2y OLS</span></div><div class="card-body"><div id="c-b" class="chart"></div>
+      <table class="table rd"><thead><tr><th>Factor</th><th class="num">Beta</th><th class="num">t-stat</th></tr></thead><tbody>
+      {% for f, b in betas.items %}<tr><td>{{ f }}</td><td class="num">{{ b|snum }}</td><td class="num {% if tstats|get_item:f|abs_val > 2 %}fw-bold{% else %}muted{% endif %}">{{ tstats|get_item:f|snum:1 }}</td></tr>{% endfor %}
+      </tbody></table></div></div>
+    <div class="card mt-3"><div class="card-header">Held in</div><div class="card-body p-0"><table class="table rd"><tbody>
+      {% for h in holders %}<tr><td><a href="{% url 'overview' h.portfolio.id %}">{{ h.portfolio.name }}</a></td><td class="num">{{ h.quantity|floatformat:0 }} sh</td><td><a class="small" href="{% url 'whatif' h.portfolio.id %}?ticker={{ asset.ticker }}">what-if</a></td></tr>{% empty %}<tr><td class="muted">Not held in any portfolio.</td></tr>{% endfor %}
+    </tbody></table></div></div>
+  </div>
+</div>
+{{ charts|json_script:"charts" }}
+{% endblock %}
+{% block scripts %}
+<script>
+(function () {
+  const d = RD.data("charts");
+  RD.line("c-px", [{ name: "Close", x: d.price.x, y: d.price.y }], { tickformat: ",.0f", hoverfmt: ",.2f" });
+  RD.line("c-vol", [{ name: "Vol", x: d.roll_vol.x, y: d.roll_vol.y, color: "#f28e2b" }]);
+  RD.bar("c-b", d.betas.labels, d.betas.values, { fmt: v => v.toFixed(2), tickformat: ".1f" });
+})();
+</script>
+{% endblock %}

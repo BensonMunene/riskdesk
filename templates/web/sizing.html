@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% load riskdesk_extras %}
+{% block title %}Position sizing · {{ portfolio.name }}{% endblock %}
+{% block content %}
+<div class="rd-page-title"><h1>Position sizing</h1><span class="sub">size the book to a vol target, equalise risk across the equity sleeve, or size a new idea by its risk budget</span></div>
+<div class="row g-3">
+  <div class="col-12 col-xl-4">
+    <div class="card"><div class="card-header">Inputs</div>
+      <div class="card-body">
+        <form method="post" id="sz-form" data-busy="Computing…">{% csrf_token %}
+          <div class="mb-2"><label class="form-label">Target portfolio vol (annualised)</label>{{ form.target_vol }}</div>
+          <div class="mb-2"><label class="form-label">Kelly fraction</label>{{ form.kelly_fraction }}<div class="form-text">0.5 = half-Kelly (usual practice)</div></div>
+          <div class="mb-2"><label class="form-label">Expected returns for Kelly</label>{{ form.return_model }}</div>
+          <hr>
+          <div class="mb-2"><label class="form-label">New position ticker</label>{{ form.new_ticker }}</div>
+          <div class="mb-3"><label class="form-label">Desired share of portfolio vol</label>{{ form.new_risk_share }}<div class="form-text">0.05 = the new name should be 5% of total risk</div></div>
+          <button class="btn btn-primary btn-sm"><i class="bi bi-play-fill me-1"></i>Compute</button>
+        </form>
+      </div></div>
+  </div>
+  <div class="col-12 col-xl-8">
+    {% if result %}
+    <div class="row g-3">
+      <div class="col-12">
+        <div class="card"><div class="card-header d-flex align-items-center">Vol targeting <span class="hint ms-2">scale every position by the same factor</span>
+          <form method="post" class="ms-auto">{% csrf_token %}{% for f in form %}<input type="hidden" name="{{ f.name }}" value="{{ f.value|default:'' }}">{% endfor %}<button class="btn btn-sm btn-outline-primary" name="action" value="send_vol">Send to what-if</button></form></div>
+          <div class="card-body">
+            <div class="kpi-grid">
+              <div class="kpi"><div class="label">Current vol</div><div class="value">{{ result.scaled.current_vol|pct }}</div></div>
+              <div class="kpi"><div class="label">Target vol</div><div class="value">{{ result.scaled.target_vol|pct }}</div></div>
+              <div class="kpi"><div class="label">Scale factor</div><div class="value">{{ result.scaled.scale|num }}×</div><div class="sub">{% if result.scaled.scale > 1 %}lever up{% else %}de-risk{% endif %}</div></div>
+              <div class="kpi"><div class="label">Gross exposure</div><div class="value">{{ result.scaled.gross_before|pct:0 }} → {{ result.scaled.gross_after|pct:0 }}</div></div>
+            </div>
+            <div class="table-wrap" style="max-height:260px"><table class="table rd"><thead><tr><th>Ticker</th><th class="num">Current</th><th class="num">Scaled</th><th class="num">Δ shares</th></tr></thead><tbody>
+            {% for t, r in result.vol_rows.iterrows %}<tr><td class="ticker">{{ t }}</td><td class="num">{{ r.current|spct }}</td><td class="num">{{ r.scaled|spct }}</td><td class="num">{{ r.delta_shares|floatformat:0 }}</td></tr>{% endfor %}
+            </tbody></table></div>
+          </div></div>
+      </div>
+      {% if result.erc is not None %}
+      <div class="col-12">
+        <div class="card"><div class="card-header d-flex align-items-center">Equal risk contribution across the long equity sleeve <span class="hint ms-2">same sleeve gross, risk spread evenly</span>
+          <form method="post" class="ms-auto">{% csrf_token %}{% for f in form %}<input type="hidden" name="{{ f.name }}" value="{{ f.value|default:'' }}">{% endfor %}<button class="btn btn-sm btn-outline-primary" name="action" value="send_erc">Send to what-if</button></form></div>
+          <div class="card-body"><div id="c-erc" class="chart"></div>
+            <div class="table-wrap" style="max-height:260px"><table class="table rd"><thead><tr><th>Ticker</th><th class="num">Current weight</th><th class="num">Current risk share</th><th class="num">ERC weight</th><th class="num">Δ</th></tr></thead><tbody>
+            {% for t, r in result.erc.iterrows %}<tr><td class="ticker">{{ t }}</td><td class="num">{{ r.current|pct }}</td><td class="num">{{ r.current_risk_share|pct }}</td><td class="num">{{ r.erc|pct }}</td><td class="num {{ r.delta|sign_class }}">{{ r.delta|spct }}</td></tr>{% endfor %}
+            </tbody></table></div></div></div>
+      </div>
+      {% endif %}
+      {% if result.new_pos %}
+      <div class="col-12 col-lg-6">
+        <div class="card"><div class="card-header d-flex align-items-center">Sizing {{ result.new_pos.ticker }} to {{ form.new_risk_share.value|pct:0 }} of portfolio risk
+          <form method="post" class="ms-auto">{% csrf_token %}{% for f in form %}<input type="hidden" name="{{ f.name }}" value="{{ f.value|default:'' }}">{% endfor %}<button class="btn btn-sm btn-outline-primary" name="action" value="send_new">Send to what-if</button></form></div>
+          <div class="card-body"><table class="table rd"><tbody>
+            <tr><td>Weight</td><td class="num">{{ result.new_pos.current_weight|pct }} → <b>{{ result.new_pos.target_weight|pct }}</b></td></tr>
+            <tr><td>Shares to trade</td><td class="num"><b>{{ result.new_pos.shares|floatformat:0 }}</b> at {{ result.new_pos.price|num }} = {{ result.new_pos.value|money }}</td></tr>
+            <tr><td>Achieved risk share</td><td class="num">{{ result.new_pos.achieved_share|pct }}</td></tr>
+            <tr><td>Portfolio vol</td><td class="num">{{ result.new_pos.vol_before|pct }} → {{ result.new_pos.vol_after|pct }}</td></tr>
+            <tr><td>Standalone vol / beta to book</td><td class="num">{{ result.new_pos.standalone_vol|pct:0 }} / {{ result.new_pos.beta_to_book|num }}</td></tr>
+          </tbody></table>
+          <div class="help-block">Solved by bisection on the Euler risk share with all other positions held fixed. A low beta-to-book name can take a larger weight for the same risk budget.</div></div></div>
+      </div>
+      {% endif %}
+      <div class="col-12 col-lg-6">
+        <div class="card"><div class="card-header">Fractional Kelly (unconstrained) <span class="hint">for calibration only</span></div>
+          <div class="card-body">
+            <div class="small mb-2">Gross {{ result.kelly.gross|pct:0 }} · net {{ result.kelly.net|pct:0 }} · vol {{ result.kelly.vol|pct }} · E[r] {{ result.kelly.expected_return|pct }}</div>
+            <div class="table-wrap" style="max-height:260px"><table class="table rd"><thead><tr><th>Ticker</th><th class="num">E[r]</th><th class="num">Current</th><th class="num">Kelly</th></tr></thead><tbody>
+            {% for t, r in result.kelly_rows.iterrows %}<tr><td class="ticker">{{ t }}</td><td class="num">{{ r.expected_return|pct }}</td><td class="num">{{ r.current|spct }}</td><td class="num {{ r.kelly|sign_class }}">{{ r.kelly|spct }}</td></tr>{% endfor %}
+            </tbody></table></div>
+            <div class="help-block mt-2">Kelly weights are extremely sensitive to expected-return errors; use them to sanity-check direction and relative size, never as a target.</div>
+          </div></div>
+      </div>
+    </div>
+    {{ result.charts|json_script:"charts" }}
+    {% else %}
+    <div class="card"><div class="card-body">
+      <h2 class="h6">Three sizing questions this page answers</h2>
+      <ul class="small mb-0">
+        <li><b>How big should the whole book be?</b> Vol targeting scales gross exposure so that expected volatility hits the target.</li>
+        <li><b>Is risk spread sensibly across names?</b> Equal risk contribution reallocates the equity sleeve so each name contributes the same volatility.</li>
+        <li><b>How much of a new idea can I add?</b> Enter a ticker and a risk budget; the tool solves for the weight that delivers exactly that share of portfolio vol, accounting for correlation with everything already held.</li>
+      </ul>
+    </div></div>
+    {% endif %}
+  </div>
+</div>
+<script>document.querySelectorAll("#sz-form select").forEach(e => e.classList.add("form-select","form-select-sm")); document.querySelectorAll("#sz-form input[type=text], #sz-form input[type=number]").forEach(e => e.classList.add("form-control","form-control-sm"));</script>
+{% endblock %}
+{% block scripts %}
+{% if result and result.erc is not None %}
+<script>(function(){ const d = RD.data("charts"); if (d.erc) RD.groupedBar("c-erc", d.erc.labels, [{ name: "Current", values: d.erc.current, color: "#bbb" }, { name: "ERC", values: d.erc.erc }], {}); })();</script>
+{% endif %}
+{% endblock %}

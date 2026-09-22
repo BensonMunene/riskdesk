@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% load riskdesk_extras %}
+{% block title %}Trade proposals · {{ portfolio.name }}{% endblock %}
+{% block content %}
+<div class="rd-page-title"><h1>Trade proposals</h1><span class="sub">audit trail of every proposed change with its risk impact at the time</span>
+  <a class="btn btn-sm btn-primary ms-auto" href="{% url 'whatif' portfolio.id %}"><i class="bi bi-plus-lg me-1"></i>New what-if</a></div>
+<div class="card"><div class="card-body p-0">
+  <table class="table rd">
+    <thead><tr><th>Proposal</th><th>Status</th><th>Source</th><th class="num">Lines</th><th class="num">Vol before → after</th><th class="num">VaR before → after</th><th>Verdict</th><th>Created</th></tr></thead>
+    <tbody>
+    {% for p in proposals %}
+    <tr>
+      <td><a href="{% url 'proposal_detail' portfolio.id p.id %}">{{ p.name }}</a>{% if p.rationale %}<div class="muted small">{{ p.rationale|truncatechars:80 }}</div>{% endif %}</td>
+      <td><span class="badge text-bg-{% if p.status == 'approved' or p.status == 'executed' %}success{% elif p.status == 'rejected' %}danger{% elif p.status == 'review' %}warning{% else %}secondary{% endif %} badge-soft">{{ p.get_status_display }}</span></td>
+      <td class="muted small">{{ p.source|default:"manual" }}</td>
+      <td class="num">{{ p.lines.count }}</td>
+      <td class="num">{{ p.snapshot.before.vol|pct }} → {{ p.snapshot.after.vol|pct }}</td>
+      <td class="num">{{ p.snapshot.before.var|pct:2 }} → {{ p.snapshot.after.var|pct:2 }}</td>
+      <td>{% if p.snapshot.verdict %}<span class="verdict {{ p.snapshot.verdict }} py-0 px-2 small">{{ p.snapshot.verdict }}</span>{% endif %}</td>
+      <td class="muted small">{{ p.created_at|date:"j M Y H:i" }} {% if p.created_by %}· {{ p.created_by.username }}{% endif %}</td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="8" class="muted">No proposals yet. Build one on the <a href="{% url 'whatif' portfolio.id %}">what-if</a> page.</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div></div>
+{% endblock %}

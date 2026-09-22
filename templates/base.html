@@ -1,0 +1,101 @@
+{% load static riskdesk_extras %}<!doctype html>
+<html lang="en" data-bs-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}RiskDesk{% endblock %} · RiskDesk</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="{% static 'css/riskdesk.css' %}" rel="stylesheet">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='%230dcaf0' d='M8 0 1 3v4c0 4.2 3 7.8 7 9 4-1.2 7-4.8 7-9V3L8 0zm-1 11-3-3 1.4-1.4L7 8.2l3.6-3.6L12 6l-5 5z'/%3E%3C/svg%3E">
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js" charset="utf-8"></script>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark border-bottom border-secondary-subtle rd-topbar">
+  <div class="container-fluid">
+    <a class="navbar-brand fw-semibold" href="{% url 'home' %}"><i class="bi bi-shield-check me-1 text-info"></i>RiskDesk</a>
+    {% if user.is_authenticated %}
+    <div class="navbar-nav me-auto">
+      <div class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#">
+          {% if active_portfolio %}{{ active_portfolio.name }}{% else %}Portfolios{% endif %}
+        </a>
+        <ul class="dropdown-menu">
+          {% for p in nav_portfolios %}
+          <li><a class="dropdown-item {% if active_portfolio and p.id == active_portfolio.id %}active{% endif %}" href="{% url 'overview' p.id %}">{{ p.name }}</a></li>
+          {% endfor %}
+          <li><hr class="dropdown-divider"></li>
+          <li><a class="dropdown-item" href="{% url 'portfolio_create' %}"><i class="bi bi-plus-lg me-1"></i>New portfolio</a></li>
+        </ul>
+      </div>
+      <a class="nav-link" href="{% url 'market' %}">Market data</a>
+      <a class="nav-link" href="{% url 'api_docs' %}">API</a>
+    </div>
+    <div class="navbar-nav">
+      <span class="navbar-text small me-3 text-secondary d-none d-md-inline">{{ user.get_full_name|default:user.username }}</span>
+      <a class="nav-link" href="{% url 'admin:index' %}" title="Admin"><i class="bi bi-gear"></i></a>
+      <form method="post" action="{% url 'logout' %}" class="d-inline">{% csrf_token %}<button class="btn btn-link nav-link" type="submit" title="Sign out"><i class="bi bi-box-arrow-right"></i></button></form>
+    </div>
+    {% endif %}
+  </div>
+</nav>
+
+<div class="rd-shell">
+  {% if active_portfolio %}
+  <aside class="rd-sidebar">
+    {% with pk=active_portfolio.id url=request.resolver_match.url_name q=nav_as_of_qs %}
+    <div class="rd-side-title">{{ active_portfolio.name }}</div>
+    <form method="get" class="rd-asof" title="View the whole app as of a past date (current holdings, prices on that date)">
+      <i class="bi bi-calendar3 text-secondary" title="As-of date"></i>
+      <input type="date" class="form-control flex-grow-1" id="as_of" name="as_of" aria-label="As-of date" value="{{ nav_as_of }}" {% if nav_latest %}max="{{ nav_latest }}" min="{{ nav_earliest }}"{% endif %} onchange="this.form.submit()">
+      {% if nav_as_of %}<a class="btn btn-sm btn-link p-0" href="{{ request.path }}" title="Back to latest"><i class="bi bi-x-circle"></i></a>{% endif %}
+    </form>
+    <div class="rd-asof-hint">{% if nav_as_of %}viewing as of {{ nav_as_of }}{% else %}latest data{% if nav_latest %} · {{ nav_latest }}{% endif %}{% endif %}</div>
+    <a class="rd-nav {% if url == 'overview' %}active{% endif %}" href="{% url 'overview' pk %}{{ q }}"><i class="bi bi-speedometer2"></i>Overview</a>
+    <a class="rd-nav {% if url == 'positions' %}active{% endif %}" href="{% url 'positions' pk %}{{ q }}"><i class="bi bi-list-ul"></i>Positions</a>
+    <div class="rd-side-group">Risk</div>
+    <a class="rd-nav {% if url == 'risk_decomposition' %}active{% endif %}" href="{% url 'risk_decomposition' pk %}{{ q }}"><i class="bi bi-pie-chart"></i>Decomposition</a>
+    <a class="rd-nav {% if url == 'risk_factors' %}active{% endif %}" href="{% url 'risk_factors' pk %}{{ q }}"><i class="bi bi-diagram-3"></i>Factor exposures</a>
+    <a class="rd-nav {% if url == 'risk_tail' %}active{% endif %}" href="{% url 'risk_tail' pk %}{{ q }}"><i class="bi bi-activity"></i>VaR &amp; drawdowns</a>
+    <a class="rd-nav {% if url == 'risk_stress' %}active{% endif %}" href="{% url 'risk_stress' pk %}{{ q }}"><i class="bi bi-lightning"></i>Stress tests</a>
+    <a class="rd-nav {% if url == 'risk_correlation' %}active{% endif %}" href="{% url 'risk_correlation' pk %}{{ q }}"><i class="bi bi-grid-3x3"></i>Correlation</a>
+    <a class="rd-nav {% if url == 'risk_liquidity' %}active{% endif %}" href="{% url 'risk_liquidity' pk %}{{ q }}"><i class="bi bi-droplet"></i>Liquidity &amp; concentration</a>
+    <a class="rd-nav {% if url == 'risk_history' %}active{% endif %}" href="{% url 'risk_history' pk %}"><i class="bi bi-clock-history"></i>Risk history</a>
+    <div class="rd-side-group">Trades</div>
+    <a class="rd-nav {% if url == 'whatif' %}active{% endif %}" href="{% url 'whatif' pk %}{{ q }}"><i class="bi bi-arrow-left-right"></i>Pre-trade what-if</a>
+    <a class="rd-nav {% if url == 'proposals' or url == 'proposal_detail' %}active{% endif %}" href="{% url 'proposals' pk %}"><i class="bi bi-inbox"></i>Trade proposals</a>
+    <div class="rd-side-group">Construction</div>
+    <a class="rd-nav {% if url == 'optimize' %}active{% endif %}" href="{% url 'optimize' pk %}{{ q }}"><i class="bi bi-sliders"></i>Optimiser</a>
+    <a class="rd-nav {% if url == 'sizing' %}active{% endif %}" href="{% url 'sizing' pk %}{{ q }}"><i class="bi bi-rulers"></i>Position sizing</a>
+    <a class="rd-nav {% if url == 'backtest' %}active{% endif %}" href="{% url 'backtest' pk %}"><i class="bi bi-graph-up"></i>Backtest</a>
+    <div class="rd-side-group">Governance</div>
+    <a class="rd-nav {% if url == 'limits' %}active{% endif %}" href="{% url 'limits' pk %}{{ q }}"><i class="bi bi-shield-exclamation"></i>Risk limits</a>
+    <a class="rd-nav {% if url == 'report' %}active{% endif %}" href="{% url 'report' pk %}{{ q }}"><i class="bi bi-file-earmark-text"></i>Risk report</a>
+    <a class="rd-nav {% if url == 'portfolio_settings' %}active{% endif %}" href="{% url 'portfolio_settings' pk %}"><i class="bi bi-gear"></i>Analytics settings</a>
+    {% endwith %}
+  </aside>
+  {% endif %}
+
+  <main class="rd-main {% if not active_portfolio %}rd-main-full{% endif %}">
+    {% if messages %}
+      {% for m in messages %}
+      <div class="alert alert-{{ m.tags|default:'info' }} alert-dismissible fade show py-2 small" role="alert">
+        {{ m }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+      {% endfor %}
+    {% endif %}
+    {% if as_of %}
+    <div class="rd-asof-banner no-print"><i class="bi bi-clock-history me-1"></i><b>Historical view:</b> figures as of {{ as_of|date:"j M Y" }} using today's holdings and that day's prices. <a href="{{ request.path }}">Back to latest</a>.</div>
+    {% endif %}
+    {% for w in warnings %}
+    <div class="rd-warn no-print"><i class="bi bi-exclamation-triangle me-1"></i>{{ w }}</div>
+    {% endfor %}
+    {% block content %}{% endblock %}
+  </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{% static 'js/riskdesk.js' %}"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

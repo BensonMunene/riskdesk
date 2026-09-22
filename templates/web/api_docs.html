@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}API{% endblock %}
+{% block content %}
+<div class="rd-page-title"><h1>JSON API</h1><span class="sub">every number on screen is available programmatically for notebooks, Excel and downstream systems</span></div>
+<div class="row g-3">
+  <div class="col-12 col-lg-7">
+    <div class="card"><div class="card-header">Endpoints</div><div class="card-body p-0"><table class="table rd"><thead><tr><th>Method</th><th>Path</th><th>Returns</th></tr></thead><tbody>
+      <tr><td>GET</td><td><a href="/api/portfolios/">/api/portfolios/</a></td><td>All portfolios with headline metrics</td></tr>
+      <tr><td>GET</td><td>/api/portfolios/&lt;id&gt;/</td><td>Summary, performance, concentration</td></tr>
+      <tr><td>GET</td><td>/api/portfolios/&lt;id&gt;/positions/</td><td>Holdings with prices, values, weights</td></tr>
+      <tr><td>GET</td><td>/api/portfolios/&lt;id&gt;/risk/</td><td>Position, sector and asset-class risk contributions</td></tr>
+      <tr><td>GET</td><td>/api/portfolios/&lt;id&gt;/factors/</td><td>Factor exposures, variance split, asset betas</td></tr>
+      <tr><td>GET</td><td>/api/portfolios/&lt;id&gt;/var/</td><td>VaR/ES by method, contributions, drawdowns</td></tr>
+      <tr><td>GET</td><td>/api/portfolios/&lt;id&gt;/stress/</td><td>Historical and hypothetical scenario P&amp;L</td></tr>
+      <tr><td>GET</td><td>/api/portfolios/&lt;id&gt;/limits/</td><td>Limit checks with status and utilisation</td></tr>
+      <tr><td>GET</td><td>/api/portfolios/&lt;id&gt;/insights/</td><td>Generated insights</td></tr>
+      <tr><td>GET</td><td>/api/portfolios/&lt;id&gt;/liquidity/</td><td>Days to liquidate, liquidity profile</td></tr>
+      <tr><td>GET</td><td>/api/portfolios/&lt;id&gt;/correlation/</td><td>Correlation matrix and stacked pairs</td></tr>
+      <tr><td>POST</td><td>/api/portfolios/&lt;id&gt;/whatif/</td><td>Before/after analysis of a trade list</td></tr>
+      <tr><td>POST</td><td>/api/portfolios/&lt;id&gt;/optimize/</td><td>Optimised weights and trade list</td></tr>
+      <tr><td>GET</td><td><a href="/api/assets/">/api/assets/</a></td><td>Universe</td></tr>
+      <tr><td>GET</td><td>/api/prices/&lt;ticker&gt;/?days=252</td><td>Price and volume history</td></tr>
+    </tbody></table></div></div>
+  </div>
+  <div class="col-12 col-lg-5">
+    <div class="card"><div class="card-header">Examples</div><div class="card-body">
+<pre class="small mb-2"># session auth in the browser, or HTTP Basic from scripts
+curl -u cio:riskdesk http://localhost:8000/api/portfolios/1/risk/
+
+# pre-trade check from Python
+import requests
+r = requests.post("http://localhost:8000/api/portfolios/1/whatif/",
+                  auth=("cio", "riskdesk"),
+                  json={"trades": {"NVDA": -5000, "AMD": 8000}})
+print(r.json()["comparison"]["verdict"])
+
+# optimiser
+requests.post(".../api/portfolios/2/optimize/", auth=("cio","riskdesk"),
+              json={"method": "risk_parity", "w_max": 0.3}).json()["weights"]</pre>
+      <div class="help-block">Responses are plain JSON; the browsable API renders them in the browser. All amounts are fractions of NAV unless the key ends in <code>_dollar</code>.</div>
+    </div></div>
+  </div>
+</div>
+{% endblock %}

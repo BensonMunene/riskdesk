@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% load riskdesk_extras %}
+{% block title %}Market data{% endblock %}
+{% block content %}
+<div class="rd-page-title"><h1>Market data universe</h1><span class="sub">{{ n }} instruments · adjusted daily closes and volumes · add more with <code>python manage.py fetch_prices --tickers NFLX CRM</code></span></div>
+<div class="card"><div class="card-body p-0 table-wrap sticky-th" style="max-height:75vh">
+  <table class="table rd">
+    <thead><tr><th>Ticker</th><th>Name</th><th>Class</th><th>Sector</th><th class="num">Price</th><th class="num">1d</th><th class="num">1m</th><th class="num">YTD</th><th class="num">Vol 1y</th><th class="num">ADV $</th><th>History</th><th></th></tr></thead>
+    <tbody>
+    {% for r in rows %}
+    <tr><td><a class="ticker" href="{% url 'asset_detail' r.ticker %}">{{ r.ticker }}</a></td><td class="muted">{{ r.name|truncatechars:30 }}</td><td class="muted small">{{ r.asset_class }}</td><td class="muted small">{{ r.sector }}</td>
+      <td class="num">{{ r.price|num }}</td><td class="num {{ r.ret_1d|sign_class }}">{{ r.ret_1d|spct }}</td><td class="num {{ r.ret_1m|sign_class }}">{{ r.ret_1m|spct }}</td><td class="num {{ r.ret_ytd|sign_class }}">{{ r.ret_ytd|spct }}</td><td class="num">{{ r.vol_1y|pct:0 }}</td><td class="num">{{ r.adv_dollar|money }}</td>
+      <td class="muted small" data-sort="{{ r.n }}">{{ r.first|date:"Y-m-d" }} → {{ r.last|date:"Y-m-d" }} · {{ r.n }}d</td><td>{% if r.is_factor %}<span class="badge text-bg-light border" title="Used in the factor model">factor</span>{% endif %}</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div></div>
+<div class="help-block mt-2">Factor ETFs ({{ factor_tickers|join:", " }}) must stay loaded for the factor model and beta-filled stress tests to work.</div>
+{% endblock %}

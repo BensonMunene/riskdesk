@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% load riskdesk_extras %}
+{% block title %}VaR & drawdowns · {{ portfolio.name }}{% endblock %}
+{% block content %}
+<div class="rd-page-title">
+  <h1>Value at Risk &amp; drawdowns</h1>
+  <span class="sub">pro-forma returns of the current book over {{ n_days }} days · NAV {{ summary.nav|money }}</span>
+</div>
+<div class="kpi-grid">
+  <div class="kpi"><div class="label">Hist. VaR 99% 1d</div><div class="value">{{ summary.var|pct:2 }}</div><div class="sub">{{ summary.var_dollar|money }}</div></div>
+  <div class="kpi"><div class="label">Expected shortfall 99%</div><div class="value">{{ summary.cvar|pct:2 }}</div><div class="sub">{{ summary.cvar_dollar|money }}</div></div>
+  <div class="kpi"><div class="label">Skew / kurtosis</div><div class="value">{{ perf.skew|snum }} / {{ perf.kurtosis|num:1 }}</div><div class="sub">excess kurtosis; normal = 0</div></div>
+  <div class="kpi"><div class="label">Worst day</div><div class="value text-danger">{{ perf.worst_day|spct }}</div><div class="sub">{{ perf.worst_day_date|date:"j M Y" }}</div></div>
+  <div class="kpi"><div class="label">Max drawdown</div><div class="value text-danger">{{ perf.max_drawdown|pct }}</div><div class="sub">current {{ perf.current_drawdown|pct }}</div></div>
+  <div class="kpi"><div class="label">Hit rate</div><div class="value">{{ perf.hit_rate|pct:0 }}</div><div class="sub">avg up {{ perf.avg_up|pct:2 }} / down {{ perf.avg_down|pct:2 }}</div></div>
+</div>
+<div class="row g-3">
+  <div class="col-12 col-lg-7">
+    <div class="card"><div class="card-header">Distribution of daily returns <span class="hint">with historical VaR / ES markers</span></div><div class="card-body"><div id="c-hist" class="chart"></div></div></div>
+  </div>
+  <div class="col-12 col-lg-5">
+    <div class="card"><div class="card-header">VaR by method <span class="hint">% of NAV, 1-day; Monte Carlo uses a Student-t(5) copula</span></div>
+      <div class="card-body p-0"><table class="table rd"><thead><tr><th>Method</th><th class="num">Conf.</th><th class="num">VaR</th><th class="num">VaR $</th><th class="num">ES</th><th class="num">ES $</th></tr></thead><tbody>
+      {% for v in var_rows %}<tr><td>{{ v.method }}</td><td class="num">{{ v.confidence|pct:0 }}</td><td class="num">{{ v.var|pct:2 }}</td><td class="num">{{ v.var|mul:summary.nav|money }}</td><td class="num">{{ v.cvar|pct:2 }}</td><td class="num">{{ v.cvar|mul:summary.nav|money }}</td></tr>{% endfor %}
+      </tbody></table></div>
+      <div class="card-body small muted border-top">If Cornish-Fisher is well above parametric, the tails are fatter than normal and parametric VaR understates risk. Historical and Monte Carlo should be the anchors for limits.</div>
+    </div>
+  </div>
+  <div class="col-12 col-lg-8">
+    <div class="card"><div class="card-header">Cumulative pro-forma return and drawdown, full history</div><div class="card-body"><div id="c-cum" class="chart chart-sm"></div><div id="c-dd" class="chart chart-sm"></div></div></div>
+  </div>
+  <div class="col-12 col-lg-4">
+    <div class="card"><div class="card-header">Expected-shortfall contributions <span class="hint">avg loss on tail days</span></div><div class="card-body"><div id="c-varc" class="chart"></div></div></div>
+  </div>
+  <div class="col-12 col-lg-6">
+    <div class="card"><div class="card-header">Largest drawdowns</div>
+      <div class="card-body p-0"><table class="table rd"><thead><tr><th>Start</th><th>Trough</th><th>Recovery</th><th class="num">Depth</th><th class="num">Days</th></tr></thead><tbody>
+      {% for _, r in drawdowns.iterrows %}<tr><td>{{ r.start|date:"j M Y" }}</td><td>{{ r.trough|date:"j M Y" }}</td><td>{% if r.recovery %}{{ r.recovery|date:"j M Y" }}{% else %}<span class="badge text-bg-warning">ongoing</span>{% endif %}</td><td class="num text-danger">{{ r.depth|pct }}</td><td class="num">{{ r.length_days }}</td></tr>{% endfor %}
+      </tbody></table></div></div>
+  </div>
+  <div class="col-12 col-lg-6">
+    <div class="card"><div class="card-header">Worst 10-day windows for this book</div>
+      <div class="card-body p-0"><table class="table rd"><thead><tr><th>From</th><th>To</th><th class="num">Return</th><th class="num">$</th></tr></thead><tbody>
+      {% for _, r in worst_windows.iterrows %}<tr><td>{{ r.start|date:"j M Y" }}</td><td>{{ r.end|date:"j M Y" }}</td><td class="num text-danger">{{ r.return|spct }}</td><td class="num">{{ r.return|mul:summary.nav|money }}</td></tr>{% endfor %}
+      </tbody></table></div></div>
+  </div>
+  <div class="col-12">
+    <div class="card"><div class="card-header">Rolling 21-day volatility <span class="hint">portfolio vs benchmark, annualised</span></div><div class="card-body"><div id="c-rvol" class="chart chart-sm"></div></div></div>
+  </div>
+  <div class="col-12">
+    <div class="card"><div class="card-header">Performance statistics (pro forma, lookback window)</div>
+      <div class="card-body"><div class="row small">
+        <div class="col-6 col-md-2 mb-2"><span class="muted">Ann. return</span><br><b>{{ perf.ann_return|spct }}</b></div>
+        <div class="col-6 col-md-2 mb-2"><span class="muted">Ann. vol</span><br><b>{{ perf.ann_vol|pct }}</b></div>
+        <div class="col-6 col-md-2 mb-2"><span class="muted">Sharpe</span><br><b>{{ perf.sharpe|num }}</b></div>
+        <div class="col-6 col-md-2 mb-2"><span class="muted">Sortino</span><br><b>{{ perf.sortino|num }}</b></div>
+        <div class="col-6 col-md-2 mb-2"><span class="muted">Calmar</span><br><b>{{ perf.calmar|num }}</b></div>
+        <div class="col-6 col-md-2 mb-2"><span class="muted">Beta / alpha</span><br><b>{{ perf.beta|num }} / {{ perf.alpha_ann|spct }}</b></div>
+        <div class="col-6 col-md-2 mb-2"><span class="muted">Tracking error</span><br><b>{{ perf.tracking_error|pct }}</b></div>
+        <div class="col-6 col-md-2 mb-2"><span class="muted">Information ratio</span><br><b>{{ perf.information_ratio|num }}</b></div>
+        <div class="col-6 col-md-2 mb-2"><span class="muted">Up / down capture</span><br><b>{{ perf.up_capture|pct:0 }} / {{ perf.down_capture|pct:0 }}</b></div>
+        <div class="col-6 col-md-2 mb-2"><span class="muted">Correlation to bench</span><br><b>{{ perf.correlation|num }}</b></div>
+        <div class="col-6 col-md-2 mb-2"><span class="muted">1m / 3m / 6m / 1y</span><br><b>{{ perf.ret_1m|spct:0 }} / {{ perf.ret_3m|spct:0 }} / {{ perf.ret_6m|spct:0 }} / {{ perf.ret_1y|spct:0 }}</b></div>
+        <div class="col-6 col-md-2 mb-2"><span class="muted">Benchmark ann. return / vol</span><br><b>{{ perf.benchmark_ann_return|spct }} / {{ perf.benchmark_ann_vol|pct }}</b></div>
+      </div></div></div>
+  </div>
+</div>
+{{ charts|json_script:"charts" }}
+{% endblock %}
+{% block scripts %}
+<script>
+(function () {
+  const d = RD.data("charts");
+  RD.histogram("c-hist", d.hist.counts, d.hist.edges, [
+    { x: d.hist.var95, label: "VaR 95%", color: "#f28e2b" }, { x: d.hist.var99, label: "VaR 99%", color: "#e15759", offset: 12 }, { x: d.hist.cvar99, label: "ES 99%", color: "#8b0000", offset: 24 }]);
+  RD.line("c-cum", [{ name: "Cumulative", x: d.cum.x, y: d.cum.y }]);
+  RD.line("c-dd", [{ name: "Drawdown", x: d.drawdown.x, y: d.drawdown.y, color: "#e15759", fill: "tozeroy", fillcolor: "rgba(225,87,89,0.15)" }]);
+  const rv = [{ name: "Portfolio", x: d.rolling_vol.port.x, y: d.rolling_vol.port.y }];
+  if (d.rolling_vol.bench) rv.push({ name: "Benchmark", x: d.rolling_vol.bench.x, y: d.rolling_vol.bench.y, color: "#9c9c9c" });
+  RD.line("c-rvol", rv);
+  RD.bar("c-varc", d.var_contrib.labels, d.var_contrib.values, { horizontal: true, fmt: v => RD.pct(v, 2), tickformat: ".1%" });
+})();
+</script>
+{% endblock %}
