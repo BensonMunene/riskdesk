@@ -1,0 +1,4557 @@
+{
+ "Concentrated Growth": {
+  "summary": {
+   "name": "Concentrated Growth",
+   "as_of": "2026-09-15",
+   "nav": 24999999.999999996,
+   "cash": 2252392.539999999,
+   "cash_weight": 0.09009570159999998,
+   "long_value": 22747607.459999997,
+   "short_value": 0.0,
+   "gross_value": 22747607.459999997,
+   "net_value": 22747607.459999997,
+   "long_exposure": 0.9099042984,
+   "short_exposure": 0.0,
+   "gross_exposure": 0.9099042984,
+   "net_exposure": 0.9099042984,
+   "n_positions": 10,
+   "n_long": 10,
+   "n_short": 0,
+   "vol": 0.23488359079057325,
+   "beta": 1.0257216272614174,
+   "var": 0.041234839681224766,
+   "cvar": 0.04889812475368243,
+   "var_confidence": 0.99,
+   "var_horizon_days": 1,
+   "var_dollar": 1030870.9920306191,
+   "cvar_dollar": 1222453.1188420607,
+   "sharpe": 1.1724706359143346,
+   "ytd_return": 0.1462626961882001,
+   "ret_1m": -0.014741721384887274,
+   "max_drawdown": -0.23253381420872,
+   "current_drawdown": -0.01912148172605077,
+   "lookback_days": 504,
+   "cov_method": "ledoit_wolf",
+   "benchmark": "QQQ",
+   "shrinkage": 0.16169090462038543
+  },
+  "performance": {
+   "n_days": 504,
+   "start": "2024-09-11",
+   "end": "2026-09-15",
+   "total_return": 0.7392622856927664,
+   "ann_return": 0.318810936295558,
+   "ann_vol": 0.23779779872962983,
+   "sharpe": 1.1724706359143346,
+   "sortino": 1.6835198481472904,
+   "max_drawdown": -0.23253381420872,
+   "calmar": 1.371030434349632,
+   "current_drawdown": -0.01912148172605077,
+   "skew": 0.8345736550695418,
+   "kurtosis": 12.091435537649922,
+   "best_day": 0.13226371288162608,
+   "worst_day": -0.05793447508764875,
+   "best_day_date": "2025-04-09",
+   "worst_day_date": "2025-04-03",
+   "hit_rate": 0.5654761904761905,
+   "avg_up": 0.010438559973786773,
+   "avg_down": -0.010800184666428191,
+   "ytd_return": 0.1462626961882001,
+   "ret_1m": -0.014741721384887274,
+   "ret_3m": 0.025329092069002357,
+   "ret_6m": 0.20833535077996235,
+   "ret_1y": 0.2149395258853284,
+   "beta": 1.0257216272614174,
+   "alpha_ann": 0.05538246871222088,
+   "correlation": 0.9352905580842346,
+   "tracking_error": 0.0843366776297779,
+   "information_ratio": 0.7308669035808945,
+   "benchmark_ann_return": 0.24587029691545292,
+   "benchmark_ann_vol": 0.2168327448440884,
+   "benchmark_total_return": 0.5521927967361988,
+   "up_capture": 1.0543569552845005,
+   "down_capture": 1.0092346781912072
+  },
+  "rc": [
+   {
+    "ticker": "NVDA",
+    "weight": 0.15,
+    "mcr": 0.3481,
+    "ccr": 0.0522,
+    "pct": 0.2223,
+    "standalone_vol": 0.4446,
+    "beta_to_port": 1.4819,
+    "sector": "Technology",
+    "asset_class": "Equity",
+    "name": "NVIDIA Corporation",
+    "market_value": 3749892.58
+   },
+   {
+    "ticker": "AVGO",
+    "weight": 0.1,
+    "mcr": 0.3645,
+    "ccr": 0.0364,
+    "pct": 0.1552,
+    "standalone_vol": 0.5223,
+    "beta_to_port": 1.5519,
+    "sector": "Technology",
+    "asset_class": "Equity",
+    "name": "Broadcom Inc.",
+    "market_value": 2499741.36
+   },
+   {
+    "ticker": "AMD",
+    "weight": 0.08,
+    "mcr": 0.4219,
+    "ccr": 0.0337,
+    "pct": 0.1437,
+    "standalone_vol": 0.6267,
+    "beta_to_port": 1.7963,
+    "sector": "Technology",
+    "asset_class": "Equity",
+    "name": "Advanced Micro Devices, Inc.",
+    "market_value": 1999657.2
+   },
+   {
+    "ticker": "TSLA",
+    "weight": 0.08,
+    "mcr": 0.4063,
+    "ccr": 0.0325,
+    "pct": 0.1384,
+    "standalone_vol": 0.5981,
+    "beta_to_port": 1.7297,
+    "sector": "Consumer Cyclical",
+    "asset_class": "Equity",
+    "name": "Tesla, Inc.",
+    "market_value": 1999700.64
+   },
+   {
+    "ticker": "META",
+    "weight": 0.1,
+    "mcr": 0.2476,
+    "ccr": 0.0248,
+    "pct": 0.1054,
+    "standalone_vol": 0.3797,
+    "beta_to_port": 1.0541,
+    "sector": "Communication Services",
+    "asset_class": "Equity",
+    "name": "Meta Platforms, Inc.",
+    "market_value": 2499995.2
+   },
+   {
+    "ticker": "AMZN",
+    "weight": 0.1,
+    "mcr": 0.2266,
+    "ccr": 0.0227,
+    "pct": 0.0965,
+    "standalone_vol": 0.339,
+    "beta_to_port": 0.9646,
+    "sector": "Consumer Cyclical",
+    "asset_class": "Equity",
+    "name": "Amazon.com, Inc.",
+    "market_value": 2499850.46
+   },
+   {
+    "ticker": "MSFT",
+    "weight": 0.1,
+    "mcr": 0.1676,
+    "ccr": 0.0168,
+    "pct": 0.0713,
+    "standalone_vol": 0.2882,
+    "beta_to_port": 0.7136,
+    "sector": "Technology",
+    "asset_class": "Equity",
+    "name": "Microsoft Corporation",
+    "market_value": 2499519.36
+   },
+   {
+    "ticker": "LLY",
+    "weight": 0.08,
+    "mcr": 0.1035,
+    "ccr": 0.0083,
+    "pct": 0.0353,
+    "standalone_vol": 0.3784,
+    "beta_to_port": 0.4407,
+    "sector": "Healthcare",
+    "asset_class": "Equity",
+    "name": "Eli Lilly and Company",
+    "market_value": 1999553.6
+   },
+   {
+    "ticker": "V",
+    "weight": 0.06,
+    "mcr": 0.0755,
+    "ccr": 0.0045,
+    "pct": 0.0193,
+    "standalone_vol": 0.2232,
+    "beta_to_port": 0.3216,
+    "sector": "Financial Services",
+    "asset_class": "Equity",
+    "name": "Visa Inc.",
+    "market_value": 1499850.66
+   },
+   {
+    "ticker": "COST",
+    "weight": 0.06,
+    "mcr": 0.05,
+    "ccr": 0.003,
+    "pct": 0.0128,
+    "standalone_vol": 0.2065,
+    "beta_to_port": 0.2127,
+    "sector": "Consumer Defensive",
+    "asset_class": "Equity",
+    "name": "Costco Wholesale Corporation",
+    "market_value": 1499846.4
+   }
+  ],
+  "sector_rc": [
+   {
+    "sector": "Technology",
+    "weight": 0.43,
+    "gross": 0.43,
+    "ccr": 0.1392,
+    "pct": 0.5925,
+    "n": 4
+   },
+   {
+    "sector": "Consumer Cyclical",
+    "weight": 0.18,
+    "gross": 0.18,
+    "ccr": 0.0552,
+    "pct": 0.2348,
+    "n": 2
+   },
+   {
+    "sector": "Communication Services",
+    "weight": 0.1,
+    "gross": 0.1,
+    "ccr": 0.0248,
+    "pct": 0.1054,
+    "n": 1
+   },
+   {
+    "sector": "Healthcare",
+    "weight": 0.08,
+    "gross": 0.08,
+    "ccr": 0.0083,
+    "pct": 0.0353,
+    "n": 1
+   },
+   {
+    "sector": "Financial Services",
+    "weight": 0.06,
+    "gross": 0.06,
+    "ccr": 0.0045,
+    "pct": 0.0193,
+    "n": 1
+   },
+   {
+    "sector": "Consumer Defensive",
+    "weight": 0.06,
+    "gross": 0.06,
+    "ccr": 0.003,
+    "pct": 0.0128,
+    "n": 1
+   }
+  ],
+  "sector_weights": [
+   {
+    "group": "Technology",
+    "net": 0.43,
+    "gross": 0.43,
+    "long": 0.43,
+    "short": 0.0,
+    "n": 4
+   },
+   {
+    "group": "Consumer Cyclical",
+    "net": 0.18,
+    "gross": 0.18,
+    "long": 0.18,
+    "short": 0.0,
+    "n": 2
+   },
+   {
+    "group": "Communication Services",
+    "net": 0.1,
+    "gross": 0.1,
+    "long": 0.1,
+    "short": 0.0,
+    "n": 1
+   },
+   {
+    "group": "Healthcare",
+    "net": 0.08,
+    "gross": 0.08,
+    "long": 0.08,
+    "short": 0.0,
+    "n": 1
+   },
+   {
+    "group": "Financial Services",
+    "net": 0.06,
+    "gross": 0.06,
+    "long": 0.06,
+    "short": 0.0,
+    "n": 1
+   },
+   {
+    "group": "Consumer Defensive",
+    "net": 0.06,
+    "gross": 0.06,
+    "long": 0.06,
+    "short": 0.0,
+    "n": 1
+   }
+  ],
+  "factor_exposures": [
+   {
+    "factor": "MKT",
+    "beta": 0.9788,
+    "factor_vol": 0.1649,
+    "var_contrib": 0.0347,
+    "pct_of_total_var": 0.5781,
+    "vol_contrib": 0.1863
+   },
+   {
+    "factor": "SIZE",
+    "beta": 0.0045,
+    "factor_vol": 0.1124,
+    "var_contrib": -0.0,
+    "pct_of_total_var": -0.0,
+    "vol_contrib": -0.0012
+   },
+   {
+    "factor": "VALUE",
+    "beta": -0.4963,
+    "factor_vol": 0.1495,
+    "var_contrib": 0.0131,
+    "pct_of_total_var": 0.2182,
+    "vol_contrib": 0.1145
+   },
+   {
+    "factor": "MOM",
+    "beta": -0.0129,
+    "factor_vol": 0.1449,
+    "var_contrib": -0.0001,
+    "pct_of_total_var": -0.0022,
+    "vol_contrib": -0.0116
+   },
+   {
+    "factor": "QUALITY",
+    "beta": -0.0048,
+    "factor_vol": 0.0421,
+    "var_contrib": 0.0,
+    "pct_of_total_var": 0.0004,
+    "vol_contrib": 0.0049
+   },
+   {
+    "factor": "LOWVOL",
+    "beta": -0.2293,
+    "factor_vol": 0.1193,
+    "var_contrib": 0.0054,
+    "pct_of_total_var": 0.0898,
+    "vol_contrib": 0.0734
+   },
+   {
+    "factor": "RATES",
+    "beta": -0.0707,
+    "factor_vol": 0.1147,
+    "var_contrib": -0.0001,
+    "pct_of_total_var": -0.0018,
+    "vol_contrib": -0.0103
+   },
+   {
+    "factor": "CREDIT",
+    "beta": -0.1245,
+    "factor_vol": 0.0565,
+    "var_contrib": -0.001,
+    "pct_of_total_var": -0.0166,
+    "vol_contrib": -0.0316
+   },
+   {
+    "factor": "USD",
+    "beta": 0.0403,
+    "factor_vol": 0.0687,
+    "var_contrib": 0.0,
+    "pct_of_total_var": 0.0,
+    "vol_contrib": 0.0014
+   },
+   {
+    "factor": "GOLD",
+    "beta": 0.0156,
+    "factor_vol": 0.2411,
+    "var_contrib": 0.0001,
+    "pct_of_total_var": 0.0023,
+    "vol_contrib": 0.0117
+   },
+   {
+    "factor": "OIL",
+    "beta": 0.0065,
+    "factor_vol": 0.4134,
+    "var_contrib": -0.0,
+    "pct_of_total_var": -0.0003,
+    "vol_contrib": -0.0044
+   }
+  ],
+  "factor_split": {
+   "systematic_vol": 0.22825591102911044,
+   "idiosyncratic_vol": 0.08910966924700969,
+   "total_vol": 0.24503325095390757,
+   "systematic_share": 0.867748800622922
+  },
+  "var_table": [
+   {
+    "method": "historical",
+    "confidence": 0.95,
+    "horizon_days": 1,
+    "var": 0.022337361543893437,
+    "cvar": 0.03293605122240654
+   },
+   {
+    "method": "parametric",
+    "confidence": 0.95,
+    "horizon_days": 1,
+    "var": 0.02342984625548175,
+    "cvar": 0.02968931547188303
+   },
+   {
+    "method": "cornish_fisher",
+    "confidence": 0.95,
+    "horizon_days": 1,
+    "var": 0.01602485221445855,
+    "cvar": 0.04884991973457541
+   },
+   {
+    "method": "monte_carlo",
+    "confidence": 0.95,
+    "horizon_days": 1,
+    "var": 0.023029086755317268,
+    "cvar": 0.033182489100755615
+   },
+   {
+    "method": "historical",
+    "confidence": 0.99,
+    "horizon_days": 1,
+    "var": 0.041234839681224766,
+    "cvar": 0.04889812475368243
+   },
+   {
+    "method": "parametric",
+    "confidence": 0.99,
+    "horizon_days": 1,
+    "var": 0.03363853008799899,
+    "cvar": 0.03871469823715438
+   },
+   {
+    "method": "cornish_fisher",
+    "confidence": 0.99,
+    "horizon_days": 1,
+    "var": 0.06286467176679057,
+    "cvar": 0.10601451843601686
+   },
+   {
+    "method": "monte_carlo",
+    "confidence": 0.99,
+    "horizon_days": 1,
+    "var": 0.03851864400031311,
+    "cvar": 0.05090308120755713
+   }
+  ],
+  "var_contrib": [
+   {
+    "ticker": "NVDA",
+    "weight": 0.15,
+    "cvar_contrib": 0.01233,
+    "pct": 0.25212
+   },
+   {
+    "ticker": "AVGO",
+    "weight": 0.09999,
+    "cvar_contrib": 0.00886,
+    "pct": 0.1812
+   },
+   {
+    "ticker": "TSLA",
+    "weight": 0.07999,
+    "cvar_contrib": 0.00633,
+    "pct": 0.12943
+   },
+   {
+    "ticker": "AMD",
+    "weight": 0.07999,
+    "cvar_contrib": 0.00624,
+    "pct": 0.12753
+   },
+   {
+    "ticker": "META",
+    "weight": 0.1,
+    "cvar_contrib": 0.0048,
+    "pct": 0.09807
+   },
+   {
+    "ticker": "AMZN",
+    "weight": 0.09999,
+    "cvar_contrib": 0.00391,
+    "pct": 0.08003
+   },
+   {
+    "ticker": "MSFT",
+    "weight": 0.09998,
+    "cvar_contrib": 0.00273,
+    "pct": 0.05589
+   },
+   {
+    "ticker": "LLY",
+    "weight": 0.07998,
+    "cvar_contrib": 0.00207,
+    "pct": 0.04224
+   },
+   {
+    "ticker": "V",
+    "weight": 0.05999,
+    "cvar_contrib": 0.00108,
+    "pct": 0.02215
+   },
+   {
+    "ticker": "COST",
+    "weight": 0.05999,
+    "cvar_contrib": 0.00055,
+    "pct": 0.01134
+   }
+  ],
+  "drawdowns": [
+   {
+    "episode": 0,
+    "start": "2021-12-28",
+    "trough": "2022-10-14",
+    "recovery": "2023-05-25",
+    "depth": -0.37883213308146957,
+    "length_days": 355
+   },
+   {
+    "episode": 1,
+    "start": "2020-02-20",
+    "trough": "2020-03-16",
+    "recovery": "2020-05-11",
+    "depth": -0.28706951054004826,
+    "length_days": 57
+   },
+   {
+    "episode": 2,
+    "start": "2025-01-24",
+    "trough": "2025-04-08",
+    "recovery": "2025-06-02",
+    "depth": -0.2325338142087201,
+    "length_days": 89
+   },
+   {
+    "episode": 3,
+    "start": "2024-07-11",
+    "trough": "2024-08-07",
+    "recovery": "2024-10-25",
+    "depth": -0.1702340016518311,
+    "length_days": 76
+   },
+   {
+    "episode": 4,
+    "start": "2025-10-30",
+    "trough": "2026-03-30",
+    "recovery": "2026-04-17",
+    "depth": -0.15571101922713593,
+    "length_days": 116
+   }
+  ],
+  "worst_windows": [
+   {
+    "rank": 0,
+    "start": "2020-03-05",
+    "end": "2020-03-18",
+    "return": -0.21699166530746827
+   },
+   {
+    "rank": 1,
+    "start": "2025-03-26",
+    "end": "2025-04-08",
+    "return": -0.15860351107996662
+   },
+   {
+    "rank": 2,
+    "start": "2022-06-03",
+    "end": "2022-06-16",
+    "return": -0.1419048057659389
+   },
+   {
+    "rank": 3,
+    "start": "2022-01-13",
+    "end": "2022-01-27",
+    "return": -0.1340748174479497
+   },
+   {
+    "rank": 4,
+    "start": "2022-09-13",
+    "end": "2022-09-26",
+    "return": -0.1229147452021736
+   }
+  ],
+  "stress_hist": [
+   {
+    "start": "2020-02-19",
+    "end": "2020-03-23",
+    "total_pnl": -0.26455330942384053,
+    "name": "COVID crash",
+    "total_dollar": -6613832.735596012,
+    "benchmark_return": -0.27916574431851804
+   },
+   {
+    "start": "2020-03-23",
+    "end": "2020-06-08",
+    "total_pnl": 0.4609405365223331,
+    "name": "COVID rebound",
+    "total_dollar": 11523513.413058326,
+    "benchmark_return": 0.41704764510930703
+   },
+   {
+    "start": "2022-01-03",
+    "end": "2022-06-16",
+    "total_pnl": -0.30378402035135366,
+    "name": "2022 rate shock (H1)",
+    "total_dollar": -7594600.508783841,
+    "benchmark_return": -0.3235273192942516
+   },
+   {
+    "start": "2022-01-03",
+    "end": "2022-10-12",
+    "total_pnl": -0.34540059131027134,
+    "name": "2022 bear market",
+    "total_dollar": -8635014.782756783,
+    "benchmark_return": -0.3428505914676341
+   },
+   {
+    "start": "2023-03-08",
+    "end": "2023-03-13",
+    "total_pnl": -0.02094606022013864,
+    "name": "SVB banking stress",
+    "total_dollar": -523651.5055034659,
+    "benchmark_return": -0.023940891459255598
+   },
+   {
+    "start": "2024-07-16",
+    "end": "2024-08-05",
+    "total_pnl": -0.1360006522808663,
+    "name": "Aug 2024 vol spike",
+    "total_dollar": -3400016.307021657,
+    "benchmark_return": -0.12283914511877003
+   },
+   {
+    "start": "2025-01-24",
+    "end": "2025-01-27",
+    "total_pnl": -0.04504421330674033,
+    "name": "DeepSeek AI sell-off",
+    "total_dollar": -1126105.332668508,
+    "benchmark_return": -0.029114573436118785
+   },
+   {
+    "start": "2025-04-02",
+    "end": "2025-04-08",
+    "total_pnl": -0.11678483913239437,
+    "name": "Apr 2025 tariff shock",
+    "total_dollar": -2919620.978309859,
+    "benchmark_return": -0.12619972864953077
+   }
+  ],
+  "stress_hypo": [
+   {
+    "total_pnl": -0.09788201497149417,
+    "shocks": {
+     "MKT": -0.1
+    },
+    "name": "Equities -10%",
+    "total_dollar": -2447050.374287354
+   },
+   {
+    "total_pnl": -0.18602987863108025,
+    "shocks": {
+     "MKT": -0.2,
+     "CREDIT": -0.08,
+     "SIZE": -0.05
+    },
+    "name": "Equities -20%, credit -8%",
+    "total_dollar": -4650746.965777006
+   },
+   {
+    "total_pnl": -0.03525874533554413,
+    "shocks": {
+     "RATES": -0.12,
+     "MKT": -0.04,
+     "LOWVOL": 0.02
+    },
+    "name": "Rates +100bp (TLT -12%)",
+    "total_dollar": -881468.6333886031
+   },
+   {
+    "total_pnl": -0.06360294979161417,
+    "shocks": {
+     "RATES": 0.08,
+     "MKT": -0.06,
+     "GOLD": 0.05
+    },
+    "name": "Flight to quality (TLT +8%)",
+    "total_dollar": -1590073.744790354
+   },
+   {
+    "total_pnl": -0.04263763619408187,
+    "shocks": {
+     "OIL": 0.25,
+     "MKT": -0.03,
+     "VALUE": 0.03
+    },
+    "name": "Oil +25%",
+    "total_dollar": -1065940.9048520466
+   },
+   {
+    "total_pnl": -0.018186029154900266,
+    "shocks": {
+     "USD": 0.05,
+     "MKT": -0.02,
+     "GOLD": -0.04
+    },
+    "name": "Dollar +5%",
+    "total_dollar": -454650.7288725066
+   },
+   {
+    "total_pnl": -0.03818393294392993,
+    "shocks": {
+     "MOM": -0.1,
+     "VALUE": 0.08,
+     "SIZE": 0.05
+    },
+    "name": "Momentum crash",
+    "total_dollar": -954598.3235982482
+   },
+   {
+    "total_pnl": -0.10304142471935,
+    "shocks": {
+     "MKT": -0.12,
+     "RATES": -0.08,
+     "OIL": 0.2,
+     "GOLD": 0.08,
+     "CREDIT": -0.05
+    },
+    "name": "Stagflation",
+    "total_dollar": -2576035.6179837496
+   }
+  ],
+  "single_name_shocks": [
+   {
+    "ticker": "NVDA",
+    "shock": -0.08411,
+    "own_pnl": -0.01262,
+    "total_pnl": -0.03478,
+    "spillover": -0.02217
+   },
+   {
+    "ticker": "AVGO",
+    "shock": -0.09881,
+    "own_pnl": -0.00988,
+    "total_pnl": -0.03101,
+    "spillover": -0.02113
+   },
+   {
+    "ticker": "TSLA",
+    "shock": -0.11314,
+    "own_pnl": -0.00905,
+    "total_pnl": -0.03018,
+    "spillover": -0.02113
+   },
+   {
+    "ticker": "AMD",
+    "shock": -0.11855,
+    "own_pnl": -0.00948,
+    "total_pnl": -0.02991,
+    "spillover": -0.02043
+   },
+   {
+    "ticker": "AMZN",
+    "shock": -0.06412,
+    "own_pnl": -0.00641,
+    "total_pnl": -0.0297,
+    "spillover": -0.02329
+   }
+  ],
+  "concentration": {
+   "hhi": 0.10735640669333943,
+   "effective_n": 9.314767798222531,
+   "top1": 0.16484777955632962,
+   "top5": 0.6044151669214709,
+   "top10": 0.9999999999999999,
+   "div_ratio": 1.5906545902005575,
+   "enb": 1.3924992802859197,
+   "n_positions": 10,
+   "max_weight": 0.1499957032,
+   "max_weight_ticker": "NVDA"
+  },
+  "clusters": [],
+  "liquidity_profile": [
+   {
+    "bucket": "< 1 day",
+    "gross_value": 22747607.46,
+    "pct_gross": 1.0,
+    "cumulative_pct": 1.0
+   },
+   {
+    "bucket": "1-3 days",
+    "gross_value": 0.0,
+    "pct_gross": 0.0,
+    "cumulative_pct": 1.0
+   },
+   {
+    "bucket": "3-10 days",
+    "gross_value": 0.0,
+    "pct_gross": 0.0,
+    "cumulative_pct": 1.0
+   },
+   {
+    "bucket": "> 10 days",
+    "gross_value": 0.0,
+    "pct_gross": 0.0,
+    "cumulative_pct": 1.0
+   }
+  ],
+  "liquidity_top": [
+   {
+    "ticker": "COST",
+    "shares": 1664.0,
+    "market_value": 1499846.4,
+    "weight": 0.06,
+    "adv_shares": 1846716.6667,
+    "adv_dollar": 1664538067.5,
+    "pct_of_adv": 0.0009,
+    "days_to_liquidate": 0.0045,
+    "bucket": "< 1 day",
+    "impact_cost": 293.1639,
+    "sector": "Consumer Defensive",
+    "name": "Costco Wholesale Corporation"
+   },
+   {
+    "ticker": "LLY",
+    "shares": 1760.0,
+    "market_value": 1999553.6,
+    "weight": 0.08,
+    "adv_shares": 2639333.3333,
+    "adv_dollar": 2998572993.3333,
+    "pct_of_adv": 0.0007,
+    "days_to_liquidate": 0.0033,
+    "bucket": "< 1 day",
+    "impact_cost": 616.067,
+    "sector": "Healthcare",
+    "name": "Eli Lilly and Company"
+   },
+   {
+    "ticker": "V",
+    "shares": 3993.0,
+    "market_value": 1499850.66,
+    "weight": 0.06,
+    "adv_shares": 6134280.0,
+    "adv_dollar": 2304158253.6,
+    "pct_of_adv": 0.0007,
+    "days_to_liquidate": 0.0033,
+    "bucket": "< 1 day",
+    "impact_cost": 269.3245,
+    "sector": "Financial Services",
+    "name": "Visa Inc."
+   },
+   {
+    "ticker": "AVGO",
+    "shares": 7368.0,
+    "market_value": 2499741.36,
+    "weight": 0.1,
+    "adv_shares": 23437850.0,
+    "adv_dollar": 7951759369.5,
+    "pct_of_adv": 0.0003,
+    "days_to_liquidate": 0.0016,
+    "bucket": "< 1 day",
+    "impact_cost": 729.888,
+    "sector": "Technology",
+    "name": "Broadcom Inc."
+   },
+   {
+    "ticker": "AMZN",
+    "shares": 10063.0,
+    "market_value": 2499850.46,
+    "weight": 0.1,
+    "adv_shares": 33953443.3333,
+    "adv_dollar": 8434714392.8667,
+    "pct_of_adv": 0.0003,
+    "days_to_liquidate": 0.0015,
+    "bucket": "< 1 day",
+    "impact_cost": 459.9488,
+    "sector": "Consumer Cyclical",
+    "name": "Amazon.com, Inc."
+   }
+  ],
+  "limits": [
+   {
+    "id": 47,
+    "metric": "beta",
+    "scope": null,
+    "operator": "lte",
+    "threshold": 1.2,
+    "label": "Beta cap",
+    "value": 1.0257216272614174,
+    "display_value": "1.03",
+    "display_threshold": "1.20",
+    "status": "ok",
+    "utilization": 0.8547680227178478
+   },
+   {
+    "id": 42,
+    "metric": "position_weight",
+    "scope": null,
+    "operator": "lte",
+    "threshold": 0.12,
+    "label": "Single-name weight",
+    "value": 0.1499957032,
+    "display_value": "15.0%",
+    "display_threshold": "12.0%",
+    "status": "breach",
+    "utilization": 1.2499641933333334
+   },
+   {
+    "id": 44,
+    "metric": "sector_gross",
+    "scope": "Technology",
+    "operator": "lte",
+    "threshold": 0.4,
+    "label": "Technology gross",
+    "value": 0.42995242000000006,
+    "display_value": "43.0%",
+    "display_threshold": "40.0%",
+    "status": "breach",
+    "utilization": 1.0748810500000001
+   },
+   {
+    "id": 45,
+    "metric": "stress_loss",
+    "scope": null,
+    "operator": "lte",
+    "threshold": 0.25,
+    "label": "Worst stress scenario loss",
+    "value": 0.34540059131027134,
+    "display_value": "34.5%",
+    "display_threshold": "25.0%",
+    "status": "breach",
+    "utilization": 1.3816023652410854
+   },
+   {
+    "id": 43,
+    "metric": "top5_weight",
+    "scope": null,
+    "operator": "lte",
+    "threshold": 0.5,
+    "label": "Top-5 share of gross",
+    "value": 0.6044151669214709,
+    "display_value": "60.4%",
+    "display_threshold": "50.0%",
+    "status": "breach",
+    "utilization": 1.2088303338429418
+   },
+   {
+    "id": 46,
+    "metric": "vol",
+    "scope": null,
+    "operator": "lte",
+    "threshold": 0.3,
+    "label": "Annualised volatility",
+    "value": 0.23488359079057325,
+    "display_value": "23.5%",
+    "display_threshold": "30.0%",
+    "status": "ok",
+    "utilization": 0.7829453026352442
+   }
+  ],
+  "insights": [
+   {
+    "severity": "high",
+    "category": "limits",
+    "title": "Limit breach: Single-name weight",
+    "detail": "Current 15.0% versus limit 12.0% (125% of limit).",
+    "action": "Cut NVDA from 15.0% to 11.8% of NAV ($810k) to get back inside the limit.",
+    "value": 0.1499957032,
+    "threshold": 0.12,
+    "tickers": [
+     "NVDA"
+    ],
+    "whatif": {
+     "ticker": "NVDA",
+     "mode": "target_weight",
+     "value": 0.1176
+    }
+   },
+   {
+    "severity": "high",
+    "category": "limits",
+    "title": "Limit breach: Technology gross",
+    "detail": "Current 43.0% versus limit 40.0% (107% of limit).",
+    "action": "Reduce the exposure back inside the limit or seek an approved exception.",
+    "value": 0.42995242000000006,
+    "threshold": 0.4,
+    "tickers": [],
+    "whatif": null
+   },
+   {
+    "severity": "high",
+    "category": "limits",
+    "title": "Limit breach: Worst stress scenario loss",
+    "detail": "Current 34.5% versus limit 25.0% (138% of limit).",
+    "action": "Reduce the exposure back inside the limit or seek an approved exception.",
+    "value": 0.34540059131027134,
+    "threshold": 0.25,
+    "tickers": [],
+    "whatif": null
+   },
+   {
+    "severity": "high",
+    "category": "limits",
+    "title": "Limit breach: Top-5 share of gross",
+    "detail": "Current 60.4% versus limit 50.0% (121% of limit).",
+    "action": "Reduce the exposure back inside the limit or seek an approved exception.",
+    "value": 0.6044151669214709,
+    "threshold": 0.5,
+    "tickers": [],
+    "whatif": null
+   },
+   {
+    "severity": "medium",
+    "category": "concentration",
+    "title": "Technology drives 59% of risk",
+    "detail": "Technology is 43% gross exposure but 59% of portfolio vol.",
+    "action": "Diversify within Technology or add a sector hedge (short XLK) sized to roughly 13% of NAV to bring its risk share below 35%.",
+    "value": 0.5924741660972954,
+    "threshold": 0.45,
+    "tickers": [],
+    "whatif": {
+     "ticker": "XLK",
+     "mode": "delta_weight",
+     "value": -0.129
+    }
+   },
+   {
+    "severity": "medium",
+    "category": "tail",
+    "title": "Worst scenario: 2022 bear market -34.5%",
+    "detail": "Replaying 2022 bear market on today's book loses -$8.64m (-34.5% of NAV).",
+    "action": "Compare with the risk budget; if too large, the cheapest fix is usually reducing the largest contributors to that scenario rather than the whole book.",
+    "value": -0.34540059131027134,
+    "threshold": -0.1,
+    "tickers": [],
+    "whatif": null
+   },
+   {
+    "severity": "low",
+    "category": "factor",
+    "title": "Unintended short VALUE tilt",
+    "detail": "Portfolio beta to VALUE is -0.50, explaining 22% of total variance (15% factor vol).",
+    "action": "If the VALUE tilt is not a deliberate view, neutralise it with the factor ETF pair or by rebalancing across names with opposite loadings.",
+    "value": -0.49625012811831487,
+    "threshold": 0.25,
+    "tickers": [],
+    "whatif": null
+   },
+   {
+    "severity": "low",
+    "category": "concentration",
+    "title": "Top 5 positions are 60% of gross",
+    "detail": "Effective number of positions is 9.3 versus 10 held.",
+    "action": "Spread the tail of the book or accept the concentration explicitly.",
+    "value": null,
+    "threshold": null,
+    "tickers": [],
+    "whatif": null
+   },
+   {
+    "severity": "low",
+    "category": "diversification",
+    "title": "Only 1.4 independent bets",
+    "detail": "Effective number of bets (entropy of principal-portfolio variance shares) is low; most risk sits in one or two common factors.",
+    "action": "Add exposures that load on different principal components (rates, commodities, low-beta names).",
+    "value": null,
+    "threshold": null,
+    "tickers": [],
+    "whatif": null
+   },
+   {
+    "severity": "low",
+    "category": "tail",
+    "title": "Fat-tailed return distribution",
+    "detail": "Excess kurtosis 12.1 and skew +0.83. Parametric VaR will understate tail losses.",
+    "action": "Use historical or Cornish-Fisher VaR for limits and sizing.",
+    "value": null,
+    "threshold": null,
+    "tickers": [],
+    "whatif": null
+   },
+   {
+    "severity": "info",
+    "category": "factor",
+    "title": "Book is mostly systematic risk",
+    "detail": "87% of variance is explained by factors; stock selection (idiosyncratic) risk is only 8.9% of the 24.5% total.",
+    "action": "If the mandate is stock-picking alpha, hedge factor exposure to let idiosyncratic risk dominate.",
+    "value": null,
+    "threshold": null,
+    "tickers": [],
+    "whatif": null
+   }
+  ],
+  "warnings": []
+ },
+ "Flagship Long/Short Equity": {
+  "summary": {
+   "name": "Flagship Long/Short Equity",
+   "as_of": "2026-09-15",
+   "nav": 50000000.0,
+   "cash": 24502421.560000006,
+   "cash_weight": 0.49004843120000013,
+   "long_value": 40996373.730000004,
+   "short_value": -15498795.29,
+   "gross_value": 56495169.02,
+   "net_value": 25497578.440000005,
+   "long_exposure": 0.8199274746,
+   "short_exposure": -0.3099759058,
+   "gross_exposure": 1.1299033804,
+   "net_exposure": 0.5099515688000001,
+   "n_positions": 30,
+   "n_long": 22,
+   "n_short": 8,
+   "vol": 0.08357259326172335,
+   "beta": 0.3742544587655228,
+   "var": 0.011692063036375752,
+   "cvar": 0.015829997134989462,
+   "var_confidence": 0.99,
+   "var_horizon_days": 1,
+   "var_dollar": 584603.1518187876,
+   "cvar_dollar": 791499.8567494731,
+   "sharpe": 0.8355245661929598,
+   "ytd_return": 0.05866743433453592,
+   "ret_1m": -0.0052638236611664,
+   "max_drawdown": -0.0935515957018751,
+   "current_drawdown": -0.01818639754916085,
+   "lookback_days": 504,
+   "cov_method": "ledoit_wolf",
+   "benchmark": "SPY",
+   "shrinkage": 0.18342227249125626
+  },
+  "performance": {
+   "n_days": 504,
+   "start": "2024-09-11",
+   "end": "2026-09-15",
+   "total_return": 0.22753080594201847,
+   "ann_return": 0.10793989274780547,
+   "ann_vol": 0.08131405765526602,
+   "sharpe": 0.8355245661929598,
+   "sortino": 1.2363905011018754,
+   "max_drawdown": -0.0935515957018751,
+   "calmar": 1.1538006587485923,
+   "current_drawdown": -0.01818639754916085,
+   "skew": 0.33487033267908256,
+   "kurtosis": 6.379691706222605,
+   "best_day": 0.037981567420652576,
+   "worst_day": -0.022689643646326516,
+   "best_day_date": "2025-04-09",
+   "worst_day_date": "2025-04-04",
+   "hit_rate": 0.5555555555555556,
+   "avg_up": 0.003778965301112255,
+   "avg_down": -0.0037789044602453557,
+   "ytd_return": 0.05866743433453592,
+   "ret_1m": -0.0052638236611664,
+   "ret_3m": 0.03895309570761696,
+   "ret_6m": 0.05265331032081999,
+   "ret_1y": 0.07420635458445757,
+   "beta": 0.3742544587655228,
+   "alpha_ann": 0.036094133969556595,
+   "correlation": 0.7588350036835667,
+   "tracking_error": 0.11596626014828829,
+   "information_ratio": -0.694015935534026,
+   "benchmark_ann_return": 0.18860470986035516,
+   "benchmark_ann_vol": 0.16487165829337033,
+   "benchmark_total_return": 0.41278115630221923,
+   "up_capture": 0.3895291360692286,
+   "down_capture": 0.34585774654452844
+  },
+  "rc": [
+   {
+    "ticker": "NVDA",
+    "weight": 0.07,
+    "mcr": 0.2838,
+    "ccr": 0.0199,
+    "pct": 0.2377,
+    "standalone_vol": 0.4446,
+    "beta_to_port": 3.3954,
+    "sector": "Technology",
+    "asset_class": "Equity",
+    "name": "NVIDIA Corporation",
+    "market_value": 3499956.32
+   },
+   {
+    "ticker": "AVGO",
+    "weight": 0.04,
+    "mcr": 0.28,
+    "ccr": 0.0112,
+    "pct": 0.134,
+    "standalone_vol": 0.5223,
+    "beta_to_port": 3.3502,
+    "sector": "Technology",
+    "asset_class": "Equity",
+    "name": "Broadcom Inc.",
+    "market_value": 1999996.65
+   },
+   {
+    "ticker": "META",
+    "weight": 0.05,
+    "mcr": 0.2178,
+    "ccr": 0.0109,
+    "pct": 0.1303,
+    "standalone_vol": 0.3797,
+    "beta_to_port": 2.606,
+    "sector": "Communication Services",
+    "asset_class": "Equity",
+    "name": "Meta Platforms, Inc.",
+    "market_value": 2499995.2
+   },
+   {
+    "ticker": "AMZN",
+    "weight": 0.05,
+    "mcr": 0.1977,
+    "ccr": 0.0099,
+    "pct": 0.1183,
+    "standalone_vol": 0.339,
+    "beta_to_port": 2.3659,
+    "sector": "Consumer Cyclical",
+    "asset_class": "Equity",
+    "name": "Amazon.com, Inc.",
+    "market_value": 2499850.46
+   },
+   {
+    "ticker": "MSFT",
+    "weight": 0.06,
+    "mcr": 0.1524,
+    "ccr": 0.0091,
+    "pct": 0.1094,
+    "standalone_vol": 0.2882,
+    "beta_to_port": 1.823,
+    "sector": "Technology",
+    "asset_class": "Equity",
+    "name": "Microsoft Corporation",
+    "market_value": 2999622.08
+   },
+   {
+    "ticker": "AAPL",
+    "weight": 0.05,
+    "mcr": 0.1354,
+    "ccr": 0.0068,
+    "pct": 0.081,
+    "standalone_vol": 0.2888,
+    "beta_to_port": 1.6203,
+    "sector": "Technology",
+    "asset_class": "Equity",
+    "name": "Apple Inc.",
+    "market_value": 2499960.3
+   },
+   {
+    "ticker": "GOOGL",
+    "weight": 0.04,
+    "mcr": 0.1574,
+    "ccr": 0.0063,
+    "pct": 0.0753,
+    "standalone_vol": 0.3171,
+    "beta_to_port": 1.883,
+    "sector": "Communication Services",
+    "asset_class": "Equity",
+    "name": "Alphabet Inc.",
+    "market_value": 1999849.06
+   },
+   {
+    "ticker": "GS",
+    "weight": 0.03,
+    "mcr": 0.1668,
+    "ccr": 0.005,
+    "pct": 0.0599,
+    "standalone_vol": 0.3244,
+    "beta_to_port": 1.9962,
+    "sector": "Financial Services",
+    "asset_class": "Equity",
+    "name": "Goldman Sachs Group, Inc. (The)",
+    "market_value": 1499188.45
+   },
+   {
+    "ticker": "LLY",
+    "weight": 0.04,
+    "mcr": 0.122,
+    "ccr": 0.0049,
+    "pct": 0.0584,
+    "standalone_vol": 0.3784,
+    "beta_to_port": 1.4594,
+    "sector": "Healthcare",
+    "asset_class": "Equity",
+    "name": "Eli Lilly and Company",
+    "market_value": 1999553.6
+   },
+   {
+    "ticker": "JPM",
+    "weight": 0.04,
+    "mcr": 0.1217,
+    "ccr": 0.0049,
+    "pct": 0.0582,
+    "standalone_vol": 0.2465,
+    "beta_to_port": 1.4561,
+    "sector": "Financial Services",
+    "asset_class": "Equity",
+    "name": "JP Morgan Chase & Co.",
+    "market_value": 1999675.77
+   },
+   {
+    "ticker": "CAT",
+    "weight": 0.03,
+    "mcr": 0.1422,
+    "ccr": 0.0043,
+    "pct": 0.051,
+    "standalone_vol": 0.3524,
+    "beta_to_port": 1.7012,
+    "sector": "Industrials",
+    "asset_class": "Equity",
+    "name": "Caterpillar, Inc.",
+    "market_value": 1499695.56
+   },
+   {
+    "ticker": "UNH",
+    "weight": 0.03,
+    "mcr": 0.0997,
+    "ccr": 0.003,
+    "pct": 0.0358,
+    "standalone_vol": 0.4213,
+    "beta_to_port": 1.1925,
+    "sector": "Healthcare",
+    "asset_class": "Equity",
+    "name": "UnitedHealth Group Incorporated",
+    "market_value": 1499960.7
+   },
+   {
+    "ticker": "V",
+    "weight": 0.03,
+    "mcr": 0.0864,
+    "ccr": 0.0026,
+    "pct": 0.031,
+    "standalone_vol": 0.2232,
+    "beta_to_port": 1.0343,
+    "sector": "Financial Services",
+    "asset_class": "Equity",
+    "name": "Visa Inc.",
+    "market_value": 1499850.66
+   },
+   {
+    "ticker": "HD",
+    "weight": 0.03,
+    "mcr": 0.0795,
+    "ccr": 0.0024,
+    "pct": 0.0285,
+    "standalone_vol": 0.239,
+    "beta_to_port": 0.9512,
+    "sector": "Consumer Cyclical",
+    "asset_class": "Equity",
+    "name": "Home Depot, Inc. (The)",
+    "market_value": 1499906.8
+   },
+   {
+    "ticker": "COST",
+    "weight": 0.03,
+    "mcr": 0.0624,
+    "ccr": 0.0019,
+    "pct": 0.0224,
+    "standalone_vol": 0.2065,
+    "beta_to_port": 0.747,
+    "sector": "Consumer Defensive",
+    "asset_class": "Equity",
+    "name": "Costco Wholesale Corporation",
+    "market_value": 1499846.4
+   },
+   {
+    "ticker": "GLD",
+    "weight": 0.03,
+    "mcr": 0.0516,
+    "ccr": 0.0015,
+    "pct": 0.0185,
+    "standalone_vol": 0.2409,
+    "beta_to_port": 0.6173,
+    "sector": "Gold",
+    "asset_class": "Commodity",
+    "name": "SPDR Gold Shares",
+    "market_value": 1499740.75
+   },
+   {
+    "ticker": "XOM",
+    "weight": 0.035,
+    "mcr": 0.0427,
+    "ccr": 0.0015,
+    "pct": 0.0179,
+    "standalone_vol": 0.2469,
+    "beta_to_port": 0.5105,
+    "sector": "Energy",
+    "asset_class": "Equity",
+    "name": "ExxonMobil Holdings Corporation",
+    "market_value": 1749922.2
+   },
+   {
+    "ticker": "LIN",
+    "weight": 0.025,
+    "mcr": 0.0583,
+    "ccr": 0.0015,
+    "pct": 0.0174,
+    "standalone_vol": 0.187,
+    "beta_to_port": 0.6978,
+    "sector": "Basic Materials",
+    "asset_class": "Equity",
+    "name": "Linde plc",
+    "market_value": 1249992.0
+   },
+   {
+    "ticker": "LMT",
+    "weight": 0.025,
+    "mcr": 0.0519,
+    "ccr": 0.0013,
+    "pct": 0.0155,
+    "standalone_vol": 0.2744,
+    "beta_to_port": 0.6212,
+    "sector": "Industrials",
+    "asset_class": "Equity",
+    "name": "Lockheed Martin Corporation",
+    "market_value": 1249896.78
+   },
+   {
+    "ticker": "NEE",
+    "weight": 0.02,
+    "mcr": 0.043,
+    "ccr": 0.0009,
+    "pct": 0.0103,
+    "standalone_vol": 0.2514,
+    "beta_to_port": 0.5144,
+    "sector": "Utilities",
+    "asset_class": "Equity",
+    "name": "NextEra Energy, Inc.",
+    "market_value": 999998.45
+   },
+   {
+    "ticker": "TLT",
+    "weight": 0.04,
+    "mcr": 0.0164,
+    "ccr": 0.0007,
+    "pct": 0.0078,
+    "standalone_vol": 0.1146,
+    "beta_to_port": 0.1957,
+    "sector": "Long Treasury",
+    "asset_class": "Fixed Income",
+    "name": "iShares 20+ Year Treasury",
+    "market_value": 1999993.8
+   },
+   {
+    "ticker": "PG",
+    "weight": 0.025,
+    "mcr": 0.0226,
+    "ccr": 0.0006,
+    "pct": 0.0068,
+    "standalone_vol": 0.1908,
+    "beta_to_port": 0.2701,
+    "sector": "Consumer Defensive",
+    "asset_class": "Equity",
+    "name": "Procter & Gamble Company (The)",
+    "market_value": 1249921.74
+   },
+   {
+    "ticker": "KHC",
+    "weight": -0.025,
+    "mcr": 0.005,
+    "ccr": -0.0001,
+    "pct": -0.0015,
+    "standalone_vol": 0.2579,
+    "beta_to_port": 0.0596,
+    "sector": "Consumer Defensive",
+    "asset_class": "Equity",
+    "name": "The Kraft Heinz Company",
+    "market_value": -1249977.85
+   },
+   {
+    "ticker": "NKE",
+    "weight": -0.02,
+    "mcr": 0.0725,
+    "ccr": -0.0014,
+    "pct": -0.0173,
+    "standalone_vol": 0.3777,
+    "beta_to_port": 0.867,
+    "sector": "Consumer Cyclical",
+    "asset_class": "Equity",
+    "name": "Nike, Inc.",
+    "market_value": -999997.98
+   },
+   {
+    "ticker": "F",
+    "weight": -0.025,
+    "mcr": 0.0586,
+    "ccr": -0.0015,
+    "pct": -0.0175,
+    "standalone_vol": 0.3536,
+    "beta_to_port": 0.701,
+    "sector": "Consumer Cyclical",
+    "asset_class": "Equity",
+    "name": "Ford Motor Company",
+    "market_value": -1249992.0
+   },
+   {
+    "ticker": "INTC",
+    "weight": -0.03,
+    "mcr": 0.0516,
+    "ccr": -0.0015,
+    "pct": -0.0185,
+    "standalone_vol": 0.6948,
+    "beta_to_port": 0.6169,
+    "sector": "Technology",
+    "asset_class": "Equity",
+    "name": "Intel Corporation",
+    "market_value": -1499938.74
+   },
+   {
+    "ticker": "SBUX",
+    "weight": -0.02,
+    "mcr": 0.0817,
+    "ccr": -0.0016,
+    "pct": -0.0195,
+    "standalone_vol": 0.3027,
+    "beta_to_port": 0.9772,
+    "sector": "Consumer Cyclical",
+    "asset_class": "Equity",
+    "name": "Starbucks Corporation",
+    "market_value": -999989.32
+   },
+   {
+    "ticker": "BA",
+    "weight": -0.03,
+    "mcr": 0.099,
+    "ccr": -0.003,
+    "pct": -0.0355,
+    "standalone_vol": 0.3524,
+    "beta_to_port": 1.1841,
+    "sector": "Industrials",
+    "asset_class": "Equity",
+    "name": "Boeing Company (The)",
+    "market_value": -1499912.57
+   },
+   {
+    "ticker": "TSLA",
+    "weight": -0.04,
+    "mcr": 0.139,
+    "ccr": -0.0056,
+    "pct": -0.0665,
+    "standalone_vol": 0.5981,
+    "beta_to_port": 1.6628,
+    "sector": "Consumer Cyclical",
+    "asset_class": "Equity",
+    "name": "Tesla, Inc.",
+    "market_value": -1999700.64
+   },
+   {
+    "ticker": "SPY",
+    "weight": -0.12,
+    "mcr": 0.1038,
+    "ccr": -0.0125,
+    "pct": -0.149,
+    "standalone_vol": 0.1647,
+    "beta_to_port": 1.2416,
+    "sector": "US Large Cap",
+    "asset_class": "ETF",
+    "name": "SPDR S&P 500 ETF",
+    "market_value": -5999286.19
+   }
+  ],
+  "sector_rc": [
+   {
+    "sector": "Technology",
+    "weight": 0.19,
+    "gross": 0.25,
+    "ccr": 0.0454,
+    "pct": 0.5436,
+    "n": 5
+   },
+   {
+    "sector": "Communication Services",
+    "weight": 0.09,
+    "gross": 0.09,
+    "ccr": 0.0172,
+    "pct": 0.2056,
+    "n": 2
+   },
+   {
+    "sector": "Financial Services",
+    "weight": 0.1,
+    "gross": 0.1,
+    "ccr": 0.0125,
+    "pct": 0.1491,
+    "n": 3
+   },
+   {
+    "sector": "Healthcare",
+    "weight": 0.07,
+    "gross": 0.07,
+    "ccr": 0.0079,
+    "pct": 0.0941,
+    "n": 2
+   },
+   {
+    "sector": "Industrials",
+    "weight": 0.025,
+    "gross": 0.085,
+    "ccr": 0.0026,
+    "pct": 0.031,
+    "n": 3
+   },
+   {
+    "sector": "Consumer Defensive",
+    "weight": 0.03,
+    "gross": 0.08,
+    "ccr": 0.0023,
+    "pct": 0.0277,
+    "n": 3
+   },
+   {
+    "sector": "Consumer Cyclical",
+    "weight": -0.025,
+    "gross": 0.185,
+    "ccr": 0.0022,
+    "pct": 0.0259,
+    "n": 6
+   },
+   {
+    "sector": "Gold",
+    "weight": 0.03,
+    "gross": 0.03,
+    "ccr": 0.0015,
+    "pct": 0.0185,
+    "n": 1
+   },
+   {
+    "sector": "Energy",
+    "weight": 0.035,
+    "gross": 0.035,
+    "ccr": 0.0015,
+    "pct": 0.0179,
+    "n": 1
+   },
+   {
+    "sector": "Basic Materials",
+    "weight": 0.025,
+    "gross": 0.025,
+    "ccr": 0.0015,
+    "pct": 0.0174,
+    "n": 1
+   },
+   {
+    "sector": "Utilities",
+    "weight": 0.02,
+    "gross": 0.02,
+    "ccr": 0.0009,
+    "pct": 0.0103,
+    "n": 1
+   },
+   {
+    "sector": "Long Treasury",
+    "weight": 0.04,
+    "gross": 0.04,
+    "ccr": 0.0007,
+    "pct": 0.0078,
+    "n": 1
+   },
+   {
+    "sector": "US Large Cap",
+    "weight": -0.12,
+    "gross": 0.12,
+    "ccr": -0.0125,
+    "pct": -0.149,
+    "n": 1
+   }
+  ],
+  "sector_weights": [
+   {
+    "group": "Technology",
+    "net": 0.19,
+    "gross": 0.25,
+    "long": 0.22,
+    "short": -0.03,
+    "n": 5
+   },
+   {
+    "group": "Consumer Cyclical",
+    "net": -0.025,
+    "gross": 0.185,
+    "long": 0.08,
+    "short": -0.105,
+    "n": 6
+   },
+   {
+    "group": "US Large Cap",
+    "net": -0.12,
+    "gross": 0.12,
+    "long": 0.0,
+    "short": -0.12,
+    "n": 1
+   },
+   {
+    "group": "Financial Services",
+    "net": 0.1,
+    "gross": 0.1,
+    "long": 0.1,
+    "short": 0.0,
+    "n": 3
+   },
+   {
+    "group": "Communication Services",
+    "net": 0.09,
+    "gross": 0.09,
+    "long": 0.09,
+    "short": 0.0,
+    "n": 2
+   },
+   {
+    "group": "Industrials",
+    "net": 0.025,
+    "gross": 0.085,
+    "long": 0.055,
+    "short": -0.03,
+    "n": 3
+   },
+   {
+    "group": "Consumer Defensive",
+    "net": 0.03,
+    "gross": 0.08,
+    "long": 0.055,
+    "short": -0.025,
+    "n": 3
+   },
+   {
+    "group": "Healthcare",
+    "net": 0.07,
+    "gross": 0.07,
+    "long": 0.07,
+    "short": 0.0,
+    "n": 2
+   },
+   {
+    "group": "Long Treasury",
+    "net": 0.04,
+    "gross": 0.04,
+    "long": 0.04,
+    "short": 0.0,
+    "n": 1
+   },
+   {
+    "group": "Energy",
+    "net": 0.035,
+    "gross": 0.035,
+    "long": 0.035,
+    "short": 0.0,
+    "n": 1
+   },
+   {
+    "group": "Gold",
+    "net": 0.03,
+    "gross": 0.03,
+    "long": 0.03,
+    "short": 0.0,
+    "n": 1
+   },
+   {
+    "group": "Basic Materials",
+    "net": 0.025,
+    "gross": 0.025,
+    "long": 0.025,
+    "short": 0.0,
+    "n": 1
+   },
+   {
+    "group": "Utilities",
+    "net": 0.02,
+    "gross": 0.02,
+    "long": 0.02,
+    "short": 0.0,
+    "n": 1
+   }
+  ],
+  "factor_exposures": [
+   {
+    "factor": "MKT",
+    "beta": 0.352,
+    "factor_vol": 0.1649,
+    "var_contrib": 0.0036,
+    "pct_of_total_var": 0.5071,
+    "vol_contrib": 0.0598
+   },
+   {
+    "factor": "SIZE",
+    "beta": -0.0785,
+    "factor_vol": 0.1124,
+    "var_contrib": 0.0001,
+    "pct_of_total_var": 0.0084,
+    "vol_contrib": 0.0077
+   },
+   {
+    "factor": "VALUE",
+    "beta": -0.1162,
+    "factor_vol": 0.1495,
+    "var_contrib": 0.0007,
+    "pct_of_total_var": 0.1049,
+    "vol_contrib": 0.0272
+   },
+   {
+    "factor": "MOM",
+    "beta": -0.0908,
+    "factor_vol": 0.1449,
+    "var_contrib": -0.0001,
+    "pct_of_total_var": -0.0076,
+    "vol_contrib": -0.0073
+   },
+   {
+    "factor": "QUALITY",
+    "beta": 0.2192,
+    "factor_vol": 0.0421,
+    "var_contrib": -0.0002,
+    "pct_of_total_var": -0.0306,
+    "vol_contrib": -0.0147
+   },
+   {
+    "factor": "LOWVOL",
+    "beta": 0.0169,
+    "factor_vol": 0.1193,
+    "var_contrib": -0.0001,
+    "pct_of_total_var": -0.0131,
+    "vol_contrib": -0.0096
+   },
+   {
+    "factor": "RATES",
+    "beta": 0.0336,
+    "factor_vol": 0.1147,
+    "var_contrib": 0.0,
+    "pct_of_total_var": 0.004,
+    "vol_contrib": 0.0053
+   },
+   {
+    "factor": "CREDIT",
+    "beta": 0.0807,
+    "factor_vol": 0.0565,
+    "var_contrib": 0.0002,
+    "pct_of_total_var": 0.0258,
+    "vol_contrib": 0.0135
+   },
+   {
+    "factor": "USD",
+    "beta": 0.0214,
+    "factor_vol": 0.0687,
+    "var_contrib": -0.0,
+    "pct_of_total_var": -0.0003,
+    "vol_contrib": -0.0015
+   },
+   {
+    "factor": "GOLD",
+    "beta": 0.0332,
+    "factor_vol": 0.2411,
+    "var_contrib": 0.0001,
+    "pct_of_total_var": 0.0161,
+    "vol_contrib": 0.0107
+   },
+   {
+    "factor": "OIL",
+    "beta": 0.0087,
+    "factor_vol": 0.4134,
+    "var_contrib": 0.0,
+    "pct_of_total_var": 0.0004,
+    "vol_contrib": 0.0016
+   }
+  ],
+  "factor_split": {
+   "systematic_vol": 0.06590533466951685,
+   "idiosyncratic_vol": 0.052140944176065455,
+   "total_vol": 0.08403684428554295,
+   "systematic_share": 0.6150376018501835
+  },
+  "var_table": [
+   {
+    "method": "historical",
+    "confidence": 0.95,
+    "horizon_days": 1,
+    "var": 0.007860646923704234,
+    "cvar": 0.010912063004328242
+   },
+   {
+    "method": "parametric",
+    "confidence": 0.95,
+    "horizon_days": 1,
+    "var": 0.008005528499317557,
+    "cvar": 0.010145930317471127
+   },
+   {
+    "method": "cornish_fisher",
+    "confidence": 0.95,
+    "horizon_days": 1,
+    "var": 0.0068476699711227254,
+    "cvar": 0.014297572299096364
+   },
+   {
+    "method": "monte_carlo",
+    "confidence": 0.95,
+    "horizon_days": 1,
+    "var": 0.008217466378166933,
+    "cvar": 0.011853078768475444
+   },
+   {
+    "method": "historical",
+    "confidence": 0.99,
+    "horizon_days": 1,
+    "var": 0.011692063036375752,
+    "cvar": 0.015829997134989462
+   },
+   {
+    "method": "parametric",
+    "confidence": 0.99,
+    "horizon_days": 1,
+    "var": 0.011496349315053967,
+    "cvar": 0.013232125809846286
+   },
+   {
+    "method": "cornish_fisher",
+    "confidence": 0.99,
+    "horizon_days": 1,
+    "var": 0.01765877007120744,
+    "cvar": 0.026859431732302146
+   },
+   {
+    "method": "monte_carlo",
+    "confidence": 0.99,
+    "horizon_days": 1,
+    "var": 0.013782233900461722,
+    "cvar": 0.01824651417926375
+   }
+  ],
+  "var_contrib": [
+   {
+    "ticker": "NVDA",
+    "weight": 0.07,
+    "cvar_contrib": 0.00531,
+    "pct": 0.33516
+   },
+   {
+    "ticker": "AVGO",
+    "weight": 0.04,
+    "cvar_contrib": 0.00288,
+    "pct": 0.18208
+   },
+   {
+    "ticker": "META",
+    "weight": 0.05,
+    "cvar_contrib": 0.00184,
+    "pct": 0.1163
+   },
+   {
+    "ticker": "AMZN",
+    "weight": 0.05,
+    "cvar_contrib": 0.00182,
+    "pct": 0.11522
+   },
+   {
+    "ticker": "AAPL",
+    "weight": 0.05,
+    "cvar_contrib": 0.00169,
+    "pct": 0.10652
+   },
+   {
+    "ticker": "MSFT",
+    "weight": 0.05999,
+    "cvar_contrib": 0.00137,
+    "pct": 0.08672
+   },
+   {
+    "ticker": "CAT",
+    "weight": 0.02999,
+    "cvar_contrib": 0.00126,
+    "pct": 0.0795
+   },
+   {
+    "ticker": "GOOGL",
+    "weight": 0.04,
+    "cvar_contrib": 0.00123,
+    "pct": 0.07769
+   },
+   {
+    "ticker": "JPM",
+    "weight": 0.03999,
+    "cvar_contrib": 0.0012,
+    "pct": 0.07606
+   },
+   {
+    "ticker": "GS",
+    "weight": 0.02998,
+    "cvar_contrib": 0.0012,
+    "pct": 0.07593
+   }
+  ],
+  "drawdowns": [
+   {
+    "episode": 0,
+    "start": "2021-12-16",
+    "trough": "2022-09-27",
+    "recovery": "2023-03-16",
+    "depth": -0.12002800056575391,
+    "length_days": 313
+   },
+   {
+    "episode": 1,
+    "start": "2020-02-20",
+    "trough": "2020-03-16",
+    "recovery": "2020-04-17",
+    "depth": -0.10031316264332413,
+    "length_days": 41
+   },
+   {
+    "episode": 2,
+    "start": "2025-02-12",
+    "trough": "2025-04-04",
+    "recovery": "2025-06-26",
+    "depth": -0.09355159570187543,
+    "length_days": 93
+   },
+   {
+    "episode": 3,
+    "start": "2020-09-03",
+    "trough": "2020-09-23",
+    "recovery": "2021-02-10",
+    "depth": -0.055739602609161554,
+    "length_days": 110
+   },
+   {
+    "episode": 4,
+    "start": "2021-09-07",
+    "trough": "2021-10-04",
+    "recovery": "2021-11-04",
+    "depth": -0.04644965548968949,
+    "length_days": 43
+   }
+  ],
+  "worst_windows": [
+   {
+    "rank": 0,
+    "start": "2020-03-03",
+    "end": "2020-03-16",
+    "return": -0.07190626412209244
+   },
+   {
+    "rank": 1,
+    "start": "2022-06-03",
+    "end": "2022-06-16",
+    "return": -0.05870027474419859
+   },
+   {
+    "rank": 2,
+    "start": "2022-09-13",
+    "end": "2022-09-26",
+    "return": -0.05086110276919742
+   },
+   {
+    "rank": 3,
+    "start": "2025-03-25",
+    "end": "2025-04-07",
+    "return": -0.0498368970610823
+   },
+   {
+    "rank": 4,
+    "start": "2022-04-08",
+    "end": "2022-04-22",
+    "return": -0.048684692150793296
+   }
+  ],
+  "stress_hist": [
+   {
+    "start": "2020-02-19",
+    "end": "2020-03-23",
+    "total_pnl": -0.10301199152981513,
+    "name": "COVID crash",
+    "total_dollar": -5150599.576490757,
+    "benchmark_return": -0.3371726770846235
+   },
+   {
+    "start": "2020-03-23",
+    "end": "2020-06-08",
+    "total_pnl": 0.1530298855050513,
+    "name": "COVID rebound",
+    "total_dollar": 7651494.275252566,
+    "benchmark_return": 0.4496527217243864
+   },
+   {
+    "start": "2022-01-03",
+    "end": "2022-06-16",
+    "total_pnl": -0.07920413016202103,
+    "name": "2022 rate shock (H1)",
+    "total_dollar": -3960206.5081010517,
+    "benchmark_return": -0.2300999028891857
+   },
+   {
+    "start": "2022-01-03",
+    "end": "2022-10-12",
+    "total_pnl": -0.08874660533559299,
+    "name": "2022 bear market",
+    "total_dollar": -4437330.266779649,
+    "benchmark_return": -0.24496397555877658
+   },
+   {
+    "start": "2023-03-08",
+    "end": "2023-03-13",
+    "total_pnl": -0.008823895948944022,
+    "name": "SVB banking stress",
+    "total_dollar": -441194.7974472011,
+    "benchmark_return": -0.033991897565258444
+   },
+   {
+    "start": "2024-07-16",
+    "end": "2024-08-05",
+    "total_pnl": -0.020518146162271586,
+    "name": "Aug 2024 vol spike",
+    "total_dollar": -1025907.3081135793,
+    "benchmark_return": -0.08405591186613914
+   },
+   {
+    "start": "2025-01-24",
+    "end": "2025-01-27",
+    "total_pnl": -0.012858820709512643,
+    "name": "DeepSeek AI sell-off",
+    "total_dollar": -642941.0354756322,
+    "benchmark_return": -0.014145356283902899
+   },
+   {
+    "start": "2025-04-02",
+    "end": "2025-04-08",
+    "total_pnl": -0.03866899456189714,
+    "name": "Apr 2025 tariff shock",
+    "total_dollar": -1933449.728094857,
+    "benchmark_return": -0.12052716082515202
+   }
+  ],
+  "stress_hypo": [
+   {
+    "total_pnl": -0.03520053903490086,
+    "shocks": {
+     "MKT": -0.1
+    },
+    "name": "Equities -10%",
+    "total_dollar": -1760026.951745043
+   },
+   {
+    "total_pnl": -0.07293775294909634,
+    "shocks": {
+     "MKT": -0.2,
+     "CREDIT": -0.08,
+     "SIZE": -0.05
+    },
+    "name": "Equities -20%, credit -8%",
+    "total_dollar": -3646887.647454817
+   },
+   {
+    "total_pnl": -0.017773702213264353,
+    "shocks": {
+     "RATES": -0.12,
+     "MKT": -0.04,
+     "LOWVOL": 0.02
+    },
+    "name": "Rates +100bp (TLT -12%)",
+    "total_dollar": -888685.1106632176
+   },
+   {
+    "total_pnl": -0.01677481027405072,
+    "shocks": {
+     "RATES": 0.08,
+     "MKT": -0.06,
+     "GOLD": 0.05
+    },
+    "name": "Flight to quality (TLT +8%)",
+    "total_dollar": -838740.513702536
+   },
+   {
+    "total_pnl": -0.011860105335999942,
+    "shocks": {
+     "OIL": 0.25,
+     "MKT": -0.03,
+     "VALUE": 0.03
+    },
+    "name": "Oil +25%",
+    "total_dollar": -593005.2667999971
+   },
+   {
+    "total_pnl": -0.007298145873052076,
+    "shocks": {
+     "USD": 0.05,
+     "MKT": -0.02,
+     "GOLD": -0.04
+    },
+    "name": "Dollar +5%",
+    "total_dollar": -364907.2936526038
+   },
+   {
+    "total_pnl": -0.004140328734825408,
+    "shocks": {
+     "MOM": -0.1,
+     "VALUE": 0.08,
+     "SIZE": 0.05
+    },
+    "name": "Momentum crash",
+    "total_dollar": -207016.43674127042
+   },
+   {
+    "total_pnl": -0.04456545109607541,
+    "shocks": {
+     "MKT": -0.12,
+     "RATES": -0.08,
+     "OIL": 0.2,
+     "GOLD": 0.08,
+     "CREDIT": -0.05
+    },
+    "name": "Stagflation",
+    "total_dollar": -2228272.5548037705
+   }
+  ],
+  "single_name_shocks": [
+   {
+    "ticker": "NVDA",
+    "shock": -0.08411,
+    "own_pnl": -0.00589,
+    "total_pnl": -0.01009,
+    "spillover": -0.0042
+   },
+   {
+    "ticker": "SPY",
+    "shock": -0.03116,
+    "own_pnl": 0.00374,
+    "total_pnl": -0.00996,
+    "spillover": -0.0137
+   },
+   {
+    "ticker": "AMZN",
+    "shock": -0.06412,
+    "own_pnl": -0.00321,
+    "total_pnl": -0.00922,
+    "spillover": -0.00602
+   },
+   {
+    "ticker": "META",
+    "shock": -0.07183,
+    "own_pnl": -0.00359,
+    "total_pnl": -0.00907,
+    "spillover": -0.00548
+   },
+   {
+    "ticker": "AVGO",
+    "shock": -0.09881,
+    "own_pnl": -0.00395,
+    "total_pnl": -0.00847,
+    "spillover": -0.00452
+   }
+  ],
+  "concentration": {
+   "hhi": 0.04201556214129719,
+   "effective_n": 23.8007050015665,
+   "top1": 0.10619113623460753,
+   "top5": 0.3097401139521363,
+   "top10": 0.49558592682656255,
+   "div_ratio": 4.261328366750013,
+   "enb": 7.189559843861936,
+   "n_positions": 30,
+   "max_weight": 0.11998572379999999,
+   "max_weight_ticker": "SPY"
+  },
+  "clusters": [],
+  "liquidity_profile": [
+   {
+    "bucket": "< 1 day",
+    "gross_value": 56495169.02,
+    "pct_gross": 1.0,
+    "cumulative_pct": 1.0
+   },
+   {
+    "bucket": "1-3 days",
+    "gross_value": 0.0,
+    "pct_gross": 0.0,
+    "cumulative_pct": 1.0
+   },
+   {
+    "bucket": "3-10 days",
+    "gross_value": 0.0,
+    "pct_gross": 0.0,
+    "cumulative_pct": 1.0
+   },
+   {
+    "bucket": "> 10 days",
+    "gross_value": 0.0,
+    "pct_gross": 0.0,
+    "cumulative_pct": 1.0
+   }
+  ],
+  "liquidity_top": [
+   {
+    "ticker": "KHC",
+    "shares": -50545.0,
+    "market_value": -1249977.85,
+    "weight": -0.025,
+    "adv_shares": 20455046.6667,
+    "adv_dollar": 505853304.0667,
+    "pct_of_adv": 0.0025,
+    "days_to_liquidate": 0.0124,
+    "bucket": "< 1 day",
+    "impact_cost": 505.1416,
+    "sector": "Consumer Defensive",
+    "name": "The Kraft Heinz Company"
+   },
+   {
+    "ticker": "LMT",
+    "shares": 2343.0,
+    "market_value": 1249896.78,
+    "weight": 0.025,
+    "adv_shares": 1028533.3333,
+    "adv_dollar": 548681392.0,
+    "pct_of_adv": 0.0023,
+    "days_to_liquidate": 0.0114,
+    "bucket": "< 1 day",
+    "impact_cost": 516.1542,
+    "sector": "Industrials",
+    "name": "Lockheed Martin Corporation"
+   },
+   {
+    "ticker": "F",
+    "shares": -92592.0,
+    "market_value": -1249992.0,
+    "weight": -0.025,
+    "adv_shares": 42621376.6667,
+    "adv_dollar": 575388585.0,
+    "pct_of_adv": 0.0022,
+    "days_to_liquidate": 0.0109,
+    "bucket": "< 1 day",
+    "impact_cost": 649.5443,
+    "sector": "Consumer Cyclical",
+    "name": "Ford Motor Company"
+   },
+   {
+    "ticker": "SBUX",
+    "shares": -10354.0,
+    "market_value": -999989.32,
+    "weight": -0.02,
+    "adv_shares": 5889446.6667,
+    "adv_dollar": 568802759.0667,
+    "pct_of_adv": 0.0018,
+    "days_to_liquidate": 0.0088,
+    "bucket": "< 1 day",
+    "impact_cost": 400.1703,
+    "sector": "Consumer Cyclical",
+    "name": "Starbucks Corporation"
+   },
+   {
+    "ticker": "BA",
+    "shares": -7153.0,
+    "market_value": -1499912.57,
+    "weight": -0.03,
+    "adv_shares": 4940766.6667,
+    "adv_dollar": 1036029362.3333,
+    "pct_of_adv": 0.0014,
+    "days_to_liquidate": 0.0072,
+    "bucket": "< 1 day",
+    "impact_cost": 634.1043,
+    "sector": "Industrials",
+    "name": "Boeing Company (The)"
+   }
+  ],
+  "limits": [
+   {
+    "id": 30,
+    "metric": "beta",
+    "scope": null,
+    "operator": "lte",
+    "threshold": 0.5,
+    "label": "Beta to SPY",
+    "value": 0.3742544587655228,
+    "display_value": "0.37",
+    "display_threshold": "0.50",
+    "status": "ok",
+    "utilization": 0.7485089175310456
+   },
+   {
+    "id": 34,
+    "metric": "days_to_liquidate",
+    "scope": null,
+    "operator": "lte",
+    "threshold": 5.0,
+    "label": "Days to liquidate (worst)",
+    "value": 0.012355141697713064,
+    "display_value": "0.01d",
+    "display_threshold": "5.0d",
+    "status": "ok",
+    "utilization": 0.002471028339542613
+   },
+   {
+    "id": 35,
+    "metric": "factor_beta",
+    "scope": "MOM",
+    "operator": "lte",
+    "threshold": 0.3,
+    "label": "Momentum factor beta",
+    "value": 0.09075167126717858,
+    "display_value": "0.09",
+    "display_threshold": "0.30",
+    "status": "ok",
+    "utilization": 0.30250557089059527
+   },
+   {
+    "id": 25,
+    "metric": "gross_exposure",
+    "scope": null,
+    "operator": "lte",
+    "threshold": 1.5,
+    "label": "Gross exposure",
+    "value": 1.1299033804,
+    "display_value": "113.0%",
+    "display_threshold": "150.0%",
+    "status": "ok",
+    "utilization": 0.7532689202666667
+   },
+   {
+    "id": 33,
+    "metric": "max_risk_share",
+    "scope": null,
+    "operator": "lte",
+    "threshold": 0.2,
+    "label": "Max single-name risk share",
+    "value": 0.23767776133306345,
+    "display_value": "23.8%",
+    "display_threshold": "20.0%",
+    "status": "breach",
+    "utilization": 1.1883888066653172
+   },
+   {
+    "id": 26,
+    "metric": "net_exposure",
+    "scope": null,
+    "operator": "lte",
+    "threshold": 0.7,
+    "label": "Net exposure",
+    "value": 0.5099515688000001,
+    "display_value": "51.0%",
+    "display_threshold": "70.0%",
+    "status": "ok",
+    "utilization": 0.7285022411428574
+   },
+   {
+    "id": 28,
+    "metric": "position_weight",
+    "scope": "SPY",
+    "operator": "lte",
+    "threshold": 0.15,
+    "label": "Index hedge size",
+    "value": 0.11998572379999999,
+    "display_value": "12.0%",
+    "display_threshold": "15.0%",
+    "status": "ok",
+    "utilization": 0.7999048253333333
+   },
+   {
+    "id": 27,
+    "metric": "position_weight",
+    "scope": "equity",
+    "operator": "lte",
+    "threshold": 0.065,
+    "label": "Single-name weight",
+    "value": 0.0699991264,
+    "display_value": "7.0%",
+    "display_threshold": "6.5%",
+    "status": "breach",
+    "utilization": 1.0769096369230768
+   },
+   {
+    "id": 29,
+    "metric": "sector_gross",
+    "scope": "Technology",
+    "operator": "lte",
+    "threshold": 0.3,
+    "label": "Technology gross",
+    "value": 0.24998948180000002,
+    "display_value": "25.0%",
+    "display_threshold": "30.0%",
+    "status": "ok",
+    "utilization": 0.8332982726666668
+   },
+   {
+    "id": 36,
+    "metric": "stress_loss",
+    "scope": null,
+    "operator": "lte",
+    "threshold": 0.2,
+    "label": "Worst stress scenario loss",
+    "value": 0.10301199152981513,
+    "display_value": "10.3%",
+    "display_threshold": "20.0%",
+    "status": "ok",
+    "utilization": 0.5150599576490756
+   },
+   {
+    "id": 32,
+    "metric": "var",
+    "scope": null,
+    "operator": "lte",
+    "threshold": 0.025,
+    "label": "1-day 99% VaR",
+    "value": 0.011692063036375752,
+    "display_value": "1.2%",
+    "display_threshold": "2.5%",
+    "status": "ok",
+    "utilization": 0.4676825214550301
+   },
+   {
+    "id": 31,
+    "metric": "vol",
+    "scope": null,
+    "operator": "lte",
+    "threshold": 0.15,
+    "label": "Annualised volatility",
+    "value": 0.08357259326172335,
+    "display_value": "8.4%",
+    "display_threshold": "15.0%",
+    "status": "ok",
+    "utilization": 0.5571506217448223
+   }
+  ],
+  "insights": [
+   {
+    "severity": "high",
+    "category": "limits",
+    "title": "Limit breach: Max single-name risk share",
+    "detail": "Current 23.8% versus limit 20.0% (119% of limit).",
+    "action": "Trim NVDA from 7.0% to about 5.7% of NAV ($628k) to bring its risk share under 20%.",
+    "value": 0.23767776133306345,
+    "threshold": 0.2,
+    "tickers": [
+     "NVDA"
+    ],
+    "whatif": {
+     "ticker": "NVDA",
+     "mode": "target_weight",
+     "value": 0.0574
+    }
+   },
+   {
+    "severity": "high",
+    "category": "limits",
+    "title": "Limit breach: Single-name weight",
+    "detail": "Current 7.0% versus limit 6.5% (108% of limit).",
+    "action": "Cut NVDA from 7.0% to 6.4% of NAV ($315k) to get back inside the limit.",
+    "value": 0.0699991264,
+    "threshold": 0.065,
+    "tickers": [
+     "NVDA"
+    ],
+    "whatif": {
+     "ticker": "NVDA",
+     "mode": "target_weight",
+     "value": 0.0637
+    }
+   },
+   {
+    "severity": "medium",
+    "category": "concentration",
+    "title": "NVDA is a risk hog",
+    "detail": "NVDA is 7.0% of NAV but contributes 23.8% of portfolio volatility (2.0 vol points of 8.4%). Its standalone vol is 44%.",
+    "action": "Trim NVDA from 7.0% to about 3.9% of NAV ($1.57m) to cut its risk share to ~12%.",
+    "value": 0.23767776133306345,
+    "threshold": null,
+    "tickers": [
+     "NVDA"
+    ],
+    "whatif": {
+     "ticker": "NVDA",
+     "mode": "target_weight",
+     "value": 0.0386
+    }
+   },
+   {
+    "severity": "medium",
+    "category": "concentration",
+    "title": "Technology drives 54% of risk",
+    "detail": "Technology is 25% gross exposure but 54% of portfolio vol.",
+    "action": "Diversify within Technology or add a sector hedge (short XLK) sized to roughly 6% of NAV to bring its risk share below 35%.",
+    "value": 0.5435616777240032,
+    "threshold": 0.45,
+    "tickers": [],
+    "whatif": {
+     "ticker": "XLK",
+     "mode": "delta_weight",
+     "value": -0.057
+    }
+   },
+   {
+    "severity": "medium",
+    "category": "tail",
+    "title": "Worst scenario: COVID crash -10.3%",
+    "detail": "Replaying COVID crash on today's book loses -$5.15m (-10.3% of NAV).",
+    "action": "Compare with the risk budget; if too large, the cheapest fix is usually reducing the largest contributors to that scenario rather than the whole book.",
+    "value": -0.10301199152981513,
+    "threshold": -0.1,
+    "tickers": [],
+    "whatif": null
+   },
+   {
+    "severity": "low",
+    "category": "tail",
+    "title": "Fat-tailed return distribution",
+    "detail": "Excess kurtosis 6.4 and skew +0.33. Parametric VaR will understate tail losses.",
+    "action": "Use historical or Cornish-Fisher VaR for limits and sizing.",
+    "value": null,
+    "threshold": null,
+    "tickers": [],
+    "whatif": null
+   }
+  ],
+  "warnings": []
+ },
+ "Mock portfolio": {
+  "summary": {
+   "name": "Mock portfolio",
+   "as_of": "2026-09-15",
+   "nav": 188849.0,
+   "cash": 100000.0,
+   "cash_weight": 0.529523587628211,
+   "long_value": 88849.0,
+   "short_value": 0.0,
+   "gross_value": 88849.0,
+   "net_value": 88849.0,
+   "long_exposure": 0.4704764123717891,
+   "short_exposure": 0.0,
+   "gross_exposure": 0.4704764123717891,
+   "net_exposure": 0.4704764123717891,
+   "n_positions": 3,
+   "n_long": 3,
+   "n_short": 0,
+   "vol": 0.11854079466791757,
+   "beta": 0.6034864874959915,
+   "var": 0.018004461199005527,
+   "cvar": 0.02367376804951007,
+   "var_confidence": 0.99,
+   "var_horizon_days": 1,
+   "var_dollar": 3400.1244929709947,
+   "cvar_dollar": 4470.767422381928,
+   "sharpe": 1.2510266472667888,
+   "ytd_return": 0.08538071031624295,
+   "ret_1m": 0.008585821392462112,
+   "max_drawdown": -0.14655676735386092,
+   "current_drawdown": -0.012308183244706172,
+   "lookback_days": 504,
+   "cov_method": "ledoit_wolf",
+   "benchmark": "SPY",
+   "shrinkage": 1.0
+  },
+  "performance": {
+   "n_days": 504,
+   "start": "2024-09-11",
+   "end": "2026-09-15",
+   "total_return": 0.41266056166664145,
+   "ann_return": 0.18855397928181672,
+   "ann_vol": 0.11874565550332095,
+   "sharpe": 1.2510266472667888,
+   "sortino": 1.8884599016098238,
+   "max_drawdown": -0.14655676735386092,
+   "calmar": 1.2865593495696699,
+   "current_drawdown": -0.012308183244706172,
+   "skew": 0.9595709712704603,
+   "kurtosis": 11.842442057484602,
+   "best_day": 0.06561634087794616,
+   "worst_day": -0.032343780255501484,
+   "best_day_date": "2025-04-09",
+   "worst_day_date": "2025-04-03",
+   "hit_rate": 0.5515873015873016,
+   "avg_up": 0.0054299502613674765,
+   "avg_down": -0.005088195255876277,
+   "ytd_return": 0.08538071031624295,
+   "ret_1m": 0.008585821392462112,
+   "ret_3m": 0.013713659342806217,
+   "ret_6m": 0.10306254493193356,
+   "ret_1y": 0.1804598064393792,
+   "beta": 0.6034864874959915,
+   "alpha_ann": 0.06736732375504105,
+   "correlation": 0.8379070167187953,
+   "tracking_error": 0.0920567972774309,
+   "information_ratio": -0.07064391670909007,
+   "benchmark_ann_return": 0.18860470986035516,
+   "benchmark_ann_vol": 0.16487165829337033,
+   "benchmark_total_return": 0.41278115630221923,
+   "up_capture": 0.6404249791676686,
+   "down_capture": 0.5609778836863233
+  },
+  "rc": [
+   {
+    "ticker": "GOOGL",
+    "weight": 0.1827,
+    "mcr": 0.2457,
+    "ccr": 0.0449,
+    "pct": 0.3786,
+    "standalone_vol": 0.3171,
+    "beta_to_port": 2.0723,
+    "sector": "Communication Services",
+    "asset_class": "Equity",
+    "name": "Alphabet Inc.",
+    "market_value": 34498.0
+   },
+   {
+    "ticker": "AAPL",
+    "weight": 0.1755,
+    "mcr": 0.212,
+    "ccr": 0.0372,
+    "pct": 0.3138,
+    "standalone_vol": 0.2888,
+    "beta_to_port": 1.7884,
+    "sector": "Technology",
+    "asset_class": "Equity",
+    "name": "Apple Inc.",
+    "market_value": 33134.0
+   },
+   {
+    "ticker": "NVDA",
+    "weight": 0.1123,
+    "mcr": 0.3246,
+    "ccr": 0.0365,
+    "pct": 0.3076,
+    "standalone_vol": 0.4446,
+    "beta_to_port": 2.7383,
+    "sector": "Technology",
+    "asset_class": "Equity",
+    "name": "NVIDIA Corporation",
+    "market_value": 21217.0
+   }
+  ],
+  "sector_rc": [
+   {
+    "sector": "Technology",
+    "weight": 0.2878,
+    "gross": 0.2878,
+    "ccr": 0.0737,
+    "pct": 0.6214,
+    "n": 2
+   },
+   {
+    "sector": "Communication Services",
+    "weight": 0.1827,
+    "gross": 0.1827,
+    "ccr": 0.0449,
+    "pct": 0.3786,
+    "n": 1
+   }
+  ],
+  "sector_weights": [
+   {
+    "group": "Technology",
+    "net": 0.2878,
+    "gross": 0.2878,
+    "long": 0.2878,
+    "short": 0.0,
+    "n": 2
+   },
+   {
+    "group": "Communication Services",
+    "net": 0.1827,
+    "gross": 0.1827,
+    "long": 0.1827,
+    "short": 0.0,
+    "n": 1
+   }
+  ],
+  "factor_exposures": [
+   {
+    "factor": "MKT",
+    "beta": 0.4104,
+    "factor_vol": 0.1649,
+    "var_contrib": 0.0067,
+    "pct_of_total_var": 0.4257,
+    "vol_contrib": 0.0821
+   },
+   {
+    "factor": "SIZE",
+    "beta": -0.063,
+    "factor_vol": 0.1124,
+    "var_contrib": 0.0001,
+    "pct_of_total_var": 0.0035,
+    "vol_contrib": 0.0074
+   },
+   {
+    "factor": "VALUE",
+    "beta": -0.1508,
+    "factor_vol": 0.1495,
+    "var_contrib": 0.0018,
+    "pct_of_total_var": 0.1115,
+    "vol_contrib": 0.042
+   },
+   {
+    "factor": "MOM",
+    "beta": -0.215,
+    "factor_vol": 0.1449,
+    "var_contrib": -0.0002,
+    "pct_of_total_var": -0.0146,
+    "vol_contrib": -0.0152
+   },
+   {
+    "factor": "QUALITY",
+    "beta": 0.0408,
+    "factor_vol": 0.0421,
+    "var_contrib": -0.0001,
+    "pct_of_total_var": -0.0059,
+    "vol_contrib": -0.0096
+   },
+   {
+    "factor": "LOWVOL",
+    "beta": -0.303,
+    "factor_vol": 0.1193,
+    "var_contrib": 0.0033,
+    "pct_of_total_var": 0.2078,
+    "vol_contrib": 0.0573
+   },
+   {
+    "factor": "RATES",
+    "beta": 0.0034,
+    "factor_vol": 0.1147,
+    "var_contrib": 0.0,
+    "pct_of_total_var": 0.0002,
+    "vol_contrib": 0.0016
+   },
+   {
+    "factor": "CREDIT",
+    "beta": 0.056,
+    "factor_vol": 0.0565,
+    "var_contrib": 0.0002,
+    "pct_of_total_var": 0.0136,
+    "vol_contrib": 0.0147
+   },
+   {
+    "factor": "USD",
+    "beta": -0.0564,
+    "factor_vol": 0.0687,
+    "var_contrib": 0.0,
+    "pct_of_total_var": 0.0004,
+    "vol_contrib": 0.0026
+   },
+   {
+    "factor": "GOLD",
+    "beta": 0.0163,
+    "factor_vol": 0.2411,
+    "var_contrib": 0.0001,
+    "pct_of_total_var": 0.0039,
+    "vol_contrib": 0.0078
+   },
+   {
+    "factor": "OIL",
+    "beta": -0.0028,
+    "factor_vol": 0.4134,
+    "var_contrib": 0.0,
+    "pct_of_total_var": 0.0003,
+    "vol_contrib": 0.0023
+   }
+  ],
+  "factor_split": {
+   "systematic_vol": 0.10864836297786515,
+   "idiosyncratic_vol": 0.06331892821234317,
+   "total_vol": 0.1257527472770667,
+   "systematic_share": 0.7464683711421191
+  },
+  "var_table": [
+   {
+    "method": "historical",
+    "confidence": 0.95,
+    "horizon_days": 1,
+    "var": 0.01078336955822128,
+    "cvar": 0.015594145176933683
+   },
+   {
+    "method": "parametric",
+    "confidence": 0.95,
+    "horizon_days": 1,
+    "var": 0.011590474229730259,
+    "cvar": 0.01471617505276237
+   },
+   {
+    "method": "cornish_fisher",
+    "confidence": 0.95,
+    "horizon_days": 1,
+    "var": 0.007633043160074517,
+    "cvar": 0.02298972255768746
+   },
+   {
+    "method": "monte_carlo",
+    "confidence": 0.95,
+    "horizon_days": 1,
+    "var": 0.011734415082286474,
+    "cvar": 0.016744170612905
+   },
+   {
+    "method": "historical",
+    "confidence": 0.99,
+    "horizon_days": 1,
+    "var": 0.018004461199005527,
+    "cvar": 0.02367376804951007
+   },
+   {
+    "method": "parametric",
+    "confidence": 0.99,
+    "horizon_days": 1,
+    "var": 0.016688237371334014,
+    "cvar": 0.0192230502145844
+   },
+   {
+    "method": "cornish_fisher",
+    "confidence": 0.99,
+    "horizon_days": 1,
+    "var": 0.02952817908221022,
+    "cvar": 0.04975841189155431
+   },
+   {
+    "method": "monte_carlo",
+    "confidence": 0.99,
+    "horizon_days": 1,
+    "var": 0.019042911513719306,
+    "cvar": 0.025823580306624575
+   }
+  ],
+  "var_contrib": [
+   {
+    "ticker": "NVDA",
+    "weight": 0.11235,
+    "cvar_contrib": 0.00936,
+    "pct": 0.39535
+   },
+   {
+    "ticker": "AAPL",
+    "weight": 0.17545,
+    "cvar_contrib": 0.0077,
+    "pct": 0.32532
+   },
+   {
+    "ticker": "GOOGL",
+    "weight": 0.18268,
+    "cvar_contrib": 0.00661,
+    "pct": 0.27934
+   }
+  ],
+  "drawdowns": [
+   {
+    "episode": 0,
+    "start": "2021-12-28",
+    "trough": "2022-12-28",
+    "recovery": "2023-05-18",
+    "depth": -0.1976979848410193,
+    "length_days": 350
+   },
+   {
+    "episode": 1,
+    "start": "2020-02-20",
+    "trough": "2020-03-23",
+    "recovery": "2020-05-11",
+    "depth": -0.15167974761480918,
+    "length_days": 57
+   },
+   {
+    "episode": 2,
+    "start": "2024-12-26",
+    "trough": "2025-04-08",
+    "recovery": "2025-07-21",
+    "depth": -0.14655676735386147,
+    "length_days": 140
+   },
+   {
+    "episode": 3,
+    "start": "2020-09-03",
+    "trough": "2020-09-23",
+    "recovery": "2020-12-07",
+    "depth": -0.0846111422790976,
+    "length_days": 66
+   },
+   {
+    "episode": 4,
+    "start": "2024-07-11",
+    "trough": "2024-08-07",
+    "recovery": "2024-11-07",
+    "depth": -0.08048979383796462,
+    "length_days": 85
+   }
+  ],
+  "worst_windows": [
+   {
+    "rank": 0,
+    "start": "2020-03-03",
+    "end": "2020-03-16",
+    "return": -0.10791427526550823
+   },
+   {
+    "rank": 1,
+    "start": "2025-03-26",
+    "end": "2025-04-08",
+    "return": -0.09420400013482755
+   },
+   {
+    "rank": 2,
+    "start": "2022-12-14",
+    "end": "2022-12-28",
+    "return": -0.0693359490991251
+   },
+   {
+    "rank": 3,
+    "start": "2020-09-03",
+    "end": "2020-09-17",
+    "return": -0.06831232782129604
+   },
+   {
+    "rank": 4,
+    "start": "2022-06-03",
+    "end": "2022-06-16",
+    "return": -0.06722566693257093
+   }
+  ],
+  "stress_hist": [
+   {
+    "start": "2020-02-19",
+    "end": "2020-03-23",
+    "total_pnl": -0.1465745645287837,
+    "name": "COVID crash",
+    "total_dollar": -27680.459936696272,
+    "benchmark_return": -0.3371726770846235
+   },
+   {
+    "start": "2020-03-23",
+    "end": "2020-06-08",
+    "total_pnl": 0.22805257636603501,
+    "name": "COVID rebound",
+    "total_dollar": 43067.50099414935,
+    "benchmark_return": 0.4496527217243864
+   },
+   {
+    "start": "2022-01-03",
+    "end": "2022-06-16",
+    "total_pnl": -0.15295383270605045,
+    "name": "2022 rate shock (H1)",
+    "total_dollar": -28885.178352704923,
+    "benchmark_return": -0.2300999028891857
+   },
+   {
+    "start": "2022-01-03",
+    "end": "2022-10-12",
+    "total_pnl": -0.1707297238989111,
+    "name": "2022 bear market",
+    "total_dollar": -32242.137628585464,
+    "benchmark_return": -0.24496397555877658
+   },
+   {
+    "start": "2023-03-08",
+    "end": "2023-03-13",
+    "total_pnl": -0.014485170124355538,
+    "name": "SVB banking stress",
+    "total_dollar": -2735.509892814419,
+    "benchmark_return": -0.033991897565258444
+   },
+   {
+    "start": "2024-07-16",
+    "end": "2024-08-05",
+    "total_pnl": -0.06663062935716058,
+    "name": "Aug 2024 vol spike",
+    "total_dollar": -12583.127723470418,
+    "benchmark_return": -0.08405591186613914
+   },
+   {
+    "start": "2025-01-24",
+    "end": "2025-01-27",
+    "total_pnl": -0.021151942609499493,
+    "name": "DeepSeek AI sell-off",
+    "total_dollar": -3994.5232098613697,
+    "benchmark_return": -0.014145356283902899
+   },
+   {
+    "start": "2025-04-02",
+    "end": "2025-04-08",
+    "total_pnl": -0.06905558689158336,
+    "name": "Apr 2025 tariff shock",
+    "total_dollar": -13041.078528888627,
+    "benchmark_return": -0.12052716082515202
+   }
+  ],
+  "stress_hypo": [
+   {
+    "total_pnl": -0.041042105686920106,
+    "shocks": {
+     "MKT": -0.1
+    },
+    "name": "Equities -10%",
+    "total_dollar": -7750.7606168691755
+   },
+   {
+    "total_pnl": -0.08341949176587601,
+    "shocks": {
+     "MKT": -0.2,
+     "CREDIT": -0.08,
+     "SIZE": -0.05
+    },
+    "name": "Equities -20%, credit -8%",
+    "total_dollar": -15753.687600493919
+   },
+   {
+    "total_pnl": -0.022884370191516533,
+    "shocks": {
+     "RATES": -0.12,
+     "MKT": -0.04,
+     "LOWVOL": 0.02
+    },
+    "name": "Rates +100bp (TLT -12%)",
+    "total_dollar": -4321.690426297706
+   },
+   {
+    "total_pnl": -0.02353678333874034,
+    "shocks": {
+     "RATES": 0.08,
+     "MKT": -0.06,
+     "GOLD": 0.05
+    },
+    "name": "Flight to quality (TLT +8%)",
+    "total_dollar": -4444.8979967377745
+   },
+   {
+    "total_pnl": -0.01754227694447349,
+    "shocks": {
+     "OIL": 0.25,
+     "MKT": -0.03,
+     "VALUE": 0.03
+    },
+    "name": "Oil +25%",
+    "total_dollar": -3312.8414586868744
+   },
+   {
+    "total_pnl": -0.011684262697543203,
+    "shocks": {
+     "USD": 0.05,
+     "MKT": -0.02,
+     "GOLD": -0.04
+    },
+    "name": "Dollar +5%",
+    "total_dollar": -2206.561326168336
+   },
+   {
+    "total_pnl": 0.0062857157435133055,
+    "shocks": {
+     "MOM": -0.1,
+     "VALUE": 0.08,
+     "SIZE": 0.05
+    },
+    "name": "Momentum crash",
+    "total_dollar": 1187.0511324467443
+   },
+   {
+    "total_pnl": -0.05158034482418884,
+    "shocks": {
+     "MKT": -0.12,
+     "RATES": -0.08,
+     "OIL": 0.2,
+     "GOLD": 0.08,
+     "CREDIT": -0.05
+    },
+    "name": "Stagflation",
+    "total_dollar": -9740.896539703239
+   }
+  ],
+  "single_name_shocks": [
+   {
+    "ticker": "GOOGL",
+    "shock": -0.05999,
+    "own_pnl": -0.01096,
+    "total_pnl": -0.01737,
+    "spillover": -0.00641
+   },
+   {
+    "ticker": "AAPL",
+    "shock": -0.05463,
+    "own_pnl": -0.00959,
+    "total_pnl": -0.01646,
+    "spillover": -0.00688
+   },
+   {
+    "ticker": "NVDA",
+    "shock": -0.08411,
+    "own_pnl": -0.00945,
+    "total_pnl": -0.01637,
+    "spillover": -0.00692
+   }
+  ],
+  "concentration": {
+   "hhi": 0.34685645095503487,
+   "effective_n": 2.883037052494192,
+   "top1": 0.38827673918671,
+   "top5": 1.0,
+   "top10": 1.0,
+   "div_ratio": 1.337523503731183,
+   "enb": 1.6024197882947613,
+   "n_positions": 3,
+   "max_weight": 0.18267504725998018,
+   "max_weight_ticker": "GOOGL"
+  },
+  "clusters": [],
+  "liquidity_profile": [
+   {
+    "bucket": "< 1 day",
+    "gross_value": 88849.0,
+    "pct_gross": 1.0,
+    "cumulative_pct": 1.0
+   },
+   {
+    "bucket": "1-3 days",
+    "gross_value": 0.0,
+    "pct_gross": 0.0,
+    "cumulative_pct": 1.0
+   },
+   {
+    "bucket": "3-10 days",
+    "gross_value": 0.0,
+    "pct_gross": 0.0,
+    "cumulative_pct": 1.0
+   },
+   {
+    "bucket": "> 10 days",
+    "gross_value": 0.0,
+    "pct_gross": 0.0,
+    "cumulative_pct": 1.0
+   }
+  ],
+  "liquidity_top": [
+   {
+    "ticker": "GOOGL",
+    "shares": 100.0,
+    "market_value": 34498.0,
+    "weight": 0.1827,
+    "adv_shares": 24493266.6667,
+    "adv_dollar": 8449687134.6667,
+    "pct_of_adv": 0.0,
+    "days_to_liquidate": 0.0,
+    "bucket": "< 1 day",
+    "impact_cost": 0.6969,
+    "sector": "Communication Services",
+    "name": "Alphabet Inc."
+   },
+   {
+    "ticker": "AAPL",
+    "shares": 100.0,
+    "market_value": 33134.0,
+    "weight": 0.1755,
+    "adv_shares": 42798093.3333,
+    "adv_dollar": 14180720245.0667,
+    "pct_of_adv": 0.0,
+    "days_to_liquidate": 0.0,
+    "bucket": "< 1 day",
+    "impact_cost": 0.4612,
+    "sector": "Technology",
+    "name": "Apple Inc."
+   },
+   {
+    "ticker": "NVDA",
+    "shares": 100.0,
+    "market_value": 21217.0,
+    "weight": 0.1123,
+    "adv_shares": 123728800.0,
+    "adv_dollar": 26251539496.0,
+    "pct_of_adv": 0.0,
+    "days_to_liquidate": 0.0,
+    "bucket": "< 1 day",
+    "impact_cost": 0.2674,
+    "sector": "Technology",
+    "name": "NVIDIA Corporation"
+   }
+  ],
+  "limits": [],
+  "insights": [
+   {
+    "severity": "medium",
+    "category": "concentration",
+    "title": "Technology drives 62% of risk",
+    "detail": "Technology is 29% gross exposure but 62% of portfolio vol.",
+    "action": "Diversify within Technology or add a sector hedge (short XLK) sized to roughly 9% of NAV to bring its risk share below 35%.",
+    "value": 0.6214338294993929,
+    "threshold": 0.45,
+    "tickers": [],
+    "whatif": {
+     "ticker": "XLK",
+     "mode": "delta_weight",
+     "value": -0.0863
+    }
+   },
+   {
+    "severity": "medium",
+    "category": "tail",
+    "title": "Worst scenario: 2022 bear market -17.1%",
+    "detail": "Replaying 2022 bear market on today's book loses -$32k (-17.1% of NAV).",
+    "action": "Compare with the risk budget; if too large, the cheapest fix is usually reducing the largest contributors to that scenario rather than the whole book.",
+    "value": -0.1707297238989111,
+    "threshold": -0.1,
+    "tickers": [],
+    "whatif": null
+   },
+   {
+    "severity": "low",
+    "category": "factor",
+    "title": "Unintended short LOWVOL tilt",
+    "detail": "Portfolio beta to LOWVOL is -0.30, explaining 21% of total variance (12% factor vol).",
+    "action": "If the LOWVOL tilt is not a deliberate view, neutralise it with the factor ETF pair or by rebalancing across names with opposite loadings.",
+    "value": -0.3030445597607009,
+    "threshold": 0.25,
+    "tickers": [],
+    "whatif": null
+   },
+   {
+    "severity": "low",
+    "category": "concentration",
+    "title": "Top 5 positions are 100% of gross",
+    "detail": "Effective number of positions is 2.9 versus 3 held.",
+    "action": "Spread the tail of the book or accept the concentration explicitly.",
+    "value": null,
+    "threshold": null,
+    "tickers": [],
+    "whatif": null
+   },
+   {
+    "severity": "low",
+    "category": "tail",
+    "title": "Fat-tailed return distribution",
+    "detail": "Excess kurtosis 11.8 and skew +0.96. Parametric VaR will understate tail losses.",
+    "action": "Use historical or Cornish-Fisher VaR for limits and sizing.",
+    "value": null,
+    "threshold": null,
+    "tickers": [],
+    "whatif": null
+   }
+  ],
+  "warnings": []
+ },
+ "Multi-Asset Balanced": {
+  "summary": {
+   "name": "Multi-Asset Balanced",
+   "as_of": "2026-09-15",
+   "nav": 120000000.0,
+   "cash": 2401416.0100000054,
+   "cash_weight": 0.020011800083333378,
+   "long_value": 117598583.99,
+   "short_value": 0.0,
+   "gross_value": 117598583.99,
+   "net_value": 117598583.99,
+   "long_exposure": 0.9799881999166666,
+   "short_exposure": 0.0,
+   "gross_exposure": 0.9799881999166666,
+   "net_exposure": 0.9799881999166666,
+   "n_positions": 11,
+   "n_long": 11,
+   "n_short": 0,
+   "vol": 0.10958338229315104,
+   "beta": 0.6689186935315883,
+   "var": 0.01620302225325654,
+   "cvar": 0.02392075677935799,
+   "var_confidence": 0.99,
+   "var_horizon_days": 1,
+   "var_dollar": 1944362.670390785,
+   "cvar_dollar": 2870490.8135229587,
+   "sharpe": 1.029497641482759,
+   "ytd_return": 0.07595009336866743,
+   "ret_1m": -0.02437209689265507,
+   "max_drawdown": -0.11340300946023951,
+   "current_drawdown": -0.025710405616002574,
+   "lookback_days": 756,
+   "cov_method": "ledoit_wolf",
+   "benchmark": "SPY",
+   "shrinkage": 0.051116386587597665
+  },
+  "performance": {
+   "n_days": 756,
+   "start": "2023-09-11",
+   "end": "2026-09-15",
+   "total_return": 0.5329867989272099,
+   "ann_return": 0.1530446852750056,
+   "ann_vol": 0.10980567678833167,
+   "sharpe": 1.029497641482759,
+   "sortino": 1.4714178597662515,
+   "max_drawdown": -0.11340300946023951,
+   "calmar": 1.3495645838981454,
+   "current_drawdown": -0.025710405616002574,
+   "skew": 0.5798642673783645,
+   "kurtosis": 11.408915158559747,
+   "best_day": 0.06502765141886009,
+   "worst_day": -0.0372536597232192,
+   "best_day_date": "2025-04-09",
+   "worst_day_date": "2025-04-04",
+   "hit_rate": 0.5542328042328042,
+   "avg_up": 0.0049989954410236525,
+   "avg_down": -0.004893861709518277,
+   "ytd_return": 0.07595009336866743,
+   "ret_1m": -0.02437209689265507,
+   "ret_3m": -0.015962363393546175,
+   "ret_6m": 0.06623368156055665,
+   "ret_1y": 0.11494968416130957,
+   "beta": 0.6689186935315883,
+   "alpha_ann": 0.013988100101653937,
+   "correlation": 0.9324452400948686,
+   "tracking_error": 0.06435969482887365,
+   "information_ratio": -0.8167135768546249,
+   "benchmark_ann_return": 0.208413212945588,
+   "benchmark_ann_vol": 0.1530646125556968,
+   "benchmark_total_return": 0.764600491177702,
+   "up_capture": 0.7155978788918774,
+   "down_capture": 0.709238411619397
+  },
+  "rc": [
+   {
+    "ticker": "SPY",
+    "weight": 0.3,
+    "mcr": 0.1421,
+    "ccr": 0.0426,
+    "pct": 0.3889,
+    "standalone_vol": 0.153,
+    "beta_to_port": 1.2963,
+    "sector": "US Large Cap",
+    "asset_class": "ETF",
+    "name": "SPDR S&P 500 ETF",
+    "market_value": 35999504.09
+   },
+   {
+    "ticker": "QQQ",
+    "weight": 0.1,
+    "mcr": 0.1796,
+    "ccr": 0.018,
+    "pct": 0.1639,
+    "standalone_vol": 0.2042,
+    "beta_to_port": 1.6386,
+    "sector": "US Growth",
+    "asset_class": "ETF",
+    "name": "Invesco QQQ Trust",
+    "market_value": 11999725.28
+   },
+   {
+    "ticker": "EFA",
+    "weight": 0.1,
+    "mcr": 0.1309,
+    "ccr": 0.0131,
+    "pct": 0.1194,
+    "standalone_vol": 0.1524,
+    "beta_to_port": 1.1942,
+    "sector": "Developed ex-US",
+    "asset_class": "ETF",
+    "name": "iShares MSCI EAFE",
+    "market_value": 11999895.4
+   },
+   {
+    "ticker": "IWM",
+    "weight": 0.05,
+    "mcr": 0.1757,
+    "ccr": 0.0088,
+    "pct": 0.0802,
+    "standalone_vol": 0.2111,
+    "beta_to_port": 1.6037,
+    "sector": "US Small Cap",
+    "asset_class": "ETF",
+    "name": "iShares Russell 2000",
+    "market_value": 5999915.88
+   },
+   {
+    "ticker": "EEM",
+    "weight": 0.05,
+    "mcr": 0.1548,
+    "ccr": 0.0077,
+    "pct": 0.0706,
+    "standalone_vol": 0.1981,
+    "beta_to_port": 1.4125,
+    "sector": "Emerging Markets",
+    "asset_class": "ETF",
+    "name": "iShares MSCI Emerging Markets",
+    "market_value": 5999942.4
+   },
+   {
+    "ticker": "TLT",
+    "weight": 0.1,
+    "mcr": 0.0559,
+    "ccr": 0.0056,
+    "pct": 0.051,
+    "standalone_vol": 0.1344,
+    "beta_to_port": 0.5103,
+    "sector": "Long Treasury",
+    "asset_class": "Fixed Income",
+    "name": "iShares 20+ Year Treasury",
+    "market_value": 11999962.8
+   },
+   {
+    "ticker": "GLD",
+    "weight": 0.05,
+    "mcr": 0.0801,
+    "ccr": 0.004,
+    "pct": 0.0366,
+    "standalone_vol": 0.2133,
+    "beta_to_port": 0.731,
+    "sector": "Gold",
+    "asset_class": "Commodity",
+    "name": "SPDR Gold Shares",
+    "market_value": 5999751.3
+   },
+   {
+    "ticker": "VNQ",
+    "weight": 0.03,
+    "mcr": 0.1048,
+    "ccr": 0.0031,
+    "pct": 0.0287,
+    "standalone_vol": 0.1681,
+    "beta_to_port": 0.9566,
+    "sector": "Real Estate",
+    "asset_class": "ETF",
+    "name": "Vanguard Real Estate ETF",
+    "market_value": 3599983.7
+   },
+   {
+    "ticker": "IEF",
+    "weight": 0.1,
+    "mcr": 0.0241,
+    "ccr": 0.0024,
+    "pct": 0.022,
+    "standalone_vol": 0.0632,
+    "beta_to_port": 0.2203,
+    "sector": "Intermediate Treasury",
+    "asset_class": "Fixed Income",
+    "name": "iShares 7-10 Year Treasury",
+    "market_value": 11999955.78
+   },
+   {
+    "ticker": "LQD",
+    "weight": 0.05,
+    "mcr": 0.0426,
+    "ccr": 0.0021,
+    "pct": 0.0194,
+    "standalone_vol": 0.0707,
+    "beta_to_port": 0.3885,
+    "sector": "IG Credit",
+    "asset_class": "Fixed Income",
+    "name": "iShares iBoxx Inv Grade",
+    "market_value": 5999958.36
+   },
+   {
+    "ticker": "HYG",
+    "weight": 0.05,
+    "mcr": 0.0423,
+    "ccr": 0.0021,
+    "pct": 0.0193,
+    "standalone_vol": 0.0502,
+    "beta_to_port": 0.3859,
+    "sector": "High Yield Credit",
+    "asset_class": "Fixed Income",
+    "name": "iShares iBoxx High Yield",
+    "market_value": 5999989.0
+   }
+  ],
+  "sector_rc": [
+   {
+    "sector": "US Large Cap",
+    "weight": 0.3,
+    "gross": 0.3,
+    "ccr": 0.0426,
+    "pct": 0.3889,
+    "n": 1
+   },
+   {
+    "sector": "US Growth",
+    "weight": 0.1,
+    "gross": 0.1,
+    "ccr": 0.018,
+    "pct": 0.1639,
+    "n": 1
+   },
+   {
+    "sector": "Developed ex-US",
+    "weight": 0.1,
+    "gross": 0.1,
+    "ccr": 0.0131,
+    "pct": 0.1194,
+    "n": 1
+   },
+   {
+    "sector": "US Small Cap",
+    "weight": 0.05,
+    "gross": 0.05,
+    "ccr": 0.0088,
+    "pct": 0.0802,
+    "n": 1
+   },
+   {
+    "sector": "Emerging Markets",
+    "weight": 0.05,
+    "gross": 0.05,
+    "ccr": 0.0077,
+    "pct": 0.0706,
+    "n": 1
+   },
+   {
+    "sector": "Long Treasury",
+    "weight": 0.1,
+    "gross": 0.1,
+    "ccr": 0.0056,
+    "pct": 0.051,
+    "n": 1
+   },
+   {
+    "sector": "Gold",
+    "weight": 0.05,
+    "gross": 0.05,
+    "ccr": 0.004,
+    "pct": 0.0366,
+    "n": 1
+   },
+   {
+    "sector": "Real Estate",
+    "weight": 0.03,
+    "gross": 0.03,
+    "ccr": 0.0031,
+    "pct": 0.0287,
+    "n": 1
+   },
+   {
+    "sector": "Intermediate Treasury",
+    "weight": 0.1,
+    "gross": 0.1,
+    "ccr": 0.0024,
+    "pct": 0.022,
+    "n": 1
+   },
+   {
+    "sector": "IG Credit",
+    "weight": 0.05,
+    "gross": 0.05,
+    "ccr": 0.0021,
+    "pct": 0.0194,
+    "n": 1
+   },
+   {
+    "sector": "High Yield Credit",
+    "weight": 0.05,
+    "gross": 0.05,
+    "ccr": 0.0021,
+    "pct": 0.0193,
+    "n": 1
+   }
+  ],
+  "sector_weights": [
+   {
+    "group": "US Large Cap",
+    "net": 0.3,
+    "gross": 0.3,
+    "long": 0.3,
+    "short": 0.0,
+    "n": 1
+   },
+   {
+    "group": "Long Treasury",
+    "net": 0.1,
+    "gross": 0.1,
+    "long": 0.1,
+    "short": 0.0,
+    "n": 1
+   },
+   {
+    "group": "Intermediate Treasury",
+    "net": 0.1,
+    "gross": 0.1,
+    "long": 0.1,
+    "short": 0.0,
+    "n": 1
+   },
+   {
+    "group": "Developed ex-US",
+    "net": 0.1,
+    "gross": 0.1,
+    "long": 0.1,
+    "short": 0.0,
+    "n": 1
+   },
+   {
+    "group": "US Growth",
+    "net": 0.1,
+    "gross": 0.1,
+    "long": 0.1,
+    "short": 0.0,
+    "n": 1
+   },
+   {
+    "group": "High Yield Credit",
+    "net": 0.05,
+    "gross": 0.05,
+    "long": 0.05,
+    "short": 0.0,
+    "n": 1
+   },
+   {
+    "group": "IG Credit",
+    "net": 0.05,
+    "gross": 0.05,
+    "long": 0.05,
+    "short": 0.0,
+    "n": 1
+   },
+   {
+    "group": "Emerging Markets",
+    "net": 0.05,
+    "gross": 0.05,
+    "long": 0.05,
+    "short": 0.0,
+    "n": 1
+   },
+   {
+    "group": "US Small Cap",
+    "net": 0.05,
+    "gross": 0.05,
+    "long": 0.05,
+    "short": 0.0,
+    "n": 1
+   },
+   {
+    "group": "Gold",
+    "net": 0.05,
+    "gross": 0.05,
+    "long": 0.05,
+    "short": 0.0,
+    "n": 1
+   },
+   {
+    "group": "Real Estate",
+    "net": 0.03,
+    "gross": 0.03,
+    "long": 0.03,
+    "short": 0.0,
+    "n": 1
+   }
+  ],
+  "factor_exposures": [
+   {
+    "factor": "MKT",
+    "beta": 0.5903,
+    "factor_vol": 0.1531,
+    "var_contrib": 0.0093,
+    "pct_of_total_var": 0.7709,
+    "vol_contrib": 0.0962
+   },
+   {
+    "factor": "SIZE",
+    "beta": 0.066,
+    "factor_vol": 0.1255,
+    "var_contrib": 0.0003,
+    "pct_of_total_var": 0.021,
+    "vol_contrib": 0.0159
+   },
+   {
+    "factor": "VALUE",
+    "beta": 0.0127,
+    "factor_vol": 0.147,
+    "var_contrib": -0.0001,
+    "pct_of_total_var": -0.0071,
+    "vol_contrib": -0.0092
+   },
+   {
+    "factor": "MOM",
+    "beta": 0.041,
+    "factor_vol": 0.1295,
+    "var_contrib": 0.0002,
+    "pct_of_total_var": 0.0159,
+    "vol_contrib": 0.0138
+   },
+   {
+    "factor": "QUALITY",
+    "beta": 0.0159,
+    "factor_vol": 0.0387,
+    "var_contrib": -0.0,
+    "pct_of_total_var": -0.0016,
+    "vol_contrib": -0.0043
+   },
+   {
+    "factor": "LOWVOL",
+    "beta": -0.0291,
+    "factor_vol": 0.1086,
+    "var_contrib": 0.0002,
+    "pct_of_total_var": 0.0191,
+    "vol_contrib": 0.0151
+   },
+   {
+    "factor": "RATES",
+    "beta": 0.1857,
+    "factor_vol": 0.1345,
+    "var_contrib": 0.0011,
+    "pct_of_total_var": 0.0918,
+    "vol_contrib": 0.0332
+   },
+   {
+    "factor": "CREDIT",
+    "beta": 0.0296,
+    "factor_vol": 0.0568,
+    "var_contrib": 0.0001,
+    "pct_of_total_var": 0.0053,
+    "vol_contrib": 0.008
+   },
+   {
+    "factor": "USD",
+    "beta": -0.1416,
+    "factor_vol": 0.0657,
+    "var_contrib": 0.0003,
+    "pct_of_total_var": 0.026,
+    "vol_contrib": 0.0177
+   },
+   {
+    "factor": "GOLD",
+    "beta": 0.0672,
+    "factor_vol": 0.2134,
+    "var_contrib": 0.0006,
+    "pct_of_total_var": 0.0472,
+    "vol_contrib": 0.0238
+   },
+   {
+    "factor": "OIL",
+    "beta": -0.0062,
+    "factor_vol": 0.3731,
+    "var_contrib": 0.0,
+    "pct_of_total_var": 0.0022,
+    "vol_contrib": 0.0052
+   }
+  ],
+  "factor_split": {
+   "systematic_vol": 0.10904260499472994,
+   "idiosyncratic_vol": 0.010507832716069119,
+   "total_vol": 0.10954772591170296,
+   "systematic_share": 0.9907993276005801
+  },
+  "var_table": [
+   {
+    "method": "historical",
+    "confidence": 0.95,
+    "horizon_days": 1,
+    "var": 0.010400199639379347,
+    "cvar": 0.015202869236515178
+   },
+   {
+    "method": "parametric",
+    "confidence": 0.95,
+    "horizon_days": 1,
+    "var": 0.01078854504289125,
+    "cvar": 0.0136789218979947
+   },
+   {
+    "method": "cornish_fisher",
+    "confidence": 0.95,
+    "horizon_days": 1,
+    "var": 0.008012110854521755,
+    "cvar": 0.023464047704918178
+   },
+   {
+    "method": "monte_carlo",
+    "confidence": 0.95,
+    "horizon_days": 1,
+    "var": 0.010715494055986369,
+    "cvar": 0.015475413555865418
+   },
+   {
+    "method": "historical",
+    "confidence": 0.99,
+    "horizon_days": 1,
+    "var": 0.01620302225325654,
+    "cvar": 0.02392075677935799
+   },
+   {
+    "method": "parametric",
+    "confidence": 0.99,
+    "horizon_days": 1,
+    "var": 0.01550251398346236,
+    "cvar": 0.017846488915472226
+   },
+   {
+    "method": "cornish_fisher",
+    "confidence": 0.99,
+    "horizon_days": 1,
+    "var": 0.030127632813805982,
+    "cvar": 0.05024147216482678
+   },
+   {
+    "method": "monte_carlo",
+    "confidence": 0.99,
+    "horizon_days": 1,
+    "var": 0.018103429424891813,
+    "cvar": 0.023835716939674394
+   }
+  ],
+  "var_contrib": [
+   {
+    "ticker": "SPY",
+    "weight": 0.3,
+    "cvar_contrib": 0.01007,
+    "pct": 0.42103
+   },
+   {
+    "ticker": "QQQ",
+    "weight": 0.1,
+    "cvar_contrib": 0.00393,
+    "pct": 0.1643
+   },
+   {
+    "ticker": "EFA",
+    "weight": 0.1,
+    "cvar_contrib": 0.00287,
+    "pct": 0.12003
+   },
+   {
+    "ticker": "IWM",
+    "weight": 0.05,
+    "cvar_contrib": 0.00189,
+    "pct": 0.0789
+   },
+   {
+    "ticker": "EEM",
+    "weight": 0.05,
+    "cvar_contrib": 0.00175,
+    "pct": 0.07297
+   },
+   {
+    "ticker": "GLD",
+    "weight": 0.05,
+    "cvar_contrib": 0.00088,
+    "pct": 0.03699
+   },
+   {
+    "ticker": "VNQ",
+    "weight": 0.03,
+    "cvar_contrib": 0.00073,
+    "pct": 0.03063
+   },
+   {
+    "ticker": "TLT",
+    "weight": 0.1,
+    "cvar_contrib": 0.00065,
+    "pct": 0.02708
+   },
+   {
+    "ticker": "HYG",
+    "weight": 0.05,
+    "cvar_contrib": 0.0005,
+    "pct": 0.02092
+   },
+   {
+    "ticker": "LQD",
+    "weight": 0.05,
+    "cvar_contrib": 0.00037,
+    "pct": 0.01554
+   }
+  ],
+  "drawdowns": [
+   {
+    "episode": 0,
+    "start": "2021-12-28",
+    "trough": "2022-10-14",
+    "recovery": "2024-03-07",
+    "depth": -0.2427381499885617,
+    "length_days": 551
+   },
+   {
+    "episode": 1,
+    "start": "2020-02-20",
+    "trough": "2020-03-23",
+    "recovery": "2020-06-08",
+    "depth": -0.21875867541408223,
+    "length_days": 76
+   },
+   {
+    "episode": 2,
+    "start": "2025-02-19",
+    "trough": "2025-04-08",
+    "recovery": "2025-05-16",
+    "depth": -0.1134030094602394,
+    "length_days": 62
+   },
+   {
+    "episode": 3,
+    "start": "2026-02-26",
+    "trough": "2026-03-30",
+    "recovery": "2026-04-17",
+    "depth": -0.07328467166819541,
+    "length_days": 36
+   },
+   {
+    "episode": 4,
+    "start": "2020-09-03",
+    "trough": "2020-09-23",
+    "recovery": "2020-11-11",
+    "depth": -0.059920901887110856,
+    "length_days": 49
+   }
+  ],
+  "worst_windows": [
+   {
+    "rank": 0,
+    "start": "2020-03-05",
+    "end": "2020-03-18",
+    "return": -0.1848931408177915
+   },
+   {
+    "rank": 1,
+    "start": "2025-03-26",
+    "end": "2025-04-08",
+    "return": -0.0939062259631579
+   },
+   {
+    "rank": 2,
+    "start": "2022-09-13",
+    "end": "2022-09-26",
+    "return": -0.08890078912829247
+   },
+   {
+    "rank": 3,
+    "start": "2022-06-03",
+    "end": "2022-06-16",
+    "return": -0.08777014423250584
+   },
+   {
+    "rank": 4,
+    "start": "2020-02-13",
+    "end": "2020-02-27",
+    "return": -0.06339887037101988
+   }
+  ],
+  "stress_hist": [
+   {
+    "start": "2020-02-19",
+    "end": "2020-03-23",
+    "total_pnl": -0.20815722292957795,
+    "name": "COVID crash",
+    "total_dollar": -24978866.751549352,
+    "benchmark_return": -0.3371726770846235
+   },
+   {
+    "start": "2020-03-23",
+    "end": "2020-06-08",
+    "total_pnl": 0.29545880407722613,
+    "name": "COVID rebound",
+    "total_dollar": 35455056.48926713,
+    "benchmark_return": 0.4496527217243864
+   },
+   {
+    "start": "2022-01-03",
+    "end": "2022-06-16",
+    "total_pnl": -0.19877542263732775,
+    "name": "2022 rate shock (H1)",
+    "total_dollar": -23853050.71647933,
+    "benchmark_return": -0.2300999028891857
+   },
+   {
+    "start": "2022-01-03",
+    "end": "2022-10-12",
+    "total_pnl": -0.23868025234966997,
+    "name": "2022 bear market",
+    "total_dollar": -28641630.281960398,
+    "benchmark_return": -0.24496397555877658
+   },
+   {
+    "start": "2023-03-08",
+    "end": "2023-03-13",
+    "total_pnl": -0.010596014905319497,
+    "name": "SVB banking stress",
+    "total_dollar": -1271521.7886383396,
+    "benchmark_return": -0.033991897565258444
+   },
+   {
+    "start": "2024-07-16",
+    "end": "2024-08-05",
+    "total_pnl": -0.04688826411023986,
+    "name": "Aug 2024 vol spike",
+    "total_dollar": -5626591.693228783,
+    "benchmark_return": -0.08405591186613914
+   },
+   {
+    "start": "2025-01-24",
+    "end": "2025-01-27",
+    "total_pnl": -0.006449087983660982,
+    "name": "DeepSeek AI sell-off",
+    "total_dollar": -773890.5580393178,
+    "benchmark_return": -0.014145356283902899
+   },
+   {
+    "start": "2025-04-02",
+    "end": "2025-04-08",
+    "total_pnl": -0.08620867616892638,
+    "name": "Apr 2025 tariff shock",
+    "total_dollar": -10345041.140271166,
+    "benchmark_return": -0.12052716082515202
+   }
+  ],
+  "stress_hypo": [
+   {
+    "total_pnl": -0.05903205523087028,
+    "shocks": {
+     "MKT": -0.1
+    },
+    "name": "Equities -10%",
+    "total_dollar": -7083846.627704434
+   },
+   {
+    "total_pnl": -0.12373020360575622,
+    "shocks": {
+     "MKT": -0.2,
+     "CREDIT": -0.08,
+     "SIZE": -0.05
+    },
+    "name": "Equities -20%, credit -8%",
+    "total_dollar": -14847624.432690747
+   },
+   {
+    "total_pnl": -0.04648372558442849,
+    "shocks": {
+     "RATES": -0.12,
+     "MKT": -0.04,
+     "LOWVOL": 0.02
+    },
+    "name": "Rates +100bp (TLT -12%)",
+    "total_dollar": -5578047.070131418
+   },
+   {
+    "total_pnl": -0.017198312824442813,
+    "shocks": {
+     "RATES": 0.08,
+     "MKT": -0.06,
+     "GOLD": 0.05
+    },
+    "name": "Flight to quality (TLT +8%)",
+    "total_dollar": -2063797.5389331377
+   },
+   {
+    "total_pnl": -0.0188851966194186,
+    "shocks": {
+     "OIL": 0.25,
+     "MKT": -0.03,
+     "VALUE": 0.03
+    },
+    "name": "Oil +25%",
+    "total_dollar": -2266223.594330232
+   },
+   {
+    "total_pnl": -0.021576036476111515,
+    "shocks": {
+     "USD": 0.05,
+     "MKT": -0.02,
+     "GOLD": -0.04
+    },
+    "name": "Dollar +5%",
+    "total_dollar": -2589124.3771333816
+   },
+   {
+    "total_pnl": 0.0002099693583155662,
+    "shocks": {
+     "MOM": -0.1,
+     "VALUE": 0.08,
+     "SIZE": 0.05
+    },
+    "name": "Momentum crash",
+    "total_dollar": 25196.322997867945
+   },
+   {
+    "total_pnl": -0.08304285589148762,
+    "shocks": {
+     "MKT": -0.12,
+     "RATES": -0.08,
+     "OIL": 0.2,
+     "GOLD": 0.08,
+     "CREDIT": -0.05
+    },
+    "name": "Stagflation",
+    "total_dollar": -9965142.706978515
+   }
+  ],
+  "single_name_shocks": [
+   {
+    "ticker": "SPY",
+    "shock": -0.02893,
+    "own_pnl": -0.00868,
+    "total_pnl": -0.01924,
+    "spillover": -0.01057
+   },
+   {
+    "ticker": "QQQ",
+    "shock": -0.03862,
+    "own_pnl": -0.00386,
+    "total_pnl": -0.01822,
+    "spillover": -0.01436
+   },
+   {
+    "ticker": "EFA",
+    "shock": -0.02883,
+    "own_pnl": -0.00288,
+    "total_pnl": -0.01779,
+    "spillover": -0.01491
+   },
+   {
+    "ticker": "HYG",
+    "shock": -0.00949,
+    "own_pnl": -0.00047,
+    "total_pnl": -0.01746,
+    "spillover": -0.01698
+   },
+   {
+    "ticker": "IWM",
+    "shock": -0.03991,
+    "own_pnl": -0.002,
+    "total_pnl": -0.01726,
+    "spillover": -0.01526
+   }
+  ],
+  "concentration": {
+   "hhi": 0.14931260778571287,
+   "effective_n": 6.697358078663776,
+   "top1": 0.30612191804164257,
+   "top5": 0.7142861801562412,
+   "top10": 0.9693875251056925,
+   "div_ratio": 1.309632169684634,
+   "enb": 1.2449851100693548,
+   "n_positions": 11,
+   "max_weight": 0.2999958674166666,
+   "max_weight_ticker": "SPY"
+  },
+  "clusters": [
+   {
+    "a": "QQQ",
+    "b": "SPY",
+    "corr": 0.9229471566470877,
+    "weight_a": 0.09999771066666666,
+    "weight_b": 0.2999958674166666,
+    "stacked": true,
+    "combined_gross": 0.39999357808333325
+   },
+   {
+    "a": "IEF",
+    "b": "TLT",
+    "corr": 0.8985887997546006,
+    "weight_a": 0.09999963149999999,
+    "weight_b": 0.09999968999999999,
+    "stacked": true,
+    "combined_gross": 0.1999993215
+   },
+   {
+    "a": "LQD",
+    "b": "TLT",
+    "corr": 0.8905982838194397,
+    "weight_a": 0.049999653000000005,
+    "weight_b": 0.09999968999999999,
+    "stacked": true,
+    "combined_gross": 0.149999343
+   },
+   {
+    "a": "IEF",
+    "b": "LQD",
+    "corr": 0.8786271024321886,
+    "weight_a": 0.09999963149999999,
+    "weight_b": 0.049999653000000005,
+    "stacked": true,
+    "combined_gross": 0.1499992845
+   },
+   {
+    "a": "IWM",
+    "b": "SPY",
+    "corr": 0.7912858353227246,
+    "weight_a": 0.049999299,
+    "weight_b": 0.2999958674166666,
+    "stacked": true,
+    "combined_gross": 0.3499951664166666
+   }
+  ],
+  "liquidity_profile": [
+   {
+    "bucket": "< 1 day",
+    "gross_value": 117598583.99,
+    "pct_gross": 1.0,
+    "cumulative_pct": 1.0
+   },
+   {
+    "bucket": "1-3 days",
+    "gross_value": 0.0,
+    "pct_gross": 0.0,
+    "cumulative_pct": 1.0
+   },
+   {
+    "bucket": "3-10 days",
+    "gross_value": 0.0,
+    "pct_gross": 0.0,
+    "cumulative_pct": 1.0
+   },
+   {
+    "bucket": "> 10 days",
+    "gross_value": 0.0,
+    "pct_gross": 0.0,
+    "cumulative_pct": 1.0
+   }
+  ],
+  "liquidity_top": [
+   {
+    "ticker": "IEF",
+    "shares": 132129.0,
+    "market_value": 11999955.78,
+    "weight": 0.1,
+    "adv_shares": 8200403.3333,
+    "adv_dollar": 744760630.7333,
+    "pct_of_adv": 0.0161,
+    "days_to_liquidate": 0.0806,
+    "bucket": "< 1 day",
+    "impact_cost": 3031.8136,
+    "sector": "Intermediate Treasury",
+    "name": "iShares 7-10 Year Treasury"
+   },
+   {
+    "ticker": "VNQ",
+    "shares": 38257.0,
+    "market_value": 3599983.7,
+    "weight": 0.03,
+    "adv_shares": 3062243.3333,
+    "adv_dollar": 288157097.6667,
+    "pct_of_adv": 0.0125,
+    "days_to_liquidate": 0.0625,
+    "bucket": "< 1 day",
+    "impact_cost": 2132.4112,
+    "sector": "Real Estate",
+    "name": "Vanguard Real Estate ETF"
+   },
+   {
+    "ticker": "EFA",
+    "shares": 113851.0,
+    "market_value": 11999895.4,
+    "weight": 0.1,
+    "adv_shares": 9347720.0,
+    "adv_dollar": 985249688.0,
+    "pct_of_adv": 0.0122,
+    "days_to_liquidate": 0.0609,
+    "bucket": "< 1 day",
+    "impact_cost": 6363.1873,
+    "sector": "Developed ex-US",
+    "name": "iShares MSCI EAFE"
+   },
+   {
+    "ticker": "EEM",
+    "shares": 91240.0,
+    "market_value": 5999942.4,
+    "weight": 0.05,
+    "adv_shares": 17573583.3333,
+    "adv_dollar": 1155638840.0,
+    "pct_of_adv": 0.0052,
+    "days_to_liquidate": 0.026,
+    "bucket": "< 1 day",
+    "impact_cost": 2699.1239,
+    "sector": "Emerging Markets",
+    "name": "iShares MSCI Emerging Markets"
+   },
+   {
+    "ticker": "TLT",
+    "shares": 148680.0,
+    "market_value": 11999962.8,
+    "weight": 0.1,
+    "adv_shares": 32612660.0,
+    "adv_dollar": 2632167788.6,
+    "pct_of_adv": 0.0046,
+    "days_to_liquidate": 0.0228,
+    "bucket": "< 1 day",
+    "impact_cost": 3431.4496,
+    "sector": "Long Treasury",
+    "name": "iShares 20+ Year Treasury"
+   }
+  ],
+  "limits": [
+   {
+    "id": 40,
+    "metric": "effective_n",
+    "scope": null,
+    "operator": "gte",
+    "threshold": 5.0,
+    "label": "Effective number of positions",
+    "value": 6.697358078663776,
+    "display_value": "6.70",
+    "display_threshold": "5.00",
+    "status": "ok",
+    "utilization": 0.7465630389285643
+   },
+   {
+    "id": 41,
+    "metric": "max_risk_share",
+    "scope": null,
+    "operator": "lte",
+    "threshold": 0.4,
+    "label": "Max single-line risk share",
+    "value": 0.38887890115072793,
+    "display_value": "38.9%",
+    "display_threshold": "40.0%",
+    "status": "warn",
+    "utilization": 0.9721972528768198
+   },
+   {
+    "id": 37,
+    "metric": "position_weight",
+    "scope": null,
+    "operator": "lte",
+    "threshold": 0.35,
+    "label": "Single-line weight",
+    "value": 0.2999958674166666,
+    "display_value": "30.0%",
+    "display_threshold": "35.0%",
+    "status": "ok",
+    "utilization": 0.8571310497619047
+   },
+   {
+    "id": 39,
+    "metric": "var",
+    "scope": null,
+    "operator": "lte",
+    "threshold": 0.02,
+    "label": "1-day 99% VaR",
+    "value": 0.01620302225325654,
+    "display_value": "1.6%",
+    "display_threshold": "2.0%",
+    "status": "ok",
+    "utilization": 0.810151112662827
+   },
+   {
+    "id": 38,
+    "metric": "vol",
+    "scope": null,
+    "operator": "lte",
+    "threshold": 0.12,
+    "label": "Annualised volatility",
+    "value": 0.10958338229315104,
+    "display_value": "11.0%",
+    "display_threshold": "12.0%",
+    "status": "warn",
+    "utilization": 0.9131948524429253
+   }
+  ],
+  "insights": [
+   {
+    "severity": "medium",
+    "category": "limits",
+    "title": "Near limit: Max single-line risk share",
+    "detail": "Current 38.9% is at 97% of the 40.0% limit.",
+    "action": "No action required yet; avoid adding in this direction.",
+    "value": 0.38887890115072793,
+    "threshold": 0.4,
+    "tickers": [],
+    "whatif": null
+   },
+   {
+    "severity": "medium",
+    "category": "limits",
+    "title": "Near limit: Annualised volatility",
+    "detail": "Current 11.0% is at 91% of the 12.0% limit.",
+    "action": "No action required yet; avoid adding in this direction.",
+    "value": 0.10958338229315104,
+    "threshold": 0.12,
+    "tickers": [],
+    "whatif": null
+   },
+   {
+    "severity": "medium",
+    "category": "tail",
+    "title": "Worst scenario: 2022 bear market -23.9%",
+    "detail": "Replaying 2022 bear market on today's book loses -$28.64m (-23.9% of NAV).",
+    "action": "Compare with the risk budget; if too large, the cheapest fix is usually reducing the largest contributors to that scenario rather than the whole book.",
+    "value": -0.23868025234966997,
+    "threshold": -0.1,
+    "tickers": [],
+    "whatif": null
+   },
+   {
+    "severity": "low",
+    "category": "correlation",
+    "title": "QQQ and SPY are one bet",
+    "detail": "Correlation +0.92 with combined gross 40.0% of NAV.",
+    "action": "Treat them as a single position for sizing; consider consolidating into the higher-conviction name.",
+    "value": 0.9229471566470877,
+    "threshold": 0.75,
+    "tickers": [
+     "QQQ",
+     "SPY"
+    ],
+    "whatif": null
+   },
+   {
+    "severity": "low",
+    "category": "correlation",
+    "title": "IEF and TLT are one bet",
+    "detail": "Correlation +0.90 with combined gross 20.0% of NAV.",
+    "action": "Treat them as a single position for sizing; consider consolidating into the higher-conviction name.",
+    "value": 0.8985887997546006,
+    "threshold": 0.75,
+    "tickers": [
+     "IEF",
+     "TLT"
+    ],
+    "whatif": null
+   },
+   {
+    "severity": "low",
+    "category": "correlation",
+    "title": "LQD and TLT are one bet",
+    "detail": "Correlation +0.89 with combined gross 15.0% of NAV.",
+    "action": "Treat them as a single position for sizing; consider consolidating into the higher-conviction name.",
+    "value": 0.8905982838194397,
+    "threshold": 0.75,
+    "tickers": [
+     "LQD",
+     "TLT"
+    ],
+    "whatif": null
+   },
+   {
+    "severity": "low",
+    "category": "concentration",
+    "title": "Top 5 positions are 71% of gross",
+    "detail": "Effective number of positions is 6.7 versus 11 held.",
+    "action": "Spread the tail of the book or accept the concentration explicitly.",
+    "value": null,
+    "threshold": null,
+    "tickers": [],
+    "whatif": null
+   },
+   {
+    "severity": "low",
+    "category": "diversification",
+    "title": "Only 1.2 independent bets",
+    "detail": "Effective number of bets (entropy of principal-portfolio variance shares) is low; most risk sits in one or two common factors.",
+    "action": "Add exposures that load on different principal components (rates, commodities, low-beta names).",
+    "value": null,
+    "threshold": null,
+    "tickers": [],
+    "whatif": null
+   },
+   {
+    "severity": "low",
+    "category": "tail",
+    "title": "Fat-tailed return distribution",
+    "detail": "Excess kurtosis 11.4 and skew +0.58. Parametric VaR will understate tail losses.",
+    "action": "Use historical or Cornish-Fisher VaR for limits and sizing.",
+    "value": null,
+    "threshold": null,
+    "tickers": [],
+    "whatif": null
+   },
+   {
+    "severity": "info",
+    "category": "factor",
+    "title": "Book is mostly systematic risk",
+    "detail": "99% of variance is explained by factors; stock selection (idiosyncratic) risk is only 1.1% of the 11.0% total.",
+    "action": "If the mandate is stock-picking alpha, hedge factor exposure to let idiosyncratic risk dominate.",
+    "value": null,
+    "threshold": null,
+    "tickers": [],
+    "whatif": null
+   }
+  ],
+  "warnings": []
+ }
+}

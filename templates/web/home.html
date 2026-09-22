@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% load riskdesk_extras humanize %}
+{% block title %}Portfolios{% endblock %}
+{% block content %}
+<div class="rd-page-title">
+  <h1>Portfolios</h1>
+  <span class="sub">Market data: {{ n_assets }} instruments, {{ coverage.first }} to {{ coverage.last }}</span>
+  <a class="btn btn-sm btn-primary ms-auto" href="{% url 'portfolio_create' %}"><i class="bi bi-plus-lg me-1"></i>New portfolio</a>
+</div>
+
+<div class="row g-3">
+  {% for c in cards %}
+  <div class="col-12 col-xl-6">
+    <div class="card h-100">
+      <div class="card-header d-flex align-items-center">
+        <a href="{% url 'overview' c.portfolio.id %}" class="text-decoration-none">{{ c.portfolio.name }}</a>
+        {% if not c.empty %}
+        <span class="ms-auto badge text-bg-{{ c.limits.overall|status_badge }} badge-soft">
+          {% if c.limits.breach %}{{ c.limits.breach }} breach{{ c.limits.breach|pluralize:"es" }}{% elif c.limits.warn %}{{ c.limits.warn }} near limit{% else %}Limits OK{% endif %}
+        </span>
+        {% endif %}
+      </div>
+      <div class="card-body">
+        {% if c.empty %}
+          <p class="muted mb-2">No positions yet.</p>
+          <a class="btn btn-sm btn-outline-primary" href="{% url 'positions' c.portfolio.id %}">Add positions</a>
+        {% else %}
+        {% with s=c.summary %}
+        <div class="kpi-grid mb-2">
+          <div class="kpi"><div class="label">NAV</div><div class="value">{{ s.nav|money }}</div><div class="sub">{{ s.n_positions }} positions</div></div>
+          <div class="kpi"><div class="label">Gross / net</div><div class="value">{{ s.gross_exposure|pct:0 }}</div><div class="sub">net {{ s.net_exposure|pct:0 }}</div></div>
+          <div class="kpi"><div class="label">Volatility</div><div class="value">{{ s.vol|pct }}</div><div class="sub">beta {{ s.beta|num }}</div></div>
+          <div class="kpi"><div class="label">VaR {{ s.var_confidence|pct:0 }} {{ s.var_horizon_days }}d</div><div class="value">{{ s.var|pct:2 }}</div><div class="sub">{{ s.var_dollar|money }}</div></div>
+          <div class="kpi"><div class="label">YTD (pro forma)</div><div class="value {{ s.ytd_return|sign_class }}">{{ s.ytd_return|spct }}</div><div class="sub">Sharpe {{ s.sharpe|num }}</div></div>
+        </div>
+        {% endwith %}
+        <div class="small muted mb-1">Top risk contributors:
+          {% for t, p in c.top_risk.items %}<span class="ticker">{{ t }}</span> {{ p|pct:0 }}{% if not forloop.last %}, {% endif %}{% endfor %}
+        </div>
+        {% for i in c.insights %}
+        <div class="insight {{ i.severity }} py-1"><div class="title">{{ i.title }}</div><div class="detail">{{ i.detail }}</div>
+          {% if i.whatif %}<div class="action"><a href="{% url 'whatif' c.portfolio.id %}?ticker={{ i.whatif.ticker }}&mode={{ i.whatif.mode }}&value={{ i.whatif.value }}"><i class="bi bi-play-fill"></i> Try the suggested trade</a></div>{% endif %}</div>
+        {% endfor %}
+        <div class="mt-2 d-flex gap-2">
+          <a class="btn btn-sm btn-primary" href="{% url 'overview' c.portfolio.id %}">Open</a>
+          <a class="btn btn-sm btn-outline-secondary" href="{% url 'whatif' c.portfolio.id %}">What-if</a>
+          <a class="btn btn-sm btn-outline-secondary" href="{% url 'report' c.portfolio.id %}">Risk report</a>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  {% empty %}
+  <div class="col-12"><div class="card"><div class="card-body">No portfolios yet. <a href="{% url 'portfolio_create' %}">Create one</a> or run <code>python manage.py load_sample_data</code>.</div></div></div>
+  {% endfor %}
+</div>
+{% endblock %}

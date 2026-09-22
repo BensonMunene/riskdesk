@@ -1,0 +1,68 @@
+[
+  {
+    "name": "Flagship Long/Short Equity",
+    "description": "US long/short equity book with an index beta hedge and small rates/gold overlay. Positions are expressed as target weights of NAV and converted to shares at the latest close.",
+    "nav": 50000000,
+    "benchmark": "SPY",
+    "settings": {"target_beta": 0.30, "lookback_days": 504, "cov_method": "ledoit_wolf", "var_confidence": 0.99},
+    "weights": {
+      "NVDA": 0.070, "MSFT": 0.060, "AAPL": 0.050, "AMZN": 0.050, "META": 0.050, "GOOGL": 0.040,
+      "AVGO": 0.040, "JPM": 0.040, "GS": 0.030, "XOM": 0.035, "UNH": 0.030, "LLY": 0.040,
+      "COST": 0.030, "HD": 0.030, "CAT": 0.030, "LMT": 0.025, "LIN": 0.025, "V": 0.030,
+      "NEE": 0.020, "PG": 0.025,
+      "TSLA": -0.040, "INTC": -0.030, "BA": -0.030, "KHC": -0.025, "F": -0.025, "NKE": -0.020, "SBUX": -0.020,
+      "SPY": -0.120,
+      "TLT": 0.040, "GLD": 0.030
+    },
+    "limits": [
+      {"metric": "gross_exposure", "operator": "lte", "threshold": 1.50, "label": "Gross exposure"},
+      {"metric": "net_exposure", "operator": "lte", "threshold": 0.70, "label": "Net exposure"},
+      {"metric": "position_weight", "scope": "equity", "operator": "lte", "threshold": 0.065, "label": "Single-name weight"},
+      {"metric": "position_weight", "scope": "SPY", "operator": "lte", "threshold": 0.15, "label": "Index hedge size"},
+      {"metric": "sector_gross", "scope": "Technology", "operator": "lte", "threshold": 0.30, "label": "Technology gross"},
+      {"metric": "beta", "operator": "lte", "threshold": 0.50, "label": "Beta to SPY"},
+      {"metric": "vol", "operator": "lte", "threshold": 0.15, "label": "Annualised volatility"},
+      {"metric": "var", "operator": "lte", "threshold": 0.025, "label": "1-day 99% VaR"},
+      {"metric": "max_risk_share", "operator": "lte", "threshold": 0.20, "label": "Max single-name risk share"},
+      {"metric": "days_to_liquidate", "operator": "lte", "threshold": 5, "label": "Days to liquidate (worst)"},
+      {"metric": "factor_beta", "scope": "MOM", "operator": "lte", "threshold": 0.30, "label": "Momentum factor beta"},
+      {"metric": "stress_loss", "operator": "lte", "threshold": 0.20, "label": "Worst stress scenario loss"}
+    ]
+  },
+  {
+    "name": "Multi-Asset Balanced",
+    "description": "Long-only strategic allocation across global equities, rates, credit, gold and real estate. Used to demonstrate optimisers, risk parity and backtests.",
+    "nav": 120000000,
+    "benchmark": "SPY",
+    "settings": {"lookback_days": 756, "cov_method": "ledoit_wolf", "var_confidence": 0.99},
+    "weights": {
+      "SPY": 0.30, "QQQ": 0.10, "IWM": 0.05, "EFA": 0.10, "EEM": 0.05,
+      "TLT": 0.10, "IEF": 0.10, "LQD": 0.05, "HYG": 0.05, "GLD": 0.05, "VNQ": 0.03
+    },
+    "limits": [
+      {"metric": "position_weight", "operator": "lte", "threshold": 0.35, "label": "Single-line weight"},
+      {"metric": "vol", "operator": "lte", "threshold": 0.12, "label": "Annualised volatility"},
+      {"metric": "var", "operator": "lte", "threshold": 0.02, "label": "1-day 99% VaR"},
+      {"metric": "effective_n", "operator": "gte", "threshold": 5, "label": "Effective number of positions"},
+      {"metric": "max_risk_share", "operator": "lte", "threshold": 0.40, "label": "Max single-line risk share"}
+    ]
+  },
+  {
+    "name": "Concentrated Growth",
+    "description": "High-conviction growth book with deliberate concentration. Used to demonstrate the insight engine, concentration limits and what-if trimming.",
+    "nav": 25000000,
+    "benchmark": "QQQ",
+    "settings": {"lookback_days": 504, "cov_method": "ewma", "ewma_halflife": 90, "var_confidence": 0.95},
+    "weights": {
+      "NVDA": 0.15, "AVGO": 0.10, "AMD": 0.08, "TSLA": 0.08, "META": 0.10, "AMZN": 0.10,
+      "MSFT": 0.10, "LLY": 0.08, "COST": 0.06, "V": 0.06
+    },
+    "limits": [
+      {"metric": "position_weight", "operator": "lte", "threshold": 0.12, "label": "Single-name weight"},
+      {"metric": "top5_weight", "operator": "lte", "threshold": 0.50, "label": "Top-5 share of gross"},
+      {"metric": "sector_gross", "scope": "Technology", "operator": "lte", "threshold": 0.40, "label": "Technology gross"},
+      {"metric": "stress_loss", "operator": "lte", "threshold": 0.25, "label": "Worst stress scenario loss"},
+      {"metric": "vol", "operator": "lte", "threshold": 0.30, "label": "Annualised volatility"}
+    ]
+  }
+]

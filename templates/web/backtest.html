@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% load riskdesk_extras %}
+{% block title %}Backtest · {{ portfolio.name }}{% endblock %}
+{% block content %}
+<div class="rd-page-title"><h1>Allocation backtest</h1><span class="sub">walk-forward: each rebalance only sees trailing data; transaction costs charged on turnover</span></div>
+<div class="row g-3">
+  <div class="col-12 col-xl-3">
+    <div class="card"><div class="card-header">Setup</div>
+      <div class="card-body">
+        <form method="post" id="bt-form" data-busy="Running backtest…">{% csrf_token %}
+          <label class="form-label">Strategies</label>
+          {% for k, v in strategies.items %}
+          <div class="form-check"><input class="form-check-input" type="checkbox" name="strategies" value="{{ k }}" id="s_{{ k }}" {% if k in form.strategies.value %}checked{% endif %}><label class="form-check-label small" for="s_{{ k }}">{{ v }}</label></div>
+          {% endfor %}
+          <div class="row mt-2">
+            <div class="col-6 mb-2"><label class="form-label">Rebalance</label>{{ form.rebalance }}</div>
+            <div class="col-6 mb-2"><label class="form-label">Lookback (days)</label>{{ form.lookback }}</div>
+            <div class="col-6 mb-2"><label class="form-label">Cost (bps)</label>{{ form.cost_bps }}</div>
+            <div class="col-6 mb-2"><label class="form-label">Max weight</label>{{ form.w_max }}</div>
+            <div class="col-12 mb-2"><label class="form-label">Start date</label>{{ form.start }}</div>
+          </div>
+          <div class="form-check mb-2"><input class="form-check-input" type="checkbox" name="long_only" id="id_long_only" {% if form.long_only.value %}checked{% endif %}><label class="form-check-label small" for="id_long_only">Long only</label></div>
+          {% for e in form.strategies.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}
+          <button class="btn btn-primary btn-sm"><i class="bi bi-play-fill me-1"></i>Run backtest</button>
+          <div class="help-block mt-2">Max-Sharpe re-solves a frontier at every rebalance and takes longer.</div>
+        </form>
+      </div></div>
+  </div>
+  <div class="col-12 col-xl-9">
+    {% if results %}
+    <div class="card"><div class="card-header">Cumulative return</div><div class="card-body"><div id="c-eq" class="chart chart-lg"></div></div></div>
+    <div class="card mt-3"><div class="card-header">Statistics <span class="hint">annualised; Sharpe uses the portfolio's risk-free setting</span></div>
+      <div class="card-body p-0"><table class="table rd"><thead><tr><th>Strategy</th><th class="num">Total</th><th class="num">Ann. return</th><th class="num">Ann. vol</th><th class="num">Sharpe</th><th class="num">Sortino</th><th class="num">Max DD</th><th class="num">Calmar</th><th class="num">Beta</th><th class="num">Turnover / yr</th><th class="num">Avg gross</th><th class="num">Worst day</th></tr></thead><tbody>
+      {% for r in results.rows %}<tr><td>{{ r.strategy }}</td><td class="num">{{ r.total_return|spct }}</td><td class="num">{{ r.ann_return|spct }}</td><td class="num">{{ r.ann_vol|pct }}</td><td class="num"><b>{{ r.sharpe|num }}</b></td><td class="num">{{ r.sortino|num }}</td><td class="num text-danger">{{ r.max_drawdown|pct }}</td><td class="num">{{ r.calmar|num }}</td><td class="num">{{ r.beta|num }}</td><td class="num">{{ r.annual_turnover|pct:0 }}</td><td class="num">{{ r.avg_gross|pct:0 }}</td><td class="num">{{ r.worst_day|spct }}</td></tr>{% endfor %}
+      </tbody></table></div></div>
+    <div class="card mt-3"><div class="card-header">Drawdowns</div><div class="card-body"><div id="c-dd" class="chart"></div></div></div>
+    <div class="card mt-3"><div class="card-header">Weights over time <span class="hint">month-end, choose a strategy</span>
+        <select id="w-strategy" class="form-select form-select-sm ms-2" style="width:auto">{% for k, w in results.final_weights.items %}<option value="{{ k }}">{{ strategies|get_item:k }}</option>{% endfor %}</select></div>
+      <div class="card-body"><div id="c-w" class="chart"></div></div></div>
+    <div class="card mt-3"><div class="card-header">Final weights by strategy</div>
+      <div class="card-body p-0 table-wrap"><table class="table rd"><thead><tr><th>Ticker</th>{% for k in results.final_weights %}<th class="num">{{ strategies|get_item:k }}</th>{% endfor %}</tr></thead><tbody>
+      {% for t in results.tickers %}<tr><td class="ticker">{{ t }}</td>{% for k, w in results.final_weights.items %}<td class="num">{{ w|get_item:t|pct }}</td>{% endfor %}</tr>{% endfor %}
+      </tbody></table></div></div>
+    {{ results.charts|json_script:"charts" }}
+    {% else %}
+    <div class="card"><div class="card-body">
+      <h2 class="h6">What this tests</h2>
+      <p class="small mb-1">Whether a systematic construction rule (risk parity, minimum variance, equal weight, vol targeting, max Sharpe) would have done better than holding the current weights on the same universe, after costs. It is a discipline check on construction, not an alpha backtest.</p>
+      <p class="small muted mb-0">Rebalance dates are month/quarter ends; covariance and expected returns use only the trailing lookback window at each date.</p>
+    </div></div>
+    {% endif %}
+  </div>
+</div>
+<script>document.querySelectorAll("#bt-form select").forEach(e => e.classList.add("form-select","form-select-sm")); document.querySelectorAll("#bt-form input[type=text], #bt-form input[type=number], #bt-form input[type=date]").forEach(e => e.classList.add("form-control","form-control-sm"));</script>
+{% endblock %}
+{% block scripts %}
+{% if results %}
+<script>
+(function () {
+  const d = RD.data("charts");
+  const eq = Object.keys(d.curves).map((k, i) => ({ name: k === "benchmark" ? d.bench_name : d.labels[k], x: d.curves[k].x, y: d.curves[k].y, color: k === "benchmark" ? "#999" : RD.palette[i], dash: k === "benchmark" ? "dot" : undefined }));
+  RD.line("c-eq", eq);
+  const dd = Object.keys(d.drawdowns).map((k, i) => ({ name: d.labels[k], x: d.drawdowns[k].x, y: d.drawdowns[k].y, color: RD.palette[i] }));
+  RD.line("c-dd", dd);
+  const sel = document.getElementById("w-strategy");
+  function drawW() { const w = d.weights[sel.value]; if (w) RD.area("c-w", w.x, w.series); }
+  sel.addEventListener("change", drawW); drawW();
+})();
+</script>
+{% endif %}
+{% endblock %}

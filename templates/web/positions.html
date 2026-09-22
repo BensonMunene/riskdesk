@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% load riskdesk_extras %}
+{% block title %}Positions · {{ portfolio.name }}{% endblock %}
+{% block content %}
+<div class="rd-page-title">
+  <h1>Positions</h1>
+  <span class="sub">{{ rows|length }} holdings · NAV {{ a.nav|money }} · cash {{ a.cash|money }}</span>
+  <div class="ms-auto d-flex gap-2">
+    <a class="btn btn-sm btn-outline-secondary" href="{% url 'export_positions' portfolio.id %}"><i class="bi bi-download me-1"></i>CSV</a>
+    <a class="btn btn-sm btn-outline-secondary" href="{% url 'portfolio_edit' portfolio.id %}"><i class="bi bi-pencil me-1"></i>Edit portfolio</a>
+  </div>
+</div>
+<div class="row g-3">
+  <div class="col-12 col-xl-8">
+    <div class="card">
+      <div class="card-header">Holdings <span class="hint">edit quantities inline and save; set 0 to remove; click a column to sort</span></div>
+      <form method="post">{% csrf_token %}
+      <div class="card-body p-0 table-wrap sticky-th">
+        <table class="table rd">
+          <thead><tr><th>Ticker</th><th>Name</th><th>Sector</th><th class="num">Quantity</th><th class="num">Price</th><th class="num">Value</th><th class="num">Weight</th><th class="num">P&amp;L</th><th class="num">Risk share</th><th></th></tr></thead>
+          <tbody>
+          {% for r in rows %}
+          <tr>
+            <td><a class="ticker" href="{% url 'asset_detail' r.pos.asset.ticker %}">{{ r.pos.asset.ticker }}</a>{% if not r.has_prices %} <span class="badge text-bg-warning">no prices</span>{% endif %}</td>
+            <td class="muted">{{ r.pos.asset.name|truncatechars:28 }}</td>
+            <td class="muted">{{ r.pos.asset.sector|default:"–" }}</td>
+            <td class="num"><input class="form-control form-control-sm text-end" style="width:110px" name="qty_{{ r.pos.id }}" value="{{ r.pos.quantity|floatformat:0 }}"></td>
+            <td class="num">{{ r.price|num }}</td>
+            <td class="num">{{ r.market_value|money }}</td>
+            <td class="num {{ r.weight|sign_class }}">{{ r.weight|spct }}</td>
+            <td class="num {{ r.pnl|sign_class }}">{% if r.pnl is not None %}{{ r.pnl|money }}{% else %}–{% endif %}</td>
+            <td class="num">{% if r.risk_share is not None %}{{ r.risk_share|pct }}{% endif %}</td>
+            <td><button class="btn btn-link btn-sm text-danger p-0" formaction="{% url 'position_delete' portfolio.id r.pos.id %}" title="Remove"><i class="bi bi-x-circle"></i></button></td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="10" class="muted">No positions. Add one on the right or import a CSV.</td></tr>
+          {% endfor %}
+          {% if rows %}
+          <tr class="total"><td colspan="3">{{ rows|length }} positions · cash {{ a.cash|money }}</td><td></td><td></td>
+            <td class="num">{{ a.market_values.sum|money }}</td><td class="num">{{ a.weights.sum|pct }}</td><td></td><td class="num">100%</td><td></td></tr>
+          {% endif %}
+          </tbody>
+        </table>
+      </div>
+      <div class="card-body border-top d-flex align-items-center gap-3">
+        <label class="form-label mb-0">Cash</label>
+        <input class="form-control form-control-sm" style="width:160px" name="cash" value="{{ portfolio.cash|floatformat:2 }}">
+        <button class="btn btn-sm btn-primary" name="update_qty" value="1"><i class="bi bi-save me-1"></i>Save changes</button>
+        <span class="help-block">Negative quantity = short. Cash can be negative (borrowed). NAV = positions + cash.</span>
+      </div>
+      </form>
+    </div>
+  </div>
+  <div class="col-12 col-xl-4">
+    <div class="card">
+      <div class="card-header">Add / update a position</div>
+      <div class="card-body">
+        <form method="post">{% csrf_token %}
+          <div class="mb-2"><label class="form-label">Ticker</label><input class="form-control" name="ticker" list="universe" value="{{ form.ticker.value|default:'' }}" required>
+            <datalist id="universe">{% for t in universe %}<option value="{{ t }}">{% endfor %}</datalist>
+            {% if form.ticker.errors %}<div class="text-danger small">{{ form.ticker.errors.0 }}</div>{% endif %}</div>
+          <div class="mb-2"><label class="form-label">Quantity (shares, negative = short)</label><input class="form-control" name="quantity" type="number" step="any" required value="{{ form.quantity.value|default:'' }}"></div>
+          <div class="mb-2"><label class="form-label">Average cost (optional)</label><input class="form-control" name="avg_cost" type="number" step="any" value="{{ form.avg_cost.value|default:'' }}"></div>
+          <div class="mb-3"><label class="form-label">Note</label><input class="form-control" name="note" value="{{ form.note.value|default:'' }}"></div>
+          <button class="btn btn-primary btn-sm">Add position</button>
+        </form>
+      </div>
+    </div>
+    <div class="card mt-3">
+      <div class="card-header">Import CSV</div>
+      <div class="card-body">
+        <form method="post" action="{% url 'positions_import' portfolio.id %}" enctype="multipart/form-data">{% csrf_token %}
+          <div class="mb-2"><input class="form-control form-control-sm" type="file" name="file" accept=".csv" required></div>
+          <div class="form-check mb-2"><input class="form-check-input" type="checkbox" name="replace" id="replace"><label class="form-check-label small" for="replace">Replace existing positions</label></div>
+          <button class="btn btn-outline-primary btn-sm">Import</button>
+          <div class="help-block mt-2">Columns: <code>ticker, quantity</code>; optional <code>avg_cost, note</code>. Tickers must exist in the price universe (see <a href="{% url 'market' %}">Market data</a>; add new ones with <code>manage.py fetch_prices --tickers XYZ</code>).</div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

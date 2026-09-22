@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% load riskdesk_extras %}
+{% block title %}{{ proposal.name }} · {{ portfolio.name }}{% endblock %}
+{% block content %}
+<div class="rd-page-title">
+  <h1>{{ proposal.name }}</h1>
+  <span class="badge text-bg-{% if proposal.status == 'approved' or proposal.status == 'executed' %}success{% elif proposal.status == 'rejected' %}danger{% elif proposal.status == 'review' %}warning{% else %}secondary{% endif %}">{{ proposal.get_status_display }}</span>
+  <span class="sub">{{ proposal.created_at|date:"j M Y H:i" }}{% if proposal.created_by %} · {{ proposal.created_by.username }}{% endif %} · {{ proposal.source|default:"manual" }}</span>
+  <div class="ms-auto d-flex gap-2 align-items-center">
+    <form method="post" action="{% url 'proposal_status' portfolio.id proposal.id %}" class="d-flex gap-2">{% csrf_token %}
+      <select class="form-select form-select-sm" name="status">{% for k, v in statuses %}<option value="{{ k }}" {% if k == proposal.status %}selected{% endif %}>{{ v }}</option>{% endfor %}</select>
+      <button class="btn btn-sm btn-outline-primary">Update status</button>
+    </form>
+    <a class="btn btn-sm btn-outline-secondary" href="{% url 'whatif' portfolio.id %}?proposal={{ proposal.id }}">Edit in what-if</a>
+    {% if proposal.status == 'approved' %}
+    <form method="post" action="{% url 'proposal_apply' portfolio.id proposal.id %}" onsubmit="return confirm('Book these trades into the live positions at the latest close?');">{% csrf_token %}<button class="btn btn-sm btn-success"><i class="bi bi-check2-circle me-1"></i>Book trades</button></form>
+    {% endif %}
+  </div>
+</div>
+{% if proposal.rationale %}<div class="alert alert-light border small">{{ proposal.rationale }}</div>{% endif %}
+{% if result %}
+{% with c=result.compare %}
+<div class="mb-3"><span class="verdict {{ c.verdict }}">{% if c.verdict == 'green' %}Inside limits{% elif c.verdict == 'amber' %}Inside limits, risk up >10%{% else %}Creates {{ c.new_breaches|length }} new breach{{ c.new_breaches|length|pluralize:"es" }}{% endif %}</span>
+  <span class="muted small ms-2">re-evaluated on today's prices; the snapshot at creation showed vol {{ proposal.snapshot.before.vol|pct }} → {{ proposal.snapshot.after.vol|pct }}</span></div>
+<div class="row g-3">
+  <div class="col-12 col-lg-6">
+    <div class="card"><div class="card-header">Trades</div><div class="card-body p-0"><table class="table rd"><thead><tr><th>Ticker</th><th>Side</th><th class="num">Shares</th><th class="num">Price</th><th class="num">Value</th><th class="num">Weight</th></tr></thead><tbody>
+    {% for t in result.trades %}<tr><td class="ticker">{{ t.ticker }}</td><td>{{ t.side }}</td><td class="num">{{ t.shares|floatformat:0 }}</td><td class="num">{{ t.price|num }}</td><td class="num">{{ t.value|money }}</td><td class="num">{{ t.weight_before|spct }} → {{ t.weight_after|spct }}</td></tr>{% endfor %}
+    </tbody></table></div></div>
+    <div class="card mt-3"><div class="card-header">Limits</div><div class="card-body p-0"><table class="table rd"><thead><tr><th>Limit</th><th class="num">Before</th><th class="num">After</th></tr></thead><tbody>
+    {% for l in c.limits %}<tr class="{% if l.broken %}table-danger{% elif l.fixed %}table-success{% endif %}"><td>{{ l.label }} <span class="muted small">({{ l.threshold }})</span></td><td class="num">{{ l.before }} <span class="badge text-bg-{{ l.status_before|status_badge }} badge-soft">{{ l.status_before }}</span></td><td class="num">{{ l.after }} <span class="badge text-bg-{{ l.status_after|status_badge }} badge-soft">{{ l.status_after }}</span></td></tr>{% endfor %}
+    </tbody></table></div></div>
+  </div>
+  <div class="col-12 col-lg-6">
+    <div class="card"><div class="card-header">Before → after</div><div class="card-body p-0"><table class="table rd"><thead><tr><th>Metric</th><th class="num">Before</th><th class="num">After</th></tr></thead><tbody>
+    {% for m in c.metrics %}<tr><td>{{ m.label }}</td><td class="num">{% if m.fmt == 'pct' %}{{ m.before|spct }}{% elif m.fmt == 'money' %}{{ m.before|money }}{% elif m.fmt == 'int' %}{{ m.before }}{% else %}{{ m.before|num }}{% endif %}</td><td class="num"><b>{% if m.fmt == 'pct' %}{{ m.after|spct }}{% elif m.fmt == 'money' %}{{ m.after|money }}{% elif m.fmt == 'int' %}{{ m.after }}{% else %}{{ m.after|num }}{% endif %}</b></td></tr>{% endfor %}
+    </tbody></table></div></div>
+    <div class="card mt-3"><div class="card-header">Insights after</div><div class="card-body">{% for i in result.insights_after|slice:":4" %}<div class="insight {{ i.severity }} py-1"><div class="title">{{ i.title }}</div><div class="detail">{{ i.detail }}</div></div>{% empty %}<span class="muted">Nothing flagged.</span>{% endfor %}</div></div>
+  </div>
+</div>
+{% endwith %}
+{% endif %}
+{% endblock %}

@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% load riskdesk_extras %}
+{% block title %}Stress tests · {{ portfolio.name }}{% endblock %}
+{% block content %}
+<div class="rd-page-title">
+  <h1>Stress tests</h1>
+  <span class="sub">historical replays use actual asset returns over the window; hypothetical shocks propagate through the factor betas · NAV {{ summary.nav|money }}</span>
+</div>
+<div class="row g-3">
+  <div class="col-12 col-lg-6">
+    <div class="card"><div class="card-header">Historical scenarios <span class="hint">book P&amp;L vs benchmark</span></div><div class="card-body"><div id="c-hist" class="chart"></div></div>
+      <div class="card-body p-0 border-top"><table class="table rd"><thead><tr><th>Scenario</th><th>Window</th><th class="num">Book</th><th class="num">$</th><th class="num">{{ summary.benchmark }}</th><th></th></tr></thead><tbody>
+      {% for s in hist %}
+      <tr><td>{{ s.name }}<div class="muted small">{{ s.description }}</div></td>
+        {% if s.available %}<td class="small muted">{{ s.start|date:"j M y" }} – {{ s.end|date:"j M y" }}</td><td class="num {{ s.total_pnl|sign_class }}">{{ s.total_pnl|spct }}</td><td class="num">{{ s.total_dollar|money }}</td><td class="num muted">{{ s.benchmark_return|spct }}</td><td><a class="small" href="?scenario={{ s.key }}#detail">detail</a></td>
+        {% else %}<td colspan="4" class="muted small">not covered by loaded history</td><td></td>{% endif %}</tr>
+      {% endfor %}
+      </tbody></table></div></div>
+  </div>
+  <div class="col-12 col-lg-6">
+    <div class="card"><div class="card-header">Hypothetical factor shocks</div><div class="card-body"><div id="c-hypo" class="chart"></div></div>
+      <div class="card-body p-0 border-top"><table class="table rd"><thead><tr><th>Scenario</th><th>Shocks</th><th class="num">Book</th><th class="num">$</th><th></th></tr></thead><tbody>
+      {% for s in hypo %}
+      <tr><td>{{ s.name }}<div class="muted small">{{ s.description }}</div></td><td class="small muted">{% for k, v in s.shocks.items %}{{ k }} {{ v|spct:0 }}{% if not forloop.last %}, {% endif %}{% endfor %}</td><td class="num {{ s.total_pnl|sign_class }}">{{ s.total_pnl|spct }}</td><td class="num">{{ s.total_dollar|money }}</td><td><a class="small" href="?scenario={{ s.key }}#detail">detail</a></td></tr>
+      {% endfor %}
+      </tbody></table></div></div>
+  </div>
+
+  <div class="col-12 col-lg-5">
+    <div class="card"><div class="card-header">Build your own shock <span class="hint">factor returns over the horizon</span></div>
+      <div class="card-body">
+        <form method="post" data-busy="Running…">{% csrf_token %}
+          <div class="row g-2">
+          {% for f in form %}<div class="col-4"><label class="form-label" title="{{ factor_desc|get_item:f.name }}">{{ f.label }}</label>{{ f }}</div>{% endfor %}
+          </div>
+          <button class="btn btn-primary btn-sm mt-3">Run shock</button>
+          <span class="help-block ms-2">e.g. MKT -0.10, RATES -0.05, OIL 0.20</span>
+        </form>
+        {% if custom %}
+        <hr>
+        <div class="d-flex align-items-baseline gap-3"><span class="muted">Result</span><span class="h5 mb-0 {{ custom.total_pnl|sign_class }}">{{ custom.total_pnl|spct }}</span><span class="muted">{{ custom.total_dollar|money }}</span></div>
+        <table class="table rd mt-2"><thead><tr><th>Ticker</th><th class="num">Weight</th><th class="num">Implied return</th><th class="num">P&amp;L</th></tr></thead><tbody>
+        {% for r in custom.detail|slice:":12" %}<tr><td class="ticker">{{ r.ticker }}</td><td class="num">{{ r.weight|spct }}</td><td class="num">{{ r.asset_return|spct }}</td><td class="num {{ r.pnl|sign_class }}">{{ r.pnl|spct:2 }}</td></tr>{% endfor %}
+        </tbody></table>
+        {% endif %}
+      </div></div>
+  </div>
+  <div class="col-12 col-lg-7">
+    <div class="card"><div class="card-header">Single-name 3σ shock with correlated spillover <span class="hint">what if one holding drops 3 daily standard deviations and the rest of the book moves as correlation implies</span></div>
+      <div class="card-body"><div id="c-single" class="chart"></div></div></div>
+  </div>
+
+  <div class="col-12" id="detail">
+    {% if detail %}
+    <div class="card"><div class="card-header">{{ detail.scenario.name }}: position detail <span class="hint">{{ detail.scenario.description }}</span></div>
+      <div class="card-body p-0 table-wrap sticky-th"><table class="table rd"><thead><tr><th>Ticker</th><th>Sector</th><th class="num">Weight</th><th class="num">Asset return</th><th class="num">P&amp;L % NAV</th><th class="num">P&amp;L $</th><th></th></tr></thead><tbody>
+      {% for r in detail.rows %}<tr><td class="ticker">{{ r.ticker }}</td><td class="muted">{{ r.sector }}</td><td class="num">{{ r.weight|spct }}</td><td class="num {{ r.asset_return|sign_class }}">{{ r.asset_return|spct }}</td><td class="num {{ r.pnl|sign_class }}">{{ r.pnl|spct:2 }}</td><td class="num">{{ r.pnl_dollar|money }}</td><td>{% if r.beta_filled %}<span class="badge text-bg-secondary" title="No history in the window; return implied from factor betas">beta-filled</span>{% endif %}</td></tr>{% endfor %}
+      <tr class="total"><td colspan="4">Total</td><td class="num {{ detail.scenario.total_pnl|sign_class }}">{{ detail.scenario.total_pnl|spct:2 }}</td><td class="num">{{ detail.scenario.total_dollar|money }}</td><td></td></tr>
+      </tbody></table></div></div>
+    {% endif %}
+  </div>
+</div>
+{{ charts|json_script:"charts" }}
+{% endblock %}
+{% block scripts %}
+<script>
+(function () {
+  const d = RD.data("charts");
+  RD.groupedBar("c-hist", d.hist.labels, [{ name: "Book", values: d.hist.pnl, color: "#2f6df6" }, { name: "{{ summary.benchmark }}", values: d.hist.bench, color: "#bbb" }], { horizontal: true });
+  RD.bar("c-hypo", d.hypo.labels, d.hypo.pnl, { horizontal: true });
+  RD.groupedBar("c-single", d.single.labels, [{ name: "Own move", values: d.single.own, color: "#e15759" }, { name: "Spillover", values: d.single.spill, color: "#f28e2b" }], { stacked: true, tickformat: ".1%" });
+})();
+</script>
+{% endblock %}

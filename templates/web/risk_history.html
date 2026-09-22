@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% load riskdesk_extras %}
+{% block title %}Risk history · {{ portfolio.name }}{% endblock %}
+{% block content %}
+<div class="rd-page-title">
+  <h1>Risk history</h1>
+  <span class="sub">{{ n_snaps }} daily snapshots · run <code>manage.py snapshot_risk</code> daily to keep this current</span>
+  <form method="post" class="ms-auto d-flex gap-2 align-items-center" data-busy="Computing…">{% csrf_token %}
+    <select class="form-select form-select-sm" name="days" style="width:auto"><option value="30">30 days</option><option value="60" selected>60 days</option><option value="120">120 days</option><option value="250">250 days</option></select>
+    <button class="btn btn-sm btn-primary">Compute history</button>
+  </form>
+</div>
+{% if n_snaps %}
+<div class="row g-3">
+  <div class="col-12 col-lg-6"><div class="card"><div class="card-header">Volatility</div><div class="card-body"><div id="c-vol" class="chart chart-sm"></div></div></div></div>
+  <div class="col-12 col-lg-6"><div class="card"><div class="card-header">VaR (% NAV)</div><div class="card-body"><div id="c-var" class="chart chart-sm"></div></div></div></div>
+  <div class="col-12 col-lg-6"><div class="card"><div class="card-header">Beta</div><div class="card-body"><div id="c-beta" class="chart chart-sm"></div></div></div></div>
+  <div class="col-12 col-lg-6"><div class="card"><div class="card-header">Gross and net exposure</div><div class="card-body"><div id="c-exp" class="chart chart-sm"></div></div></div></div>
+  <div class="col-12 col-lg-6"><div class="card"><div class="card-header">Concentration</div><div class="card-body"><div id="c-conc" class="chart chart-sm"></div></div></div></div>
+  <div class="col-12 col-lg-6"><div class="card"><div class="card-header">Recent snapshots</div>
+    <div class="card-body p-0 table-wrap"><table class="table rd"><thead><tr><th>Date</th><th class="num">NAV</th><th class="num">Gross</th><th class="num">Vol</th><th class="num">VaR</th><th class="num">Beta</th></tr></thead><tbody>
+    {% for s in snapshots %}<tr><td>{{ s.as_of }}</td><td class="num">{{ s.metrics.nav|money }}</td><td class="num">{{ s.metrics.gross_exposure|pct:0 }}</td><td class="num">{{ s.metrics.vol|pct }}</td><td class="num">{{ s.metrics.var|pct:2 }}</td><td class="num">{{ s.metrics.beta|num }}</td></tr>{% endfor %}
+    </tbody></table></div></div></div>
+</div>
+{{ charts|json_script:"charts" }}
+{% else %}
+<div class="card"><div class="card-body">No snapshots yet. Click <b>Compute history</b> to back-fill from price history (current holdings held constant), then schedule <code>python manage.py snapshot_risk</code> to record each day going forward.</div></div>
+{% endif %}
+{% endblock %}
+{% block scripts %}
+{% if n_snaps %}
+<script>
+(function () {
+  const d = RD.data("charts");
+  RD.line("c-vol", [{ name: "Vol", x: d.vol.x, y: d.vol.y }]);
+  RD.line("c-var", [{ name: "VaR", x: d.var.x, y: d.var.y, color: "#e15759" }], { tickformat: ".1%" });
+  RD.line("c-beta", [{ name: "Beta", x: d.beta.x, y: d.beta.y, color: "#59a14f" }], { tickformat: ".2f", hoverfmt: ".2f" });
+  RD.line("c-exp", [{ name: "Gross", x: d.gross_exposure.x, y: d.gross_exposure.y }, { name: "Net", x: d.net_exposure.x, y: d.net_exposure.y, color: "#f28e2b" }]);
+  RD.line("c-conc", [{ name: "Max risk share", x: d.max_risk_share.x, y: d.max_risk_share.y }, { name: "Top-5 gross", x: d.top5.x, y: d.top5.y, color: "#b07aa1" }]);
+})();
+</script>
+{% endif %}
+{% endblock %}

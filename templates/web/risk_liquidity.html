@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% load riskdesk_extras %}
+{% block title %}Liquidity & concentration · {{ portfolio.name }}{% endblock %}
+{% block content %}
+<div class="rd-page-title">
+  <h1>Liquidity &amp; concentration</h1>
+  <span class="sub">days to liquidate at {{ participation|pct:0 }} of 30-day ADV · impact cost from a square-root model</span>
+</div>
+<div class="kpi-grid">
+  <div class="kpi"><div class="label">Effective # positions</div><div class="value">{{ concentration.effective_n|num:1 }}</div><div class="sub">1 / HHI, of {{ concentration.n_positions }} held</div></div>
+  <div class="kpi"><div class="label">Effective # bets</div><div class="value">{{ concentration.enb|num:1 }}</div><div class="sub">Meucci, principal portfolios</div></div>
+  <div class="kpi"><div class="label">Top-1 / top-5 / top-10</div><div class="value">{{ concentration.top1|pct:0 }} / {{ concentration.top5|pct:0 }} / {{ concentration.top10|pct:0 }}</div><div class="sub">share of gross</div></div>
+  <div class="kpi"><div class="label">Diversification ratio</div><div class="value">{{ concentration.div_ratio|num }}</div><div class="sub">weighted vol ÷ portfolio vol</div></div>
+  {% if profile|length %}<div class="kpi"><div class="label">Liquid within 1 day</div><div class="value">{{ profile.pct_gross|get_item:"< 1 day"|pct:0 }}</div><div class="sub">of gross exposure</div></div>{% endif %}
+</div>
+<div class="row g-3">
+  <div class="col-12 col-lg-6">
+    <div class="card"><div class="card-header">Liquidation profile</div><div class="card-body">{% if charts.profile %}<div id="c-prof" class="chart chart-sm"></div>{% else %}<div class="muted">No volume data.</div>{% endif %}</div></div>
+    <div class="card mt-3"><div class="card-header">Largest positions (gross weight)</div><div class="card-body"><div id="c-top" class="chart"></div></div></div>
+  </div>
+  <div class="col-12 col-lg-6">
+    <div class="card"><div class="card-header">Time to liquidate by position <span class="hint">in {{ charts.days.unit }} at {{ participation|pct:0 }} of ADV; capped at 60 days</span></div><div class="card-body"><div id="c-days" class="chart chart-lg"></div></div></div>
+  </div>
+  <div class="col-12">
+    <div class="card"><div class="card-header">Liquidity table</div>
+      <div class="card-body p-0 table-wrap sticky-th"><table class="table rd"><thead><tr><th>Ticker</th><th>Name</th><th class="num">Shares</th><th class="num">Value</th><th class="num">Weight</th><th class="num">ADV (shares)</th><th class="num">ADV ($)</th><th class="num">% of ADV</th><th class="num">Days to exit</th><th>Bucket</th><th class="num">Impact cost</th></tr></thead><tbody>
+      {% for t, r in liq.iterrows %}
+      <tr><td><a class="ticker" href="{% url 'asset_detail' t %}">{{ t }}</a></td><td class="muted">{{ r.name|truncatechars:24 }}</td><td class="num">{{ r.shares|floatformat:0 }}</td><td class="num">{{ r.market_value|money }}</td><td class="num">{{ r.weight|spct }}</td><td class="num">{{ r.adv_shares|floatformat:0 }}</td><td class="num">{{ r.adv_dollar|money }}</td><td class="num">{{ r.pct_of_adv|pct:2 }}</td><td class="num">{{ r.days_to_liquidate|days }}</td><td><span class="badge text-bg-{% if r.bucket == '< 1 day' %}success{% elif r.bucket == '1-3 days' %}info{% elif r.bucket == '3-10 days' %}warning{% else %}danger{% endif %} badge-soft">{{ r.bucket }}</span></td><td class="num">{{ r.impact_cost|money }}</td></tr>
+      {% endfor %}
+      </tbody></table></div></div>
+  </div>
+  <div class="col-12 col-lg-6">
+    <div class="card"><div class="card-header">Sector weights</div><div class="card-body p-0"><table class="table rd"><thead><tr><th>Sector</th><th class="num">#</th><th class="num">Long</th><th class="num">Short</th><th class="num">Net</th><th class="num">Gross</th></tr></thead><tbody>
+    {% for s, r in sector_weights.iterrows %}<tr><td>{{ s }}</td><td class="num">{{ r.n|floatformat:0 }}</td><td class="num">{{ r.long|pct }}</td><td class="num">{{ r.short|pct }}</td><td class="num">{{ r.net|spct }}</td><td class="num">{{ r.gross|pct }}</td></tr>{% endfor %}
+    </tbody></table></div></div>
+  </div>
+  <div class="col-12 col-lg-6">
+    <div class="card"><div class="card-header">Asset class weights</div><div class="card-body p-0"><table class="table rd"><thead><tr><th>Asset class</th><th class="num">#</th><th class="num">Long</th><th class="num">Short</th><th class="num">Net</th><th class="num">Gross</th></tr></thead><tbody>
+    {% for s, r in asset_class_weights.iterrows %}<tr><td>{{ s }}</td><td class="num">{{ r.n|floatformat:0 }}</td><td class="num">{{ r.long|pct }}</td><td class="num">{{ r.short|pct }}</td><td class="num">{{ r.net|spct }}</td><td class="num">{{ r.gross|pct }}</td></tr>{% endfor %}
+    </tbody></table></div></div>
+  </div>
+</div>
+{{ charts|json_script:"charts" }}
+{% endblock %}
+{% block scripts %}
+<script>
+(function () {
+  const d = RD.data("charts");
+  if (d.profile) RD.groupedBar("c-prof", d.profile.labels, [{ name: "In bucket", values: d.profile.pct }, { name: "Cumulative", values: d.profile.cum, color: "#59a14f" }], {});
+  if (d.days) { const u = { minutes: "m", hours: "h", days: "d" }[d.days.unit] || "d";
+    RD.bar("c-days", d.days.labels, d.days.days, { horizontal: true, fmt: v => v.toFixed(u === "m" ? 0 : 1) + u, tickformat: u === "m" ? ",.0f" : ".1f", color: "#76b7b2" }); }
+  RD.bar("c-top", d.top.labels, d.top.values, { horizontal: true });
+})();
+</script>
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+<div class="rd-page-title"><h1>{{ title }}</h1></div>
+<div class="card" style="max-width:640px">
+  <div class="card-body">
+    <form method="post">{% csrf_token %}
+      {% for f in form %}
+      <div class="mb-3">
+        <label class="form-label">{{ f.label }}</label>
+        {{ f }}
+        {% if f.help_text %}<div class="form-text">{{ f.help_text }}</div>{% endif %}
+        {% for e in f.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}
+      </div>
+      {% endfor %}
+      <button class="btn btn-primary">Save</button>
+      {% if portfolio %}<a class="btn btn-outline-danger ms-2" href="{% url 'portfolio_delete' portfolio.id %}">Delete portfolio</a>{% endif %}
+    </form>
+  </div>
+</div>
+<script>document.querySelectorAll("form input, form textarea, form select").forEach(e => { if (!e.classList.contains("form-check-input")) e.classList.add("form-control"); });</script>
+{% endblock %}

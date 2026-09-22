@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% load riskdesk_extras %}
+{% block title %}Risk report · {{ portfolio.name }}{% endblock %}
+{% block content %}
+{% with s=summary %}
+<div class="rd-page-title no-print">
+  <h1>Risk report</h1><span class="sub">one-page daily pack for the CIO</span>
+  <div class="ms-auto d-flex gap-2">
+    <button class="btn btn-sm btn-outline-secondary" onclick="window.print()"><i class="bi bi-printer me-1"></i>Print / PDF</button>
+    <a class="btn btn-sm btn-outline-secondary" href="{% url 'export_risk_xlsx' portfolio.id %}"><i class="bi bi-file-earmark-excel me-1"></i>Excel</a>
+    <a class="btn btn-sm btn-outline-secondary" href="{% url 'export_positions' portfolio.id %}"><i class="bi bi-filetype-csv me-1"></i>Positions CSV</a>
+  </div>
+</div>
+<div class="card"><div class="card-body">
+  <div class="d-flex align-items-baseline gap-3 mb-2"><h2 class="h5 mb-0">{{ portfolio.name }}</h2><span class="muted">Daily risk report · as of {{ s.as_of|date:"j F Y" }} · NAV {{ s.nav|money_full }} · benchmark {{ s.benchmark }}</span></div>
+  {% if portfolio.description %}<div class="small muted mb-3">{{ portfolio.description }}</div>{% endif %}
+
+  <div class="kpi-grid">
+    <div class="kpi"><div class="label">Gross / net</div><div class="value">{{ s.gross_exposure|pct:0 }} / {{ s.net_exposure|pct:0 }}</div></div>
+    <div class="kpi"><div class="label">Volatility</div><div class="value">{{ s.vol|pct }}</div></div>
+    <div class="kpi"><div class="label">Beta</div><div class="value">{{ s.beta|num }}</div></div>
+    <div class="kpi"><div class="label">VaR {{ s.var_confidence|pct:0 }} {{ s.var_horizon_days }}d</div><div class="value">{{ s.var|pct:2 }}</div><div class="sub">{{ s.var_dollar|money }}</div></div>
+    <div class="kpi"><div class="label">ES {{ s.var_confidence|pct:0 }}</div><div class="value">{{ s.cvar|pct:2 }}</div><div class="sub">{{ s.cvar_dollar|money }}</div></div>
+    <div class="kpi"><div class="label">Sharpe / max DD</div><div class="value">{{ s.sharpe|num }} / {{ s.max_drawdown|pct:0 }}</div></div>
+    <div class="kpi"><div class="label">Effective # / top-5</div><div class="value">{{ concentration.effective_n|num:0 }} / {{ concentration.top5|pct:0 }}</div></div>
+    <div class="kpi {{ limit_summary.overall }}"><div class="label">Limits</div><div class="value">{% if limit_summary.breach %}{{ limit_summary.breach }} breach{{ limit_summary.breach|pluralize:"es" }}{% elif limit_summary.warn %}{{ limit_summary.warn }} near{% else %}OK{% endif %}</div></div>
+  </div>
+
+  <div class="row g-3">
+    <div class="col-12 col-lg-6">
+      <h3 class="h6">Actionable insights</h3>
+      {% for i in insights|slice:":6" %}<div class="insight {{ i.severity }} py-1"><div class="title">{{ i.title }}</div><div class="detail">{{ i.detail }}</div>{% if i.action %}<div class="action">{{ i.action }}{% if i.whatif %} <a class="no-print" href="{% url 'whatif' portfolio.id %}?ticker={{ i.whatif.ticker }}&mode={{ i.whatif.mode }}&value={{ i.whatif.value }}">Try in what-if</a>{% endif %}</div>{% endif %}</div>{% empty %}<div class="muted small">Nothing to flag.</div>{% endfor %}
+    </div>
+    <div class="col-12 col-lg-6">
+      <h3 class="h6">Risk limits</h3>
+      <table class="table rd"><thead><tr><th>Limit</th><th class="num">Current</th><th class="num">Threshold</th><th>Status</th></tr></thead><tbody>
+      {% for l in limit_results %}<tr><td>{{ l.label }}</td><td class="num">{{ l.display_value }}</td><td class="num">{% if l.operator == 'lte' %}≤{% else %}≥{% endif %} {{ l.display_threshold }}</td><td><span class="badge text-bg-{{ l.status|status_badge }} badge-soft">{{ l.status }}</span></td></tr>{% endfor %}
+      </tbody></table>
+    </div>
+    <div class="col-12 col-lg-6">
+      <h3 class="h6">Top risk contributors</h3>
+      <table class="table rd"><thead><tr><th>Ticker</th><th>Sector</th><th class="num">Weight</th><th class="num">Vol</th><th class="num">Risk share</th></tr></thead><tbody>
+      {% for t, r in rc.iterrows %}<tr><td class="ticker">{{ t }}</td><td class="muted">{{ r.sector }}</td><td class="num">{{ r.weight|spct }}</td><td class="num">{{ r.standalone_vol|pct:0 }}</td><td class="num">{{ r.pct|spct }}</td></tr>{% endfor %}
+      </tbody></table>
+    </div>
+    <div class="col-12 col-lg-6">
+      <h3 class="h6">Sector exposure and risk</h3>
+      <table class="table rd"><thead><tr><th>Sector</th><th class="num">Long</th><th class="num">Short</th><th class="num">Net</th><th class="num">Risk share</th></tr></thead><tbody>
+      {% for sname, r in sector_weights.iterrows %}<tr><td>{{ sname }}</td><td class="num">{{ r.long|pct }}</td><td class="num">{{ r.short|pct }}</td><td class="num">{{ r.net|spct }}</td><td class="num">{{ sector_rc.pct|get_item:sname|spct }}</td></tr>{% endfor %}
+      </tbody></table>
+      <h3 class="h6 mt-3">Factor exposures</h3>
+      <table class="table rd"><thead><tr><th>Factor</th><th class="num">Beta</th><th class="num">% of variance</th></tr></thead><tbody>
+      {% for f, r in exposures.iterrows %}<tr><td>{{ f }}</td><td class="num">{{ r.beta|snum }}</td><td class="num">{{ r.pct_of_total_var|spct:0 }}</td></tr>{% endfor %}
+      <tr class="total"><td>Systematic / idiosyncratic vol</td><td class="num" colspan="2">{{ fd.systematic_vol|pct }} / {{ fd.idiosyncratic_vol|pct }}</td></tr>
+      </tbody></table>
+    </div>
+    <div class="col-12 col-lg-6">
+      <h3 class="h6">Value at risk</h3>
+      <table class="table rd"><thead><tr><th>Method</th><th class="num">Conf.</th><th class="num">VaR</th><th class="num">ES</th></tr></thead><tbody>
+      {% for v in var_rows %}<tr><td>{{ v.method }}</td><td class="num">{{ v.confidence|pct:0 }}</td><td class="num">{{ v.var|pct:2 }}</td><td class="num">{{ v.cvar|pct:2 }}</td></tr>{% endfor %}
+      </tbody></table>
+      <h3 class="h6 mt-3">Largest drawdowns (pro forma)</h3>
+      <table class="table rd"><thead><tr><th>Start</th><th>Trough</th><th class="num">Depth</th><th class="num">Days</th></tr></thead><tbody>
+      {% for _, r in drawdowns.iterrows %}<tr><td>{{ r.start|date:"j M Y" }}</td><td>{{ r.trough|date:"j M Y" }}</td><td class="num text-danger">{{ r.depth|pct }}</td><td class="num">{{ r.length_days }}</td></tr>{% endfor %}
+      </tbody></table>
+    </div>
+    <div class="col-12 col-lg-6">
+      <h3 class="h6">Stress tests</h3>
+      <table class="table rd"><thead><tr><th>Scenario</th><th>Type</th><th class="num">P&amp;L</th><th class="num">$</th></tr></thead><tbody>
+      {% for d in stress %}<tr><td>{{ d.name }}</td><td class="muted">{{ d.kind }}</td><td class="num {{ d.total_pnl|sign_class }}">{{ d.total_pnl|spct }}</td><td class="num">{{ d.total_dollar|money }}</td></tr>{% endfor %}
+      </tbody></table>
+      {% if liquidity_profile|length %}
+      <h3 class="h6 mt-3">Liquidity</h3>
+      <table class="table rd"><thead><tr><th>Bucket</th><th class="num">% gross</th><th class="num">Cumulative</th></tr></thead><tbody>
+      {% for b, r in liquidity_profile.iterrows %}<tr><td>{{ b }}</td><td class="num">{{ r.pct_gross|pct:0 }}</td><td class="num">{{ r.cumulative_pct|pct:0 }}</td></tr>{% endfor %}
+      </tbody></table>
+      {% endif %}
+    </div>
+  </div>
+  <div class="muted small mt-3">Methodology: {{ s.cov_method }} covariance over {{ s.lookback_days }} trading days; VaR is historical over the same window; factor model is an 11-factor ETF regression; stress replays use actual asset returns with beta-fill for names lacking history; liquidity assumes 20% of 30-day ADV. All figures pro forma for the current holdings.</div>
+</div></div>
+{% endwith %}
+{% endblock %}

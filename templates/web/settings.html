@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Analytics settings · {{ portfolio.name }}{% endblock %}
+{% block content %}
+<div class="rd-page-title"><h1>Analytics settings</h1><span class="sub">{{ portfolio.name }}</span></div>
+<div class="card" style="max-width:720px">
+  <div class="card-body">
+    <form method="post">{% csrf_token %}
+      <div class="row">
+      {% for f in form %}
+      <div class="col-12 col-md-6 mb-3">
+        <label class="form-label">{{ f.label }}</label>
+        {{ f }}
+        {% if f.help_text %}<div class="form-text">{{ f.help_text }}</div>{% endif %}
+        {% for e in f.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}
+      </div>
+      {% endfor %}
+      </div>
+      <button class="btn btn-primary">Save settings</button>
+    </form>
+  </div>
+</div>
+<div class="help-block mt-3" style="max-width:720px">
+  <b>Covariance:</b> Ledoit-Wolf shrinkage is the robust default for 20-60 names; EWMA reacts faster to regime changes; sample is unshrunk.
+  <b>VaR:</b> the headline number is historical VaR over the lookback; parametric, Cornish-Fisher and Monte Carlo (Student-t) are shown alongside on the VaR page.
+  <b>Target beta:</b> when set, the insight engine sizes the index hedge needed to reach it.
+</div>
+<script>document.querySelectorAll("form input, form select").forEach(e => { if (e.type === "checkbox") e.classList.add("form-check-input"); else e.classList.add(e.tagName === "SELECT" ? "form-select" : "form-control"); });</script>
+{% endblock %}

@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+{% load riskdesk_extras %}
+{% block title %}What-if · {{ portfolio.name }}{% endblock %}
+{% block content %}
+<div class="rd-page-title">
+  <h1>Pre-trade what-if</h1>
+  <span class="sub">enter proposed trades and see the book before and after, checked against every limit · prices as of {{ summary.as_of|date:"j M Y" }}</span>
+</div>
+<form method="post" id="whatif-form" data-busy="Analysing…">{% csrf_token %}
+<div class="row g-3">
+  <div class="col-12 col-xl-4">
+    <div class="card">
+      <div class="card-header">Proposed trades</div>
+      <div class="card-body p-0">
+        <table class="table rd nosort mb-0">
+          <thead><tr><th>Ticker</th><th>How</th><th class="num">Amount</th><th></th></tr></thead>
+          <tbody id="trade-rows">
+          {% for r in rows %}
+          <tr>
+            <td><input class="form-control form-control-sm ticker" name="ticker[]" list="universe" value="{{ r.ticker }}" placeholder="AAPL"></td>
+            <td><select class="form-select form-select-sm" name="mode[]">
+              <option value="shares" {% if r.mode == 'shares' %}selected{% endif %}>Δ shares</option>
+              <option value="dollars" {% if r.mode == 'dollars' %}selected{% endif %}>Δ dollars</option>
+              <option value="delta_weight" {% if r.mode == 'delta_weight' %}selected{% endif %}>Δ weight</option>
+              <option value="target_weight" {% if r.mode == 'target_weight' %}selected{% endif %}>Target weight</option></select></td>
+            <td><input class="form-control form-control-sm text-end" name="value[]" value="{{ r.value }}" placeholder="-5000"></td>
+            <td><button type="button" class="btn btn-link btn-sm text-danger p-0" onclick="RDTrades.removeRow(this)"><i class="bi bi-x-circle"></i></button></td>
+          </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+        <datalist id="universe">{% for t in universe %}<option value="{{ t }}">{% endfor %}</datalist>
+        <template id="trade-row-template"><tr>
+          <td><input class="form-control form-control-sm ticker" name="ticker[]" list="universe" placeholder="AAPL"></td>
+          <td><select class="form-select form-select-sm" name="mode[]"><option value="shares">Δ shares</option><option value="dollars">Δ dollars</option><option value="delta_weight">Δ weight</option><option value="target_weight">Target weight</option></select></td>
+          <td><input class="form-control form-control-sm text-end" name="value[]"></td>
+          <td><button type="button" class="btn btn-link btn-sm text-danger p-0" onclick="RDTrades.removeRow(this)"><i class="bi bi-x-circle"></i></button></td>
+        </tr></template>
+      </div>
+      <div class="card-body border-top">
+        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="RDTrades.addRow()"><i class="bi bi-plus-lg me-1"></i>Add row</button>
+        <div class="help-block mt-2">Weights are fractions of NAV (0.05 = 5%). Negative = sell / short. Positions not yet held can be added if they are in the price universe.</div>
+        <div class="mt-3">
+          <label class="form-label">Proposal name (for saving)</label>
+          <input class="form-control form-control-sm" name="name" value="{{ form.name.value|default:'' }}" placeholder="e.g. Trim NVDA, add AMD">
+          <label class="form-label mt-2">Rationale</label>
+          <textarea class="form-control form-control-sm" name="rationale" rows="2">{{ form.rationale.value|default:'' }}</textarea>
+        </div>
+        <div class="d-flex gap-2 mt-3">
+          <button class="btn btn-primary btn-sm" name="action" value="analyse"><i class="bi bi-play-fill me-1"></i>Analyse</button>
+          <button class="btn btn-outline-primary btn-sm" name="action" value="save"><i class="bi bi-save me-1"></i>Save as proposal</button>
+        </div>
+      </div>
+    </div>
+    <div class="card mt-3"><div class="card-header">Current holdings <span class="hint">click to add a row</span></div>
+      <div class="card-body" style="max-height:260px;overflow:auto">
+        {% for t in holdings %}<a href="#" class="badge text-bg-light border me-1 mb-1 text-decoration-none" onclick="RDTrades.addRow('{{ t }}','shares',''); return false;">{{ t }}</a>{% endfor %}
+      </div></div>
+  </div>
+
+  <div class="col-12 col-xl-8">
+    {% if result %}
+    {% with c=result.compare %}
+    <div class="d-flex align-items-center gap-3 mb-3">
+      <span class="verdict {{ c.verdict }}">
+        {% if c.verdict == 'green' %}<i class="bi bi-check-circle me-1"></i>Inside limits, risk not materially higher
+        {% elif c.verdict == 'amber' %}<i class="bi bi-exclamation-triangle me-1"></i>Inside limits but risk rises >10%
+        {% else %}<i class="bi bi-x-octagon me-1"></i>Creates {{ c.new_breaches|length }} new limit breach{{ c.new_breaches|length|pluralize:"es" }}{% endif %}
+      </span>
+      {% if c.fixed_breaches %}<span class="text-success small"><i class="bi bi-bandaid me-1"></i>Fixes {{ c.fixed_breaches|length }} existing breach{{ c.fixed_breaches|length|pluralize:"es" }}</span>{% endif %}
+    </div>
+    <div class="card"><div class="card-header">Trade list</div>
+      <div class="card-body p-0"><table class="table rd"><thead><tr><th>Ticker</th><th>Side</th><th class="num">Shares</th><th class="num">Price</th><th class="num">Value</th><th class="num">Shares after</th><th class="num">Weight before → after</th></tr></thead><tbody>
+      {% for t in result.trades %}<tr><td class="ticker">{{ t.ticker }}</td><td><span class="badge text-bg-{% if t.side == 'BUY' %}success{% else %}danger{% endif %} badge-soft">{{ t.side }}</span></td><td class="num">{{ t.shares|floatformat:0 }}</td><td class="num">{{ t.price|num }}</td><td class="num">{{ t.value|money }}</td><td class="num">{{ t.new_shares|floatformat:0 }}</td><td class="num">{{ t.weight_before|spct }} → <b>{{ t.weight_after|spct }}</b></td></tr>{% endfor %}
+      </tbody></table></div></div>
+
+    <div class="row g-3 mt-0">
+      <div class="col-12 col-lg-6">
+        <div class="card"><div class="card-header">Before → after</div>
+          <div class="card-body p-0"><table class="table rd"><thead><tr><th>Metric</th><th class="num">Before</th><th class="num">After</th><th class="num">Δ</th></tr></thead><tbody>
+          {% for m in c.metrics %}
+          <tr><td>{{ m.label }}</td>
+            <td class="num">{% if m.fmt == 'pct' %}{{ m.before|spct }}{% elif m.fmt == 'money' %}{{ m.before|money }}{% elif m.fmt == 'int' %}{{ m.before }}{% else %}{{ m.before|num }}{% endif %}</td>
+            <td class="num"><b>{% if m.fmt == 'pct' %}{{ m.after|spct }}{% elif m.fmt == 'money' %}{{ m.after|money }}{% elif m.fmt == 'int' %}{{ m.after }}{% else %}{{ m.after|num }}{% endif %}</b></td>
+            <td class="num {% if m.delta and m.better == 'lower' %}{% if m.delta < 0 %}delta-pos{% else %}delta-neg{% endif %}{% elif m.delta and m.better == 'higher' %}{% if m.delta > 0 %}delta-pos{% else %}delta-neg{% endif %}{% endif %}">{% if m.delta is not None %}{% if m.fmt == 'pct' %}{{ m.delta|spct:2 }}{% elif m.fmt == 'money' %}{{ m.delta|money }}{% elif m.fmt == 'int' %}{{ m.delta|snum:0 }}{% else %}{{ m.delta|snum }}{% endif %}{% endif %}</td></tr>
+          {% endfor %}
+          </tbody></table></div></div>
+      </div>
+      <div class="col-12 col-lg-6">
+        <div class="card"><div class="card-header">Limits before → after</div>
+          <div class="card-body p-0"><table class="table rd"><thead><tr><th>Limit</th><th class="num">Threshold</th><th class="num">Before</th><th class="num">After</th></tr></thead><tbody>
+          {% for l in c.limits %}<tr class="{% if l.broken %}table-danger{% elif l.fixed %}table-success{% endif %}"><td>{{ l.label }}</td><td class="num">{{ l.threshold }}</td><td class="num">{{ l.before }} <span class="badge text-bg-{{ l.status_before|status_badge }} badge-soft">{{ l.status_before }}</span></td><td class="num">{{ l.after }} <span class="badge text-bg-{{ l.status_after|status_badge }} badge-soft">{{ l.status_after }}</span></td></tr>{% endfor %}
+          </tbody></table></div></div>
+        <div class="card mt-3"><div class="card-header">Insights after the trade</div>
+          <div class="card-body">{% for i in result.insights_after|slice:":5" %}<div class="insight {{ i.severity }} py-1"><div class="title">{{ i.title }}</div><div class="detail">{{ i.detail }}</div>{% if i.action %}<div class="action">{{ i.action }}</div>{% endif %}</div>{% empty %}<span class="muted">Nothing flagged.</span>{% endfor %}</div></div>
+      </div>
+      <div class="col-12 col-lg-6"><div class="card"><div class="card-header">Risk share, before vs after</div><div class="card-body"><div id="c-rc" class="chart"></div></div></div></div>
+      <div class="col-12 col-lg-6"><div class="card"><div class="card-header">Factor betas, before vs after</div><div class="card-body"><div id="c-fac" class="chart"></div></div></div></div>
+      <div class="col-12 col-lg-6"><div class="card"><div class="card-header">Sector net exposure</div><div class="card-body"><div id="c-sec" class="chart"></div></div></div></div>
+      <div class="col-12 col-lg-6">
+        <div class="card"><div class="card-header">Stress scenarios, before → after</div>
+          <div class="card-body p-0"><table class="table rd"><thead><tr><th>Scenario</th><th class="num">Before</th><th class="num">After</th><th class="num">Δ $</th></tr></thead><tbody>
+          {% for s in c.stress|slice:":8" %}<tr><td>{{ s.name }}</td><td class="num {{ s.before|sign_class }}">{{ s.before|spct }}</td><td class="num {{ s.after|sign_class }}"><b>{{ s.after|spct }}</b></td><td class="num">{{ s.after_dollar|money }}</td></tr>{% endfor %}
+          </tbody></table></div></div>
+      </div>
+    </div>
+    {{ result.charts|json_script:"charts" }}
+    {% endwith %}
+    {% else %}
+    <div class="card"><div class="card-body">
+      <h2 class="h6">How the CIO uses this page</h2>
+      <ol class="small mb-2">
+        <li>Type the trades you are considering (shares, dollars, or weight).</li>
+        <li><b>Analyse</b> shows the full before/after: vol, VaR, beta, factor tilts, sector mix, risk contributions, stress losses, and every mandate limit.</li>
+        <li>A red verdict means the trade would breach a limit; amber means risk rises more than 10%.</li>
+        <li><b>Save as proposal</b> records it for review; approved proposals can be booked into the live positions.</li>
+      </ol>
+      <div class="muted small">Tip: the Optimiser and Position sizing pages can send their trade lists straight here.</div>
+    </div></div>
+    {% endif %}
+  </div>
+</div>
+</form>
+{% endblock %}
+{% block scripts %}
+{% if result %}
+<script>
+(function () {
+  const d = RD.data("charts");
+  RD.groupedBar("c-rc", d.rc.labels, [{ name: "Before", values: d.rc.before, color: "#bbb" }, { name: "After", values: d.rc.after }], { horizontal: true });
+  RD.groupedBar("c-fac", d.factors.labels, [{ name: "Before", values: d.factors.before, color: "#bbb" }, { name: "After", values: d.factors.after }], { tickformat: ".2f", hoverfmt: ".2f" });
+  RD.groupedBar("c-sec", d.sectors.labels, [{ name: "Before", values: d.sectors.before, color: "#bbb" }, { name: "After", values: d.sectors.after }], { horizontal: true });
+})();
+</script>
+{% endif %}
+{% endblock %}

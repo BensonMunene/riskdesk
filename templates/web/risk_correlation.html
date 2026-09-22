@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% load riskdesk_extras %}
+{% block title %}Correlation · {{ portfolio.name }}{% endblock %}
+{% block content %}
+<div class="rd-page-title">
+  <h1>Correlation structure</h1>
+  <span class="sub">{{ summary.cov_method }} covariance, {{ summary.lookback_days }} days · sorted by risk contribution</span>
+</div>
+<div class="kpi-grid">
+  <div class="kpi"><div class="label">Average pairwise correlation</div><div class="value">{{ avg_corr|num }}</div></div>
+  <div class="kpi"><div class="label">Long vs short correlation</div><div class="value">{{ ls_corr|num }}</div><div class="sub">higher = shorts hedge better</div></div>
+  <div class="kpi"><div class="label">First principal component</div><div class="value">{{ pc1_share|pct:0 }}</div><div class="sub">of covariance variance</div></div>
+  <div class="kpi"><div class="label">Effective # bets</div><div class="value">{{ enb|num:1 }}</div></div>
+</div>
+<div class="row g-3">
+  <div class="col-12 col-xl-8">
+    <div class="card"><div class="card-header">Correlation matrix</div><div class="card-body"><div id="c-heat" class="chart" style="min-height:{{ charts.heatmap.labels|length|mul:22|add:140 }}px"></div></div></div>
+  </div>
+  <div class="col-12 col-xl-4">
+    <div class="card"><div class="card-header">Principal components <span class="hint">share of variance</span></div><div class="card-body"><div id="c-eig" class="chart chart-sm"></div></div></div>
+    <div class="card mt-3"><div class="card-header">Stacked bets <span class="hint">|ρ| ≥ 0.75, same direction</span></div>
+      <div class="card-body p-0"><table class="table rd"><thead><tr><th>Pair</th><th class="num">Corr</th><th class="num">Weights</th><th class="num">Combined</th></tr></thead><tbody>
+      {% for c in clusters %}{% if c.stacked %}<tr><td><span class="ticker">{{ c.a }}</span> / <span class="ticker">{{ c.b }}</span></td><td class="num">{{ c.corr|num }}</td><td class="num">{{ c.weight_a|spct:0 }} / {{ c.weight_b|spct:0 }}</td><td class="num">{{ c.combined_gross|pct }}</td></tr>{% endif %}{% empty %}<tr><td colspan="4" class="muted">No pairs above the threshold.</td></tr>{% endfor %}
+      </tbody></table></div></div>
+  </div>
+</div>
+{{ charts|json_script:"charts" }}
+{% endblock %}
+{% block scripts %}
+<script>
+(function () {
+  const d = RD.data("charts");
+  RD.heatmap("c-heat", d.heatmap.labels, d.heatmap.labels, d.heatmap.z, { showText: d.heatmap.labels.length <= 20 });
+  RD.groupedBar("c-eig", d.eigen.labels, [{ name: "Share", values: d.eigen.share }, { name: "Cumulative", values: d.eigen.cum, color: "#59a14f" }], {});
+})();
+</script>
+{% endblock %}

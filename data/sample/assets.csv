@@ -1,0 +1,70 @@
+ticker,name,asset_class,sector,industry,market_cap,country,currency
+AAPL,Apple Inc.,Equity,Technology,Consumer Electronics,4835635625984.0,United States,USD
+MSFT,Microsoft Corporation,Equity,Technology,Software - Infrastructure,3691387289600.0,United States,USD
+NVDA,NVIDIA Corporation,Equity,Technology,Semiconductors,5123268935680.0,United States,USD
+AMZN,"Amazon.com, Inc.",Equity,Consumer Cyclical,Internet Retail,2679535828992.0,United States,USD
+GOOGL,Alphabet Inc.,Equity,Communication Services,Internet Content & Information,4219083161600.0,United States,USD
+META,"Meta Platforms, Inc.",Equity,Communication Services,Internet Content & Information,1707440472064.0,United States,USD
+AVGO,Broadcom Inc.,Equity,Technology,Semiconductors,1619549356032.0,United States,USD
+JPM,JP Morgan Chase & Co.,Equity,Financial Services,Banks - Diversified,936984051712.0,United States,USD
+BAC,Bank of America Corporation,Equity,Financial Services,Banks - Diversified,416208388096.0,United States,USD
+GS,"Goldman Sachs Group, Inc. (The)",Equity,Financial Services,Capital Markets,284378365952.0,United States,USD
+XOM,ExxonMobil Holdings Corporation,Equity,Energy,Oil & Gas Integrated,696228970496.0,United States,USD
+CVX,Chevron Corporation,Equity,Energy,Oil & Gas Integrated,427178360832.0,United States,USD
+UNH,UnitedHealth Group Incorporated,Equity,Healthcare,Healthcare Plans,337432805376.0,United States,USD
+JNJ,Johnson & Johnson,Equity,Healthcare,Drug Manufacturers - General,643924885504.0,United States,USD
+LLY,Eli Lilly and Company,Equity,Healthcare,Drug Manufacturers - General,1013116305408.0,United States,USD
+PG,Procter & Gamble Company (The),Equity,Consumer Defensive,Household & Personal Products,340666351616.0,United States,USD
+KO,Coca-Cola Company (The),Equity,Consumer Defensive,Beverages - Non-Alcoholic,381679108096.0,United States,USD
+PEP,"Pepsico, Inc.",Equity,Consumer Defensive,Beverages - Non-Alcoholic,185092997120.0,United States,USD
+HD,"Home Depot, Inc. (The)",Equity,Consumer Cyclical,Home Improvement Retail,304774217728.0,United States,USD
+COST,Costco Wholesale Corporation,Equity,Consumer Defensive,Discount Stores,399729623040.0,United States,USD
+CAT,"Caterpillar, Inc.",Equity,Industrials,Farm & Heavy Construction Machinery,360173633536.0,United States,USD
+DE,Deere & Company,Equity,Industrials,Farm & Heavy Construction Machinery,184434556928.0,United States,USD
+LMT,Lockheed Martin Corporation,Equity,Industrials,Aerospace & Defense,123117641728.0,United States,USD
+NEE,"NextEra Energy, Inc.",Equity,Utilities,Utilities - Regulated Electric,169110257664.0,United States,USD
+LIN,Linde plc,Equity,Basic Materials,Specialty Chemicals,213415378944.0,United Kingdom,USD
+V,Visa Inc.,Equity,Financial Services,Credit Services,701300277248.0,United States,USD
+MA,Mastercard Incorporated,Equity,Financial Services,Credit Services,502190211072.0,United States,USD
+TSLA,"Tesla, Inc.",Equity,Consumer Cyclical,Auto Manufacturers,1408329580544.0,United States,USD
+INTC,Intel Corporation,Equity,Technology,Semiconductors,513492254720.0,United States,USD
+BA,Boeing Company (The),Equity,Industrials,Aerospace & Defense,165732696064.0,United States,USD
+KHC,The Kraft Heinz Company,Equity,Consumer Defensive,Packaged Foods,29325420544.0,United States,USD
+F,Ford Motor Company,Equity,Consumer Cyclical,Auto Manufacturers,53832544256.0,United States,USD
+GM,General Motors Company,Equity,Consumer Cyclical,Auto Manufacturers,77213032448.0,United States,USD
+PFE,"Pfizer, Inc.",Equity,Healthcare,Drug Manufacturers - General,157026009088.0,United States,USD
+T,AT&T Inc.,Equity,Communication Services,Telecom Services,183095738368.0,United States,USD
+VZ,Verizon Communications Inc.,Equity,Communication Services,Telecom Services,213763194880.0,United States,USD
+DIS,Walt Disney Company (The),Equity,Communication Services,Entertainment,183754014720.0,United States,USD
+NKE,"Nike, Inc.",Equity,Consumer Cyclical,Footwear & Accessories,53732327424.0,United States,USD
+SBUX,Starbucks Corporation,Equity,Consumer Cyclical,Restaurants,110101200896.0,United States,USD
+AMD,"Advanced Micro Devices, Inc.",Equity,Technology,Semiconductors,823093886976.0,United States,USD
+SPY,SPDR S&P 500 ETF,ETF,US Large Cap,US Large Cap,,US,USD
+QQQ,Invesco QQQ Trust,ETF,US Growth,US Growth,,US,USD
+IWM,iShares Russell 2000,ETF,US Small Cap,US Small Cap,,US,USD
+IWF,iShares Russell 1000 Growth,ETF,US Growth,US Growth,,US,USD
+IWD,iShares Russell 1000 Value,ETF,US Value,US Value,,US,USD
+MTUM,iShares MSCI USA Momentum,ETF,Momentum,Momentum,,US,USD
+QUAL,iShares MSCI USA Quality,ETF,Quality,Quality,,US,USD
+USMV,iShares MSCI USA Min Vol,ETF,Low Volatility,Low Volatility,,US,USD
+TLT,iShares 20+ Year Treasury,Fixed Income,Long Treasury,Long Treasury,,US,USD
+IEF,iShares 7-10 Year Treasury,Fixed Income,Intermediate Treasury,Intermediate Treasury,,US,USD
+HYG,iShares iBoxx High Yield,Fixed Income,High Yield Credit,High Yield Credit,,US,USD
+LQD,iShares iBoxx Inv Grade,Fixed Income,IG Credit,IG Credit,,US,USD
+UUP,Invesco DB US Dollar Bullish,Currency,US Dollar,US Dollar,,US,USD
+GLD,SPDR Gold Shares,Commodity,Gold,Gold,,US,USD
+USO,United States Oil Fund,Commodity,Crude Oil,Crude Oil,,US,USD
+XLK,Technology Select Sector,ETF,Technology,Technology,,US,USD
+XLF,Financial Select Sector,ETF,Financials,Financials,,US,USD
+XLE,Energy Select Sector,ETF,Energy,Energy,,US,USD
+XLV,Health Care Select Sector,ETF,Healthcare,Healthcare,,US,USD
+XLP,Consumer Staples Select Sector,ETF,Consumer Staples,Consumer Staples,,US,USD
+XLI,Industrial Select Sector,ETF,Industrials,Industrials,,US,USD
+XLU,Utilities Select Sector,ETF,Utilities,Utilities,,US,USD
+XLY,Consumer Discretionary Select,ETF,Consumer Discretionary,Consumer Discretionary,,US,USD
+XLC,Communication Services Select,ETF,Communication Services,Communication Services,,US,USD
+XLB,Materials Select Sector,ETF,Materials,Materials,,US,USD
+XLRE,Real Estate Select Sector,ETF,Real Estate,Real Estate,,US,USD
+EFA,iShares MSCI EAFE,ETF,Developed ex-US,Developed ex-US,,US,USD
+EEM,iShares MSCI Emerging Markets,ETF,Emerging Markets,Emerging Markets,,US,USD
+VNQ,Vanguard Real Estate ETF,ETF,Real Estate,Real Estate,,US,USD
