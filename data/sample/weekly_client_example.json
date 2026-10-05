@@ -1,0 +1,65 @@
+{
+  "client": "Example Client",
+  "slug": "example-client",
+  "analyst": "Portfolio analyst",
+  "tickers": [
+    "NVDA",
+    "AMD",
+    "AVGO",
+    "META",
+    "AMZN",
+    "TSLA",
+    "JPM",
+    "XOM",
+    "LLY",
+    "COST"
+  ],
+  "benchmark": "SPY",
+  "nav": 10000000,
+  "nav_note": "Notional $10m used to express risk and trades in dollars; scale to actual capital.",
+  "horizon": "Positions are typically held for days to a few weeks, so the model uses a six-month lookback with a fast-reacting (30-day half-life) covariance and reports one-day and one-week risk.",
+  "model": {
+    "lookback_days": 126,
+    "cov_method": "ewma",
+    "ewma_halflife": 30,
+    "var_confidence": 0.99,
+    "risk_free_rate": 0.04,
+    "return_model": "capm",
+    "equity_premium": 0.05,
+    "objective_max_weight": 0.25
+  },
+  "mandate": {
+    "target_vol": 0.15,
+    "max_long": 0.2,
+    "max_short": 0.1,
+    "gross_max": 1.0,
+    "net_min": -0.3,
+    "net_max": 1.0,
+    "turnover_max_weekly": 0.4,
+    "var_99_1d_max": 0.035,
+    "max_risk_share": 0.25,
+    "sector_gross_max": 0.4,
+    "days_to_liquidate_max": 3,
+    "vol_max": 0.2
+  },
+  "rule": {
+    "long_ma": 200,
+    "allow_short": true,
+    "hysteresis": 0.05,
+    "vol_band": 0.3,
+    "min_trade": 0.03,
+    "rel_band": 0.25,
+    "description": "Own names in a long-term uptrend (price above the 200-day average), short only names in a confirmed downtrend (price below the 50-day and 200-day averages with the 50-day below the 200-day), stay flat on the rest. Equal risk per name, no name above 25% of book risk, the whole book scaled towards 15% volatility but never levered beyond 100% gross. A name must move 5% through its average before its direction changes, and is only resized when its target moves materially, so the book drifts rather than churns."
+  },
+  "backtest": {
+    "years": 6,
+    "rebalance": "W",
+    "cost_bps": 10
+  },
+  "house_overrides": {},
+  "commentary": {
+    "house_view": "",
+    "allocation": "",
+    "stocks": {}
+  }
+}

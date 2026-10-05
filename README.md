@@ -46,6 +46,7 @@ This guide is long on purpose. It walks through every page in the left-hand menu
 - [3.19 Market data and the instrument page](#319-market-data-and-the-instrument-page)
 - [3.20 The API](#320-the-api)
 - [3.21 The admin site](#321-the-admin-site)
+- [3.22 The weekly client report (PDF and HTML)](#322-the-weekly-client-report-pdf-and-html)
 
 **Part 4 — The maths, in plain words**
 - [4.1 Returns and the lookback window](#41-returns-and-the-lookback-window)
@@ -1088,6 +1089,72 @@ print(r.json()["comparison"]["verdict"])      # "green", "amber" or "red"
 
 The cog in the top bar opens Django's built-in administration site, where users, permissions, portfolios, positions, limits, proposals and price data can be managed directly.
 
+## 3.22 The weekly client report (PDF and HTML)
+
+**What it is for.** Some clients do not want software. They send a list of the names they are trading and want an expert's view back every week, in a few pages they can read over coffee and forward to colleagues. The weekly report is that document. One command turns a client's ticker list into a seven-page PDF and an identical interactive HTML page, using every engine described above, and leaves three clearly marked slots for the analyst's own words.
+
+**The weekly routine**, three commands on Monday morning:
+
+```bash
+python manage.py fetch_prices                                   # refresh prices; new client tickers are added automatically
+python manage.py weekly_report --client clients/<client>.json
+# review reports/<client>/<date>/report.html, write the commentary in the config, re-run, send the PDF
+```
+
+The output lands in `reports/<client>/<date>/`: `report.pdf`, `report.html`, `state.json` (what next week compares against) and `data.json` (every number, for audit). Add `--date 2026-09-08` to re-create a past week, `--no-pdf` to skip the browser step, `--no-events` to skip the earnings-date lookup.
+
+### The client config
+
+One JSON file per client in `clients/`. Start by copying `data/sample/weekly_client_example.json`. The `clients/` and `reports/` folders are git-ignored, so client names, mandates and generated reports never leave your machine.
+
+| Block | What it sets |
+|---|---|
+| `tickers`, `benchmark`, `nav` | The names, the index to compare with, and a notional capital so trades and risk can be shown in dollars |
+| `model` | Lookback (126 days, six months, because positions are held for weeks), a fast-reacting covariance (30-day half-life), VaR confidence, the expected-return model for the reference objectives |
+| `mandate` | The risk appetite: 15% target volatility, 20% cap per long and 10% per short, 100% gross, 1-day 99% VaR at most 3.5%, no name above 25% of risk, 40% weekly turnover, and more. Every one of these is checked on page 5 |
+| `rule` | The house rule's settings (see below) and its plain-English description, which is printed in the appendix |
+| `backtest` | How many years of evidence to show, rebalance frequency, cost in basis points |
+| `house_overrides` | Exact weights the analyst wants to force for named tickers, e.g. `{"TSLA": 0}` to stay out of a name |
+| `commentary` | The three analyst slots: `house_view`, `allocation`, and per-stock notes. While they are empty the report prints a draft generated from the numbers, clearly labelled as a draft |
+
+### The seven pages
+
+**Page 1, Summary and actions.** The house view, six headline numbers for the recommended book, the actions for the week as a trade list in shares and dollars, what changed since last week, and the recommended weights with their change versus last week.
+
+![Weekly report page 1](docs/guide/report_p1.png)
+
+**Page 2, The names this week.** One row per stock with a six-month sparkline, returns over one week to one year, volatility and its weekly change, beta, distance from the 12-month high, trend state, distance from the 50-day average, RSI, and the next earnings date with a red flag when it falls within two weeks. The benchmark gets the same row. A bullet list says what moved and why.
+
+![Weekly report page 2](docs/guide/report_p2.png)
+
+**Page 3, How the names move together.** Six-month and one-month average correlation, effective number of bets, the correlation matrix, the best diversifiers, any pairs that behave as one bet, and a chart of the one-month correlation over the last six months so a change of regime is visible.
+
+![Weekly report page 3](docs/guide/report_p3.png)
+
+**Page 4, Construction.** Five reference long-only objectives side by side (equal weight, minimum variance, risk parity, maximum diversification, maximum Sharpe) with their return, volatility, Sharpe, largest position and effective bets, then the house allocation: each name's side, the reason in words, the weight, last week's weight, and the trade.
+
+![Weekly report page 4](docs/guide/report_p4.png)
+
+**Page 5, Risk of the recommended book.** Volatility, one-day and one-week VaR and Expected Shortfall, beta, drawdown, where the risk sits by name, factor exposures, the stress tests, the mandate check with every limit's status, and the findings from the insight engine.
+
+![Weekly report page 5](docs/guide/report_p5.png)
+
+**Page 6, Evidence and watch list.** A six-year walk-forward test of the house rule against equal weight, risk parity and the benchmark, with year-by-year returns, followed by the watch list (names near a signal flip, overbought or oversold, volatility spikes, earnings within two weeks, correlation regime, VaR near its limit) and the standing rules.
+
+![Weekly report page 6](docs/guide/report_p6.png)
+
+**Page 7, Appendix.** The mandate in one table, the method in six short paragraphs, the house rule in full, and a glossary, so the document stands on its own.
+
+### The house rule, and why these settings
+
+The recommendation is produced by a rule, then edited by the analyst. In words: own names in a long-term uptrend (price above its 200-day average), short only names in a confirmed downtrend (below the 50-day and 200-day averages with the 50-day below the 200-day), stay flat on the rest. Size each active name for equal risk, let no name carry more than 25% of book risk, scale the book toward 15% volatility but never lever beyond 100% gross. A name must move 5% through its average before its direction changes, and is only resized when its target moves materially, so the book drifts rather than churns.
+
+Those settings were chosen by testing alternatives on the demo names from 2020 to 2026. A 50-day trend flipped positions constantly and lost money in 2024 to 2026; the 200-day version with 5% hysteresis earned 19.9% a year at 14.3% volatility (Sharpe 1.11) with a beta of only 0.39, and it was **up 6% in 2022** while equal weight lost 27%, risk parity 12% and SPY 18%. It lags the fully invested baskets in a bull market, which page 6 says in plain words; its job is a reasonable return with a controlled drawdown and protection when the names roll over.
+
+### What the analyst adds
+
+The numbers are the easy part. The report leaves three boxes for judgement, filled in the client config before the final run: the house view on page 1, the allocation rationale on page 4, and a note per stock on page 2. Overrides let the analyst force a weight when the rule and the view disagree, and the override reason is printed next to the name. The draft text that appears while the boxes are empty is generated from the week's numbers so nothing is ever sent blank.
+
 ---
 
 # Part 4 — The maths, in plain words
@@ -1393,6 +1460,7 @@ The insight engine is a list of ten fixed rules, run in order, then sorted high 
 | `load_sample_data [--reset] [--skip-prices]` | Load the bundled universe and demo portfolios (idempotent) |
 | `fetch_prices [--tickers ...] [--start ...]` | Add or update instruments from Yahoo Finance |
 | `snapshot_risk [--backfill N]` | Record daily headline risk for the history page |
+| `weekly_report --client <cfg> [--date] [--no-pdf] [--no-events]` | Build a client's weekly PDF and HTML report (see [3.22](#322-the-weekly-client-report-pdf-and-html)) |
 | `test` | Run the 32 unit and integration tests |
 | `scripts/build_sample_data.py` | Rebuild the bundled CSVs from scratch |
 | `scripts/capture_guide_screenshots.py` | Regenerate every screenshot in this guide from a running server |

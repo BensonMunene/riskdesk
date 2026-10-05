@@ -17,3 +17,8 @@ staticfiles/
 .idea/
 Thumbs.db
 .DS_Store
+
+# Private client material: never commit (this repo is public)
+reports/
+clients/
+*.pdf

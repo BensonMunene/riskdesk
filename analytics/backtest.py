@@ -53,9 +53,12 @@ def _rebalance_dates(index: pd.DatetimeIndex, freq: str) -> list[pd.Timestamp]:
     return sorted(set(dates))
 
 
-def _target_weights(strategy: str, hist: pd.DataFrame, current: pd.Series, cons: opt.Constraints,
-                    cov_method: str, rf: float, vol_target: float) -> pd.Series:
+def _target_weights(strategy, hist: pd.DataFrame, current: pd.Series, cons: opt.Constraints,
+                    cov_method: str, rf: float, vol_target: float, live: pd.Series | None = None) -> pd.Series:
     tickers = list(hist.columns)
+    if callable(strategy):
+        # custom rules see what the book actually holds right now (drifted weights), not the starting weights
+        return strategy(hist, live if live is not None else current).reindex(tickers).fillna(0.0)
     if strategy in ("current", "buy_hold"):
         return current.reindex(tickers).fillna(0.0)
     cov = estimate_cov(hist, cov_method) * TRADING_DAYS
@@ -82,7 +85,7 @@ def _target_weights(strategy: str, hist: pd.DataFrame, current: pd.Series, cons:
     return r.weights.fillna(0.0)
 
 
-def run_backtest(prices: pd.DataFrame, strategy: str, current_weights: pd.Series | None = None,
+def run_backtest(prices: pd.DataFrame, strategy, current_weights: pd.Series | None = None,
                  rebalance: str = "M", lookback: int = 252, cost_bps: float = 10.0,
                  cons: opt.Constraints | None = None, cov_method: str = "ledoit_wolf",
                  rf: float = 0.0, start: str | None = None, vol_target: float = 0.10,
@@ -114,7 +117,8 @@ def run_backtest(prices: pd.DataFrame, strategy: str, current_weights: pd.Series
         r = rets.loc[d].to_numpy(dtype=float)
         if not initialised or (d in rb_dates and strategy != "buy_hold"):
             hist = rets.iloc[max(0, rets.index.get_loc(d) - lookback): rets.index.get_loc(d)]
-            target = _target_weights(strategy, hist, current, cons, cov_method, rf, vol_target).reindex(tickers).fillna(0.0).to_numpy()
+            live = pd.Series(w, index=tickers) if initialised else None
+            target = _target_weights(strategy, hist, current, cons, cov_method, rf, vol_target, live).reindex(tickers).fillna(0.0).to_numpy()
             to = float(np.abs(target - w).sum()) if initialised else float(np.abs(target).sum())
             tc = to * cost
             w = target
@@ -128,22 +132,25 @@ def run_backtest(prices: pd.DataFrame, strategy: str, current_weights: pd.Series
         # drift
         gross_growth = 1.0 + pr
         w = w * (1.0 + r) / gross_growth if gross_growth != 0 else w
-    returns = pd.Series(port_ret, index=dates, name=strategy)
+    name = strategy if isinstance(strategy, str) else getattr(strategy, "__name__", "custom")
+    returns = pd.Series(port_ret, index=dates, name=name)
     equity = (1.0 + returns).cumprod()
     wdf = pd.DataFrame(weights_hist, index=dates, columns=tickers)
     to_series = pd.Series(turnover, index=dates)
     stats = performance_stats(returns, rf=rf, benchmark=benchmark)
     stats["annual_turnover"] = float(to_series.sum() / (len(dates) / TRADING_DAYS))
     stats["avg_gross"] = float(wdf.abs().sum(axis=1).mean())
-    return BacktestResult(strategy, returns, equity, wdf, to_series, stats,
+    return BacktestResult(name, returns, equity, wdf, to_series, stats,
                           {"rebalance": rebalance, "lookback": lookback, "cost_bps": cost_bps})
 
 
-def compare(prices: pd.DataFrame, strategies: list[str], **kw) -> dict[str, BacktestResult]:
+def compare(prices: pd.DataFrame, strategies, **kw) -> dict[str, BacktestResult]:
+    """strategies: a list of built-in names, or a dict {label: name-or-callable}."""
+    items = strategies.items() if isinstance(strategies, dict) else [(s, s) for s in strategies]
     out = {}
-    for s in strategies:
+    for label, s in items:
         try:
-            out[s] = run_backtest(prices, s, **kw)
+            out[label] = run_backtest(prices, s, **kw)
         except Exception as exc:  # noqa: BLE001
-            out[s] = exc
+            out[label] = exc
     return out

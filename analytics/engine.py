@@ -432,12 +432,13 @@ class PortfolioAnalyzer:
             disp_thr = (f"{thr * 100:.1f}%" if is_pct else (f"{thr:.1f}d" if lim["metric"] == "days_to_liquidate" else f"{thr:.2f}"))
             status, util = "n/a", None
             if value is not None and not (isinstance(value, float) and np.isnan(value)):
+                tol = 1e-9 + 1e-4 * abs(thr)  # a position sized exactly at its cap is at the limit, not over it
                 if op == "lte":
                     util = value / thr if thr else float("inf")
-                    status = "breach" if value > thr else ("warn" if util >= 0.9 else "ok")
+                    status = "breach" if value > thr + tol else ("warn" if util >= 0.9 else "ok")
                 else:
                     util = thr / value if value else float("inf")
-                    status = "breach" if value < thr else ("warn" if util >= 0.9 else "ok")
+                    status = "breach" if value < thr - tol else ("warn" if util >= 0.9 else "ok")
             out.append({**lim, "value": value, "display_value": display, "display_threshold": disp_thr,
                         "status": status, "utilization": util})
         return out

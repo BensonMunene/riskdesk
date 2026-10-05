@@ -1,0 +1,355 @@
+{% load riskdesk_extras %}<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>{{ r.meta.client }} · Weekly portfolio report · {{ r.meta.as_of }}</title>
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js" charset="utf-8"></script>
+<style>
+  :root { --ink:#1c2330; --muted:#6b7686; --line:#e3e7ee; --accent:#0d6efd; --soft:#f4f6f9; }
+  * { box-sizing: border-box; }
+  html, body { margin:0; background:#fff; }
+  body { font: 11.5px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: var(--ink); }
+  .doc { width: 760px; margin: 0 auto; padding: 18px 0 40px; }
+  .page { break-after: page; page-break-after: always; padding-bottom: 10px; }
+  .page:last-child { break-after: auto; page-break-after: auto; }
+  h1 { font-size: 22px; margin: 0 0 2px; }
+  h2 { font-size: 15px; margin: 0 0 8px; padding-bottom: 4px; border-bottom: 2px solid var(--ink); }
+  h3 { font-size: 12px; margin: 12px 0 4px; color: var(--ink); text-transform: uppercase; letter-spacing: .04em; }
+  p { margin: 0 0 6px; }
+  .muted { color: var(--muted); }
+  .small { font-size: 10.5px; }
+  .cover { display:flex; justify-content:space-between; align-items:flex-end; border-bottom: 3px solid var(--ink); padding-bottom: 8px; margin-bottom: 12px; }
+  .cover .brand { font-weight: 700; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+  .cover .meta { text-align: right; font-size: 10.5px; color: var(--muted); }
+  .kpis { display:grid; grid-template-columns: repeat(6, 1fr); gap: 6px; margin: 8px 0 10px; }
+  .kpi { border:1px solid var(--line); border-radius:6px; padding:6px 8px; background:#fff; }
+  .kpi .l { font-size: 9px; text-transform: uppercase; letter-spacing:.05em; color: var(--muted); }
+  .kpi .v { font-size: 15px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .kpi .s { font-size: 9.5px; color: var(--muted); }
+  .kpi.bad { border-color:#f1aeb5; background:#fff5f6; } .kpi.warn { border-color:#ffe69c; background:#fffbea; } .kpi.ok { border-color:#a3cfbb; background:#f2fbf6; }
+  table { width:100%; border-collapse: collapse; font-size: 10.5px; margin: 4px 0 8px; }
+  th { text-align:left; font-size: 9px; text-transform: uppercase; letter-spacing:.04em; color: var(--muted); border-bottom: 1px solid var(--ink); padding: 3px 5px; white-space: nowrap; }
+  td { padding: 3px 5px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+  td.n, th.n { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  tr.total td { font-weight: 600; border-top: 2px solid var(--line); }
+  .tk { font-family: ui-monospace, Menlo, Consolas, monospace; font-weight: 600; }
+  .pos { color:#198754; } .neg { color:#dc3545; }
+  .badge { display:inline-block; padding: 1px 6px; border-radius: 10px; font-size: 9px; font-weight: 600; }
+  .b-up { background:#d1e7dd; color:#0f5132; } .b-down { background:#f8d7da; color:#842029; } .b-mixed { background:#e2e3e5; color:#41464b; }
+  .b-ok { background:#d1e7dd; color:#0f5132; } .b-warn { background:#fff3cd; color:#664d03; } .b-breach { background:#f8d7da; color:#842029; }
+  .b-high { background:#f8d7da; color:#842029; } .b-medium { background:#fff3cd; color:#664d03; } .b-low { background:#cff4fc; color:#055160; } .b-info { background:#e2e3e5; color:#41464b; }
+  .two { display:grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .three { display:grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+  .box { border:1px solid var(--line); border-radius: 6px; padding: 8px 10px; background:#fff; }
+  .view { border-left: 3px solid var(--accent); background: var(--soft); padding: 8px 12px; border-radius: 0 6px 6px 0; margin: 6px 0 10px; }
+  .view .tag { font-size: 9px; text-transform: uppercase; letter-spacing: .06em; color: var(--accent); font-weight: 700; }
+  .draft { color:#8a6d00; font-size: 9.5px; }
+  ul { margin: 2px 0 8px 16px; padding: 0; } li { margin-bottom: 2px; }
+  .chart { width: 100%; height: 230px; } .chart.tall { height: 330px; } .chart.short { height: 200px; } .chart.mini { height: 170px; }
+  .keep { break-inside: avoid; page-break-inside: avoid; }
+  .foot { font-size: 9.5px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 6px; margin-top: 10px; }
+  .steps li { margin-bottom: 1px; }
+  .warn-box { background:#fff8e6; border:1px solid #ffe2a8; color:#5c4400; border-radius:6px; padding:6px 10px; margin-bottom: 8px; font-size: 10.5px; }
+  @page { size: A4; margin: 10mm 9mm 12mm; }
+  @media print { .doc { width: 100%; padding: 0; } body { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }
+</style>
+</head>
+<body>
+<div class="doc">
+
+<!-- ======================================================= PAGE 1: SUMMARY -->
+<section class="page">
+  <div class="cover">
+    <div>
+      <div class="brand">RiskDesk · Weekly portfolio report</div>
+      <h1>{{ r.meta.client }}</h1>
+      <div class="muted">Week of {{ r.meta.week_start }} to {{ r.meta.week_end }} · {{ r.meta.tickers|length }} names · benchmark {{ r.meta.benchmark }}</div>
+    </div>
+    <div class="meta">Prepared by {{ r.meta.analyst }}<br>Data as of {{ r.meta.as_of_long }}<br>{% if r.meta.first_report %}First report{% else %}Changes vs {{ r.meta.prev_date }}{% endif %} · Confidential</div>
+  </div>
+  {% for w in r.warnings %}<div class="warn-box">⚠ {{ w }}</div>{% endfor %}
+
+  <h2>1 · Summary and actions</h2>
+  <div class="view"><div class="tag">House view {% if r.commentary.house_view_is_draft %}<span class="draft">(draft generated from this week's numbers; replace with the analyst's words in the client config)</span>{% endif %}</div>
+    <p>{{ r.commentary.house_view }}</p></div>
+
+  {% if r.risk %}{% with s=r.risk.summary %}
+  <div class="kpis">
+    <div class="kpi"><div class="l">House book</div><div class="v">{{ s.gross_exposure|pct:0 }} / {{ s.net_exposure|spct:0 }}</div><div class="s">gross / net · {{ s.n_long }}L {{ s.n_short }}S</div></div>
+    <div class="kpi"><div class="l">Volatility</div><div class="v">{{ s.vol|pct }}</div><div class="s">target {{ r.meta.mandate.target_vol|pct:0 }}</div></div>
+    <div class="kpi"><div class="l">1-day VaR 99%</div><div class="v">{{ s.var|pct:2 }}</div><div class="s">{{ s.var_dollar|money }}</div></div>
+    <div class="kpi"><div class="l">1-week VaR 99%</div><div class="v">{{ r.risk.var5|pct:2 }}</div><div class="s">{{ r.risk.var5_dollar|money }}</div></div>
+    <div class="kpi"><div class="l">Beta to {{ r.meta.benchmark }}</div><div class="v">{{ s.beta|num }}</div><div class="s">{{ r.risk.systematic_share|pct:0 }} systematic</div></div>
+    <div class="kpi {% if r.risk.n_breach %}bad{% elif r.risk.n_warn %}warn{% else %}ok{% endif %}"><div class="l">Mandate</div><div class="v">{% if r.risk.n_breach %}{{ r.risk.n_breach }} breach{{ r.risk.n_breach|pluralize:"es" }}{% elif r.risk.n_warn %}{{ r.risk.n_warn }} near limit{% else %}All clear{% endif %}</div><div class="s">{{ r.risk.limits|length }} limits checked</div></div>
+  </div>
+  {% endwith %}{% endif %}
+
+  <div class="two">
+    <div>
+      <h3>Actions this week</h3>
+      <ul>{% for a in r.actions %}<li>{{ a }}</li>{% endfor %}</ul>
+      <h3>Changes since last report</h3>
+      {% if r.meta.first_report %}<p class="muted">First report: no prior week to compare.</p>{% else %}
+      <table><thead><tr><th>Metric</th><th class="n">Last week</th><th class="n">This week</th><th class="n">Change</th></tr></thead><tbody>
+      {% for d in r.deltas.risk %}<tr><td>{{ d.label }}</td><td class="n">{% if d.fmt == 'pct' %}{{ d.prev|pct }}{% else %}{{ d.prev|num }}{% endif %}</td><td class="n"><b>{% if d.fmt == 'pct' %}{{ d.now|pct }}{% else %}{{ d.now|num }}{% endif %}</b></td><td class="n {{ d.delta|sign_class }}">{% if d.delta is not None %}{% if d.fmt == 'pct' %}{{ d.delta|spct }}{% else %}{{ d.delta|snum }}{% endif %}{% endif %}</td></tr>{% endfor %}
+      </tbody></table>{% endif %}
+    </div>
+    <div>
+      <h3>Recommended book</h3>
+      <table><thead><tr><th>Name</th><th>Side</th><th class="n">Weight</th><th class="n">vs last</th><th class="n">Value</th></tr></thead><tbody>
+      {% for h in r.construction.house.rows %}<tr><td class="tk">{{ h.ticker }}</td><td><span class="badge {% if h.direction == 'Long' %}b-up{% elif h.direction == 'Short' %}b-down{% else %}b-mixed{% endif %}">{{ h.direction }}</span></td><td class="n"><b>{{ h.weight|spct }}</b></td><td class="n {{ h.delta|sign_class }}">{% if r.meta.first_report %}new{% else %}{{ h.delta|spct }}{% endif %}</td><td class="n">{{ h.dollars|money }}</td></tr>{% endfor %}
+      <tr class="total"><td colspan="2">Gross / net · turnover</td><td class="n">{{ r.construction.house.gross|pct:0 }} / {{ r.construction.house.net|spct:0 }}</td><td class="n">{{ r.construction.house.turnover|pct:0 }}</td><td class="n">{{ r.meta.nav|money }}</td></tr>
+      </tbody></table>
+      <p class="small muted">Weights are fractions of the {{ r.meta.nav|money }} notional. {{ r.meta.nav_note }}</p>
+    </div>
+  </div>
+  <div class="foot">How to read this report: section 2 looks at each name, 3 at how they move together, 4 at how to weight them, 5 at the risk of the recommended book, 6 at the evidence and what to watch. Every term is defined in the appendix.</div>
+</section>
+
+<!-- ======================================================= PAGE 2: STOCKS -->
+<section class="page">
+  <h2>2 · The names this week</h2>
+  <p class="muted small">Returns are price returns. Volatility is the fast-reacting (30-day half-life) annualised estimate. Trend: <b>Uptrend</b> = price above its 50-day average and 50-day above 200-day; <b>Downtrend</b> = the reverse; <b>Mixed</b> = neither. RSI above 70 is overbought, below 30 oversold.</p>
+  <table>
+    <thead><tr><th>Name</th><th>6 months</th><th class="n">Price</th><th class="n">1w</th><th class="n">1m</th><th class="n">3m</th><th class="n">YTD</th><th class="n">Vol</th><th class="n">Δ vol</th><th class="n">Beta</th><th class="n">From high</th><th>Trend</th><th class="n">vs 50d</th><th class="n">RSI</th><th>Earnings</th></tr></thead>
+    <tbody>
+    {% for x in r.stocks.rows %}
+    <tr>
+      <td><span class="tk">{{ x.ticker }}</span><br><span class="muted" style="font-size:9px">{{ x.sector|truncatechars:18 }}</span></td>
+      <td>{{ x.sparkline|safe }}</td>
+      <td class="n">{{ x.price|num }}</td>
+      <td class="n {{ x.ret_1w|sign_class }}">{{ x.ret_1w|spct }}</td>
+      <td class="n {{ x.ret_1m|sign_class }}">{{ x.ret_1m|spct }}</td>
+      <td class="n {{ x.ret_3m|sign_class }}">{{ x.ret_3m|spct }}</td>
+      <td class="n {{ x.ret_ytd|sign_class }}">{{ x.ret_ytd|spct }}</td>
+      <td class="n">{{ x.vol|pct:0 }}</td>
+      <td class="n {% if x.vol_change and x.vol_change > 0.15 %}neg{% endif %}">{{ x.vol_change|spct:0 }}</td>
+      <td class="n">{{ x.beta|num }}</td>
+      <td class="n neg">{{ x.dd_from_high|pct:0 }}</td>
+      <td><span class="badge {% if x.trend == 'Uptrend' %}b-up{% elif x.trend == 'Downtrend' %}b-down{% else %}b-mixed{% endif %}">{{ x.trend }}</span>{% if x.crossed_ma50_1w %} <span class="muted" style="font-size:9px">crossed</span>{% endif %}</td>
+      <td class="n {{ x.px_vs_ma50|sign_class }}">{{ x.px_vs_ma50|spct }}</td>
+      <td class="n {% if x.rsi >= 70 or x.rsi <= 30 %}neg{% endif %}">{{ x.rsi|num:0 }}</td>
+      <td class="small">{% if x.next_earnings %}{{ x.next_earnings }}{% if x.earnings_in_days <= 14 %} <b class="neg">({{ x.earnings_in_days }}d)</b>{% endif %}{% else %}–{% endif %}</td>
+    </tr>
+    {% endfor %}
+    {% if r.stocks.benchmark %}{% with b=r.stocks.benchmark %}
+    <tr class="total"><td class="tk">{{ r.meta.benchmark }}</td><td class="muted small">benchmark</td><td class="n">{{ b.price|num }}</td><td class="n {{ b.ret_1w|sign_class }}">{{ b.ret_1w|spct }}</td><td class="n {{ b.ret_1m|sign_class }}">{{ b.ret_1m|spct }}</td><td class="n {{ b.ret_3m|sign_class }}">{{ b.ret_3m|spct }}</td><td class="n {{ b.ret_ytd|sign_class }}">{{ b.ret_ytd|spct }}</td><td class="n">{{ b.vol|pct:0 }}</td><td class="n">{{ b.vol_change|spct:0 }}</td><td class="n">1.00</td><td class="n neg">{{ b.dd_from_high|pct:0 }}</td><td><span class="badge {% if b.trend == 'Uptrend' %}b-up{% elif b.trend == 'Downtrend' %}b-down{% else %}b-mixed{% endif %}">{{ b.trend }}</span></td><td class="n">{{ b.px_vs_ma50|spct }}</td><td class="n">{{ b.rsi|num:0 }}</td><td></td></tr>
+    {% endwith %}{% endif %}
+    </tbody>
+  </table>
+  <div class="two">
+    <div><div id="c-returns" class="chart short"></div></div>
+    <div>
+      <h3>What moved this week</h3>
+      <ul>{% for n in r.commentary.stock_notes %}<li>{{ n }}</li>{% endfor %}</ul>
+      {% if r.commentary.stocks %}<h3>Analyst notes</h3><ul>{% for t, note in r.commentary.stocks.items %}<li><span class="tk">{{ t }}</span>: {{ note }}</li>{% endfor %}</ul>{% endif %}
+    </div>
+  </div>
+</section>
+
+<!-- ======================================================= PAGE 3: CORRELATION -->
+<section class="page">
+  <h2>3 · How the names move together</h2>
+  <div class="kpis" style="grid-template-columns: repeat(4, 1fr)">
+    <div class="kpi"><div class="l">Average correlation (6m)</div><div class="v">{{ r.correlation.avg_corr|num }}</div><div class="s">{% if r.correlation.prev_avg_corr %}last report {{ r.correlation.prev_avg_corr|num }}{% else %}0 = unrelated, 1 = move as one{% endif %}</div></div>
+    <div class="kpi {% if r.correlation.avg_corr_1m > r.correlation.avg_corr|add:0.15 %}warn{% endif %}"><div class="l">Average correlation (1m)</div><div class="v">{{ r.correlation.avg_corr_1m|num }}</div><div class="s">{% if r.correlation.avg_corr_1m > r.correlation.avg_corr|add:0.1 %}rising: names moving as a group{% else %}in line with six months{% endif %}</div></div>
+    <div class="kpi"><div class="l">Effective # of bets</div><div class="v">{{ r.correlation.enb_equal|num:1 }}</div><div class="s">of {{ r.meta.tickers|length }} names, equal-weighted</div></div>
+    <div class="kpi"><div class="l">Pairs above 0.70</div><div class="v">{{ r.correlation.pairs|length }}</div><div class="s">effectively one bet each</div></div>
+  </div>
+  <div class="two">
+    <div><div id="c-corr" class="chart tall"></div></div>
+    <div>
+      <h3>Best diversifiers</h3>
+      <p class="muted small">Average correlation of each name to the other nine. Low = adds diversification.</p>
+      <table><thead><tr><th>Name</th><th class="n">Avg corr to others</th></tr></thead><tbody>
+      {% for d in r.correlation.diversifiers %}<tr><td class="tk">{{ d.ticker }}</td><td class="n">{{ d.avg_corr|num }}</td></tr>{% endfor %}
+      </tbody></table>
+      <h3>Pairs that move as one</h3>
+      {% if r.correlation.pairs %}<table><thead><tr><th>Pair</th><th class="n">Corr</th></tr></thead><tbody>
+      {% for p in r.correlation.pairs %}<tr><td><span class="tk">{{ p.a }}</span> / <span class="tk">{{ p.b }}</span></td><td class="n">{{ p.corr|num }}</td></tr>{% endfor %}</tbody></table>
+      <p class="small muted">Size these pairs as a single position: holding both long doubles the same bet.</p>
+      {% else %}<p class="muted small">None above 0.70 this week.</p>{% endif %}
+    </div>
+  </div>
+  <h3>Diversification regime: one-month average correlation over the last six months</h3>
+  <p class="muted small">When this line rises the names start moving as a group and the book's diversification shrinks; when it falls, stock-picking matters more than the market.</p>
+  <div id="c-corr-roll" class="chart mini"></div>
+</section>
+
+<!-- ======================================================= PAGE 4: CONSTRUCTION -->
+<section class="page">
+  <h2>4 · Construction: how to weight them</h2>
+  <p class="muted small">Five standard long-only objectives are shown for reference, each capped at {{ r.construction.cap|pct:0 }} per name. {{ r.construction.mu_note }} The <b>house allocation</b> is the recommendation: a trend-aware long/short book built to the mandate.</p>
+  <table>
+    <thead><tr><th>Name</th>{% for o in r.construction.objectives %}<th class="n">{{ o.label }}</th>{% endfor %}<th class="n" style="border-left:2px solid var(--ink)">House</th></tr></thead>
+    <tbody>
+    {% for t in r.meta.tickers %}<tr><td class="tk">{{ t }}</td>{% for o in r.construction.objectives %}<td class="n">{{ o.weights|get_item:t|pct }}</td>{% endfor %}
+      <td class="n" style="border-left:2px solid var(--ink)"><b>{% for h in r.construction.house.rows %}{% if h.ticker == t %}{{ h.weight|spct }}{% endif %}{% endfor %}</b></td></tr>{% endfor %}
+    <tr class="total"><td>Expected return</td>{% for o in r.construction.objectives %}<td class="n">{{ o.expected_return|pct }}</td>{% endfor %}<td class="n" style="border-left:2px solid var(--ink)">–</td></tr>
+    <tr class="total"><td>Volatility</td>{% for o in r.construction.objectives %}<td class="n">{{ o.vol|pct }}</td>{% endfor %}<td class="n" style="border-left:2px solid var(--ink)">{{ r.construction.house.vol|pct }}</td></tr>
+    <tr class="total"><td>Sharpe</td>{% for o in r.construction.objectives %}<td class="n">{{ o.sharpe|num }}</td>{% endfor %}<td class="n" style="border-left:2px solid var(--ink)">–</td></tr>
+    <tr class="total"><td>Largest weight</td>{% for o in r.construction.objectives %}<td class="n">{{ o.max_weight|pct:0 }} {{ o.max_ticker }}</td>{% endfor %}<td class="n" style="border-left:2px solid var(--ink)">{{ r.meta.mandate.max_long|pct:0 }} cap</td></tr>
+    <tr class="total"><td>Effective # bets</td>{% for o in r.construction.objectives %}<td class="n">{{ o.enb|num:1 }}</td>{% endfor %}<td class="n" style="border-left:2px solid var(--ink)">–</td></tr>
+    </tbody>
+  </table>
+  <div class="two">
+    <div><div id="c-objectives" class="chart short"></div></div>
+    <div><div id="c-house" class="chart short"></div></div>
+  </div>
+  <h3>House allocation</h3>
+  <div class="view"><div class="tag">Allocation rationale {% if r.commentary.allocation_is_draft %}<span class="draft">(draft; replace with the analyst's reasoning)</span>{% endif %}</div><p>{{ r.commentary.allocation }}</p></div>
+  <table>
+    <thead><tr><th>Name</th><th>Side</th><th>Why</th><th class="n">Weight</th><th class="n">Last</th><th class="n">Trade</th><th class="n">Shares</th></tr></thead>
+    <tbody>
+    {% for h in r.construction.house.rows %}<tr><td class="tk">{{ h.ticker }}</td><td><span class="badge {% if h.direction == 'Long' %}b-up{% elif h.direction == 'Short' %}b-down{% else %}b-mixed{% endif %}">{{ h.direction }}</span></td><td class="small">{{ h.reason }}</td><td class="n"><b>{{ h.weight|spct }}</b></td><td class="n">{% if r.meta.first_report %}–{% else %}{{ h.prev_weight|spct }}{% endif %}</td><td class="n {{ h.trade_dollars|sign_class }}">{{ h.trade_dollars|money }}</td><td class="n">{{ h.trade_shares|snum:0 }}</td></tr>{% endfor %}
+    </tbody>
+  </table>
+  <p class="small muted keep">The full rule is stated in the appendix.</p>
+</section>
+
+{% if r.risk %}
+<!-- ======================================================= PAGE 5: RISK -->
+<section class="page">
+  <h2>5 · Risk of the recommended book</h2>
+  {% with s=r.risk.summary %}
+  <div class="kpis">
+    <div class="kpi"><div class="l">Volatility</div><div class="v">{{ s.vol|pct }}</div><div class="s">realised {{ r.risk.realised_vol|pct }}</div></div>
+    <div class="kpi"><div class="l">1-day VaR / ES 99%</div><div class="v">{{ s.var|pct:2 }} / {{ s.cvar|pct:2 }}</div><div class="s">{{ s.var_dollar|money }} / {{ s.cvar_dollar|money }}</div></div>
+    <div class="kpi"><div class="l">1-week VaR / ES 99%</div><div class="v">{{ r.risk.var5|pct:2 }} / {{ r.risk.es5|pct:2 }}</div><div class="s">{{ r.risk.var5_dollar|money }}</div></div>
+    <div class="kpi"><div class="l">Beta · systematic</div><div class="v">{{ s.beta|num }} · {{ r.risk.systematic_share|pct:0 }}</div><div class="s">idio vol {{ r.risk.idio_vol|pct }}</div></div>
+    <div class="kpi"><div class="l">Max drawdown (6m, pro forma)</div><div class="v">{{ s.max_drawdown|pct }}</div><div class="s">now {{ s.current_drawdown|pct }}</div></div>
+    <div class="kpi"><div class="l">Effective # bets</div><div class="v">{{ r.risk.concentration.enb|num:1 }}</div><div class="s">top-5 {{ r.risk.concentration.top5|pct:0 }} of gross</div></div>
+  </div>
+  {% endwith %}
+  <div class="two">
+    <div>
+      <h3>Where the risk sits</h3>
+      <table><thead><tr><th>Name</th><th class="n">Weight</th><th class="n">Risk share</th><th class="n">Own vol</th><th class="n">Beta to book</th></tr></thead><tbody>
+      {% for x in r.risk.rc %}<tr><td class="tk">{{ x.ticker }}</td><td class="n">{{ x.weight|spct }}</td><td class="n {% if x.pct > 0.25 %}neg{% endif %}"><b>{{ x.pct|spct }}</b></td><td class="n">{{ x.standalone_vol|pct:0 }}</td><td class="n">{{ x.beta_to_port|num }}</td></tr>{% endfor %}
+      </tbody></table>
+      <p class="small muted">Risk share = weight × beta to the book (Euler decomposition). Shares sum to 100%; a negative share means the position reduces total risk.</p>
+    </div>
+    <div>
+      <div id="c-rc" class="chart"></div>
+      <h3>Factor exposures</h3>
+      <table><thead><tr><th>Factor</th><th class="n">Beta</th><th class="n">% of variance</th></tr></thead><tbody>
+      {% for f in r.risk.factors %}{% if f.pct_var > 0.03 or f.pct_var < -0.03 or f.factor == 'MKT' %}<tr><td>{{ f.factor }}</td><td class="n">{{ f.beta|snum }}</td><td class="n">{{ f.pct_var|spct:0 }}</td></tr>{% endif %}{% endfor %}
+      <tr class="total"><td>Stock-specific (idiosyncratic)</td><td class="n"></td><td class="n">{{ r.risk.systematic_share|mul:-100|add:100|floatformat:0 }}%</td></tr>
+      </tbody></table>
+    </div>
+  </div>
+  <div class="two">
+    <div>
+      <h3>Stress tests</h3>
+      <table><thead><tr><th>Scenario</th><th class="n">Book</th><th class="n">$</th><th class="n">{{ r.meta.benchmark }}</th></tr></thead><tbody>
+      {% for d in r.risk.stress_hist %}<tr><td>{{ d.name }}</td><td class="n {{ d.pnl|sign_class }}">{{ d.pnl|spct }}</td><td class="n">{{ d.dollar|money }}</td><td class="n muted">{{ d.bench|spct }}</td></tr>{% endfor %}
+      {% for d in r.risk.stress_hypo|slice:":4" %}<tr><td>{{ d.name }} <span class="muted" style="font-size:9px">({{ d.shocks }})</span></td><td class="n {{ d.pnl|sign_class }}">{{ d.pnl|spct }}</td><td class="n">{{ d.dollar|money }}</td><td class="n muted">–</td></tr>{% endfor %}
+      </tbody></table>
+    </div>
+    <div>
+      <h3>Mandate check</h3>
+      <table><thead><tr><th>Limit</th><th class="n">Now</th><th class="n">Limit</th><th>Status</th></tr></thead><tbody>
+      {% for l in r.risk.limits %}<tr><td>{{ l.label }}</td><td class="n">{{ l.display_value }}</td><td class="n">{% if l.operator == 'lte' %}≤{% else %}≥{% endif %} {{ l.display_threshold }}</td><td><span class="badge b-{{ l.status }}">{{ l.status }}</span></td></tr>{% endfor %}
+      </tbody></table>
+      {% if r.risk.insights %}<h3>Findings</h3><ul>{% for i in r.risk.insights|slice:":5" %}<li><span class="badge b-{{ i.severity }}">{{ i.category }}</span> <b>{{ i.title }}.</b> {{ i.detail }} {% if i.action %}<span class="muted">{{ i.action }}</span>{% endif %}</li>{% endfor %}</ul>{% endif %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- ======================================================= PAGE 6: EVIDENCE -->
+<section class="page">
+  <h2>6 · Evidence and watch list</h2>
+  <p class="muted small">Walk-forward test since {{ r.evidence.start }}: every {% if r.evidence.rebalance == 'W' %}week{% else %}month{% endif %} the rule sees only the data available at the time, sets weights, pays {{ r.evidence.cost_bps }} bps on what it trades, then weights drift with prices. Compared with two simple long-only rules on the same names, and with {{ r.meta.benchmark }}.</p>
+  <div id="c-bt" class="chart"></div>
+  <table>
+    <thead><tr><th>Strategy</th><th class="n">Total</th><th class="n">Ann. return</th><th class="n">Volatility</th><th class="n">Sharpe</th><th class="n">Max drawdown</th><th class="n">Beta</th><th class="n">Turnover / yr</th><th class="n">Worst day</th>{% for y in r.evidence.years_list %}<th class="n">{{ y }}</th>{% endfor %}</tr></thead>
+    <tbody>
+    {% for b in r.evidence.rows %}<tr {% if forloop.first %}style="font-weight:600"{% endif %}><td>{{ b.label }}</td><td class="n {{ b.total|sign_class }}">{{ b.total|spct }}</td><td class="n">{{ b.ann_return|spct }}</td><td class="n">{{ b.ann_vol|pct }}</td><td class="n">{{ b.sharpe|num }}</td><td class="n neg">{{ b.max_dd|pct }}</td><td class="n">{{ b.beta|num }}</td><td class="n">{{ b.turnover|pct:0 }}</td><td class="n">{{ b.worst_day|spct }}</td>
+      {% for y in r.evidence.years_list %}<td class="n">{% with yr=r.evidence.yearly|get_item:b.label %}{{ yr|get_item:y|spct:0 }}{% endwith %}</td>{% endfor %}</tr>{% endfor %}
+    </tbody>
+  </table>
+  <p class="small muted">Read honestly: a volatility-targeted long/short rule will lag a fully invested long-only basket in a strong bull market; its job is to earn a reasonable return with a controlled drawdown and to make money, or lose less, when the names roll over. The years columns show where each approach earned its keep.</p>
+  <div class="two">
+    <div>
+      <h3>Watch list: what could change the view</h3>
+      {% if r.watch %}<ul>{% for w in r.watch %}<li><span class="tk">{{ w.ticker }}</span> <span class="badge b-info">{{ w.kind }}</span> {{ w.text }}</li>{% endfor %}</ul>{% else %}<p class="muted">Nothing on watch this week.</p>{% endif %}
+    </div>
+    <div>
+      <h3>Standing rules</h3>
+      <ul>
+        <li>A name is bought when it is in a long-term uptrend (above its {{ r.meta.rule.long_ma }}-day average), sold short only in a confirmed downtrend, and closed when the signal reverses by more than {{ r.meta.rule.hysteresis|pct:0 }}.</li>
+        <li>Position size falls automatically when a name's volatility rises, so one wild stock cannot dominate the book, and no name may carry more than {{ r.meta.mandate.max_risk_share|pct:0 }} of its risk.</li>
+        <li>Earnings within two weeks are flagged; the client may prefer to halve the position into the print.</li>
+        <li>If the one-day VaR exceeds {{ r.meta.mandate.var_99_1d_max|pct }} of capital or any limit above breaches, the book is scaled down the same day.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ======================================================= APPENDIX -->
+<section class="page">
+  <h2>Appendix · Mandate, method and glossary</h2>
+  <div class="three">
+    <div class="box">
+      <h3 style="margin-top:0">Mandate used</h3>
+      <table><tbody>
+        <tr><td>Target volatility</td><td class="n">{{ r.meta.mandate.target_vol|pct:0 }}</td></tr>
+        <tr><td>Hard volatility cap</td><td class="n">{{ r.meta.mandate.vol_max|pct:0 }}</td></tr>
+        <tr><td>Max long / short per name</td><td class="n">{{ r.meta.mandate.max_long|pct:0 }} / {{ r.meta.mandate.max_short|pct:0 }}</td></tr>
+        <tr><td>Gross exposure cap</td><td class="n">{{ r.meta.mandate.gross_max|pct:0 }}</td></tr>
+        <tr><td>Net exposure range</td><td class="n">{{ r.meta.mandate.net_min|spct:0 }} to {{ r.meta.mandate.net_max|spct:0 }}</td></tr>
+        <tr><td>1-day 99% VaR cap</td><td class="n">{{ r.meta.mandate.var_99_1d_max|pct }}</td></tr>
+        <tr><td>Max single-name risk share</td><td class="n">{{ r.meta.mandate.max_risk_share|pct:0 }}</td></tr>
+        <tr><td>Sector gross cap</td><td class="n">{{ r.meta.mandate.sector_gross_max|pct:0 }}</td></tr>
+        <tr><td>Weekly turnover cap</td><td class="n">{{ r.meta.mandate.turnover_max_weekly|pct:0 }}</td></tr>
+        <tr><td>Days to liquidate cap</td><td class="n">{{ r.meta.mandate.days_to_liquidate_max }}d</td></tr>
+      </tbody></table>
+    </div>
+    <div class="box">
+      <h3 style="margin-top:0">Method, in brief</h3>
+      <p class="small">{{ r.meta.horizon }}</p>
+      <p class="small"><b>Returns and volatility.</b> Daily price returns on dividend-adjusted closes; volatility is the standard deviation scaled to a year, weighting recent days more (half-life {{ r.meta.halflife }} days).</p>
+      <p class="small"><b>Correlation and risk shares.</b> From the same {{ r.meta.lookback }}-day window. A name's risk share is its weight times its beta to the book, so shares add to 100%.</p>
+      <p class="small"><b>VaR / ES.</b> Historical: the 1st percentile of the book's daily pro-forma returns over the window; ES is the average beyond it. One-week figures scale by √5.</p>
+      <p class="small"><b>Factors.</b> Each name regressed on eleven ETF-built factors (market, size, value, momentum, quality, low-vol, rates, credit, dollar, gold, oil).</p>
+      <p class="small"><b>Stress.</b> Historical replays apply each name's actual return over the episode to today's weights; hypothetical shocks go through the factor betas.</p>
+      <p class="small"><b>Objectives.</b> Solved with convex optimisation on the six-month covariance. {{ r.construction.mu_note }}</p>
+      <p class="small"><b>House rule.</b> {{ r.meta.rule.description }} Longs are capped at {{ r.meta.mandate.max_long|pct:0 }}, shorts at {{ r.meta.mandate.max_short|pct:0 }}, gross at {{ r.meta.mandate.gross_max|pct:0 }}, weekly turnover at {{ r.meta.mandate.turnover_max_weekly|pct:0 }}.</p>
+    </div>
+    <div class="box">
+      <h3 style="margin-top:0">Glossary</h3>
+      <p class="small"><b>Gross / net exposure.</b> Longs plus shorts / longs minus shorts, as a share of capital.</p>
+      <p class="small"><b>Beta.</b> How much the book moves for a 1% move in {{ r.meta.benchmark }}.</p>
+      <p class="small"><b>Volatility.</b> The typical size of a yearly swing; divide by 16 for a daily feel.</p>
+      <p class="small"><b>VaR 99%.</b> The daily loss exceeded only one day in a hundred. <b>ES</b> is the average loss on those days.</p>
+      <p class="small"><b>Risk share.</b> A name's fraction of total book volatility.</p>
+      <p class="small"><b>Effective number of bets.</b> How many independent bets a correlated set of names behaves like.</p>
+      <p class="small"><b>Sharpe.</b> Return above cash per unit of volatility; above 1 is good.</p>
+      <p class="small"><b>Max drawdown.</b> The worst peak-to-trough fall.</p>
+      <p class="small"><b>Pro forma.</b> Today's weights replayed over the past; describes the current book, not a track record.</p>
+      <p class="small"><b>RSI.</b> A 0-100 momentum gauge; above 70 stretched up, below 30 stretched down.</p>
+    </div>
+  </div>
+  <div class="foot">Data: daily adjusted closes and volumes (Yahoo Finance). Generated {{ r.meta.generated }} by RiskDesk. This report is an analytical opinion, not investment advice; past performance, simulated or real, does not guarantee future results.</div>
+</section>
+
+</div>
+{{ charts|json_script:"charts" }}
+<script>{{ rd_js|safe }}</script>
+<script>
+(function () {
+  const d = JSON.parse(document.getElementById("charts").textContent);
+  const cfg = { displayModeBar: false, responsive: true };
+  RD.groupedBar("c-returns", d.returns.labels, [{ name: "1 week", values: d.returns.ret_1w }, { name: "1 month", values: d.returns.ret_1m, color: "#bbb" }], {});
+  RD.heatmap("c-corr", d.corr.labels, d.corr.labels, d.corr.z, { showText: true });
+  RD.line("c-corr-roll", [{ name: "1-month avg correlation", x: d.corr_roll.x, y: d.corr_roll.y }], { tickformat: ".2f", hoverfmt: ".2f" });
+  RD.groupedBar("c-objectives", d.objectives.labels, d.objectives.series, {});
+  RD.groupedBar("c-house", d.house.labels, [{ name: "Last week", values: d.house.prev, color: "#bbb" }, { name: "House", values: d.house.weights }], { horizontal: true });
+  if (d.rc) RD.groupedBar("c-rc", d.rc.labels, [{ name: "Risk share", values: d.rc.pct, color: "#f28e2b" }, { name: "Weight", values: d.rc.weight }], {});
+  const curves = Object.keys(d.backtest.curves).map((k, i) => ({ name: k, x: d.backtest.curves[k].x, y: d.backtest.curves[k].y, color: RD.palette[i], width: i === 0 ? 2.2 : 1.4, dash: k === "{{ r.meta.benchmark }}" ? "dot" : undefined }));
+  RD.line("c-bt", curves);
+})();
+</script>
+</body>
+</html>
