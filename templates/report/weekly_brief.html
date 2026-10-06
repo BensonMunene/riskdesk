@@ -1,0 +1,207 @@
+{% load riskdesk_extras %}<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>{{ r.meta.client }} · Weekly brief · {{ r.meta.as_of }}</title>
+{% if plotly_js %}<script>{{ plotly_js|safe }}</script>{% else %}<script src="https://cdn.plot.ly/plotly-2.35.2.min.js" charset="utf-8"></script>{% endif %}
+<style>
+  :root { --ink:#1c2330; --muted:#6b7686; --line:#e3e7ee; --accent:#0d6efd; --soft:#f4f6f9; }
+  * { box-sizing: border-box; }
+  html, body { margin:0; background:#fff; }
+  body { font: 10.5px/1.4 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: var(--ink); }
+  .doc { width: 760px; margin: 0 auto; padding: 14px 0 30px; }
+  .page { break-after: page; page-break-after: always; }
+  .page:last-child { break-after: auto; page-break-after: auto; }
+  h1 { font-size: 19px; margin: 0; }
+  h2 { font-size: 11px; margin: 10px 0 4px; text-transform: uppercase; letter-spacing: .05em; color: var(--ink); border-bottom: 1.5px solid var(--ink); padding-bottom: 2px; }
+  p { margin: 0 0 4px; }
+  .muted { color: var(--muted); } .small { font-size: 9.5px; }
+  .cover { display:flex; justify-content:space-between; align-items:flex-end; border-bottom: 2.5px solid var(--ink); padding-bottom: 6px; margin-bottom: 8px; }
+  .cover .brand { font-weight: 700; font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+  .cover .meta { text-align: right; font-size: 9.5px; color: var(--muted); }
+  .view { border-left: 3px solid var(--accent); background: var(--soft); padding: 6px 10px; border-radius: 0 6px 6px 0; margin: 6px 0 8px; font-size: 10.5px; }
+  .view .tag { font-size: 8.5px; text-transform: uppercase; letter-spacing: .06em; color: var(--accent); font-weight: 700; }
+  .draft { color:#8a6d00; font-size: 8.5px; font-weight: 400; text-transform: none; letter-spacing: 0; }
+  .kpis { display:grid; grid-template-columns: repeat(6, 1fr); gap: 5px; margin: 6px 0 8px; }
+  .kpi { border:1px solid var(--line); border-radius:5px; padding:5px 7px; }
+  .kpi .l { font-size: 8px; text-transform: uppercase; letter-spacing:.05em; color: var(--muted); }
+  .kpi .v { font-size: 14px; font-weight: 600; font-variant-numeric: tabular-nums; line-height: 1.2; }
+  .kpi .s { font-size: 8.5px; color: var(--muted); }
+  .kpi.bad { border-color:#f1aeb5; background:#fff5f6; } .kpi.warn { border-color:#ffe69c; background:#fffbea; } .kpi.ok { border-color:#a3cfbb; background:#f2fbf6; }
+  table { width:100%; border-collapse: collapse; font-size: 9.8px; margin: 2px 0 6px; }
+  th { text-align:left; font-size: 8px; text-transform: uppercase; letter-spacing:.04em; color: var(--muted); border-bottom: 1px solid var(--ink); padding: 2px 4px; white-space: nowrap; }
+  td { padding: 2.5px 4px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+  td.n, th.n { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  tr.total td { font-weight: 600; border-top: 1.5px solid var(--line); }
+  .tk { font-family: ui-monospace, Menlo, Consolas, monospace; font-weight: 600; }
+  .pos { color:#198754; } .neg { color:#dc3545; }
+  .badge { display:inline-block; padding: 0 5px; border-radius: 9px; font-size: 8.5px; font-weight: 600; line-height: 14px; }
+  .b-up, .b-ok { background:#d1e7dd; color:#0f5132; } .b-down, .b-breach { background:#f8d7da; color:#842029; } .b-mixed { background:#e2e3e5; color:#41464b; } .b-warn { background:#fff3cd; color:#664d03; }
+  .grid { display:grid; gap: 10px; } .g64 { grid-template-columns: 1.5fr 1fr; } .g55 { grid-template-columns: 1fr 1fr; } .g46 { grid-template-columns: 1fr 1.3fr; }
+  .chart { width:100%; height: 230px; } .chart.sm { height: 200px; } .chart.corr { height: 300px; } .chart.bt { height: 240px; }
+  ul { margin: 2px 0 4px 14px; padding: 0; } li { margin-bottom: 1px; }
+  .foot { font-size: 8.5px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 4px; margin-top: 8px; }
+  .warn-box { background:#fff8e6; border:1px solid #ffe2a8; color:#5c4400; border-radius:5px; padding:4px 8px; margin-bottom: 6px; }
+  @page { size: A4; margin: 9mm 9mm 10mm; }
+  @media print { .doc { width: 100%; padding: 0; } body { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }
+</style>
+</head>
+<body>
+<div class="doc">
+
+<!-- ===================================================== PAGE 1: THE DECISION -->
+<section class="page">
+  <div class="cover">
+    <div>
+      <div class="brand">Weekly portfolio brief</div>
+      <h1>{{ r.meta.client }}</h1>
+      <div class="muted small">Week of {{ r.meta.week_start }} to {{ r.meta.week_end }} · {{ r.meta.tickers|length }} names · benchmark {{ r.meta.benchmark }} · {{ r.meta.nav|money }} notional</div>
+    </div>
+    <div class="meta">{{ r.meta.analyst }}<br>Data as of {{ r.meta.as_of_long }}<br>{% if r.meta.first_report %}First report{% else %}vs {{ r.meta.prev_date }}{% endif %} · Confidential</div>
+  </div>
+  {% for w in r.warnings %}<div class="warn-box small">⚠ {{ w }}</div>{% endfor %}
+
+  <div class="view"><div class="tag">House view{% if r.commentary.house_view_is_draft %} <span class="draft">· draft from this week's numbers</span>{% endif %}</div>{{ r.commentary.house_view }}</div>
+
+  {% if r.risk %}{% with s=r.risk.summary d=r.deltas.risk %}
+  <div class="kpis">
+    <div class="kpi"><div class="l">Book</div><div class="v">{{ s.gross_exposure|pct:0 }} / {{ s.net_exposure|spct:0 }}</div><div class="s">gross / net · {{ s.n_long }}L {{ s.n_short }}S</div></div>
+    <div class="kpi"><div class="l">Volatility</div><div class="v">{{ s.vol|pct }}</div><div class="s">target {{ r.meta.mandate.target_vol|pct:0 }}{% if not r.meta.first_report %} · last {{ d.0.prev|pct }}{% endif %}</div></div>
+    <div class="kpi"><div class="l">1-day VaR 99%</div><div class="v">{{ s.var|pct:2 }}</div><div class="s">{{ s.var_dollar|money }}{% if not r.meta.first_report %} · last {{ d.1.prev|pct:2 }}{% endif %}</div></div>
+    <div class="kpi"><div class="l">1-week VaR 99%</div><div class="v">{{ r.risk.var5|pct:2 }}</div><div class="s">{{ r.risk.var5_dollar|money }}</div></div>
+    <div class="kpi"><div class="l">Beta to {{ r.meta.benchmark }}</div><div class="v">{{ s.beta|num }}</div><div class="s">{% if not r.meta.first_report %}last {{ d.3.prev|num }} · {% endif %}{{ r.risk.systematic_share|pct:0 }} market-driven</div></div>
+    <div class="kpi {% if r.risk.n_breach %}bad{% elif r.risk.n_warn %}warn{% else %}ok{% endif %}"><div class="l">Mandate</div><div class="v">{% if r.risk.n_breach %}{{ r.risk.n_breach }} breach{{ r.risk.n_breach|pluralize:"es" }}{% elif r.risk.n_warn %}{{ r.risk.n_warn }} at limit{% else %}All clear{% endif %}</div><div class="s">{{ r.risk.limits|length }} rules checked</div></div>
+  </div>
+  {% endwith %}{% endif %}
+
+  <div class="grid g64">
+    <div>
+      <h2>Recommended book and this week's trades</h2>
+      <table>
+        <thead><tr><th>Name</th><th>Side</th><th class="n">Weight</th><th class="n">vs last</th><th class="n">Trade</th><th>Why</th></tr></thead>
+        <tbody>
+        {% for h in r.construction.house.rows %}
+        <tr><td class="tk">{{ h.ticker }}</td>
+          <td><span class="badge {% if h.direction == 'Long' %}b-up{% elif h.direction == 'Short' %}b-down{% else %}b-mixed{% endif %}">{{ h.direction }}</span></td>
+          <td class="n"><b>{{ h.weight|spct }}</b></td>
+          <td class="n {{ h.delta|sign_class }}">{% if r.meta.first_report %}new{% elif h.delta|abs_val < 0.0005 %}–{% else %}{{ h.delta|spct }}{% endif %}</td>
+          <td class="n {{ h.trade_dollars|sign_class }}">{% if h.trade_shares %}{% if h.trade_shares > 0 %}Buy{% else %}Sell{% endif %} {{ h.trade_shares|abs_val|floatformat:0 }} · {{ h.trade_dollars|abs_val|money }}{% else %}–{% endif %}</td>
+          <td class="small muted">{{ h.reason_short }}</td></tr>
+        {% endfor %}
+        <tr class="total"><td colspan="2">Gross / net</td><td class="n">{{ r.construction.house.gross|pct:0 }} / {{ r.construction.house.net|spct:0 }}</td><td class="n">{{ r.construction.house.turnover|pct:0 }}</td><td class="n" colspan="2">turnover this week</td></tr>
+        </tbody>
+      </table>
+      <p class="small muted">Rule in one line: long names in a long-term uptrend, short confirmed downtrends, equal risk per name, no name above {{ r.meta.mandate.max_risk_share|pct:0 }} of risk, book run at {{ r.meta.mandate.target_vol|pct:0 }} volatility, never levered. Weights are shares of the {{ r.meta.nav|money }} notional.</p>
+    </div>
+    <div>
+      <h2>Where the risk sits</h2>
+      <div id="c-rc" class="chart sm"></div>
+      <p class="small muted">Orange: each name's share of the book's volatility. Blue: its weight. A name well above its weight is doing more than its share of the damage on a bad day.</p>
+    </div>
+  </div>
+
+  <h2>The names this week</h2>
+  <table>
+    <thead><tr><th>Name</th><th>6 months</th><th class="n">Price</th><th class="n">1w</th><th class="n">1m</th><th class="n">3m</th><th class="n">YTD</th><th class="n">Vol</th><th class="n">Beta</th><th class="n">From high</th><th>Trend</th><th class="n">vs 200d</th><th class="n">RSI</th><th>Earnings</th></tr></thead>
+    <tbody>
+    {% for x in r.stocks.rows %}
+    <tr>
+      <td><span class="tk">{{ x.ticker }}</span></td>
+      <td>{{ x.sparkline|safe }}</td>
+      <td class="n">{{ x.price|num }}</td>
+      <td class="n {{ x.ret_1w|sign_class }}">{{ x.ret_1w|spct }}</td>
+      <td class="n {{ x.ret_1m|sign_class }}">{{ x.ret_1m|spct }}</td>
+      <td class="n {{ x.ret_3m|sign_class }}">{{ x.ret_3m|spct }}</td>
+      <td class="n {{ x.ret_ytd|sign_class }}">{{ x.ret_ytd|spct }}</td>
+      <td class="n">{{ x.vol|pct:0 }}</td>
+      <td class="n">{{ x.beta|num }}</td>
+      <td class="n neg">{{ x.dd_from_high|pct:0 }}</td>
+      <td><span class="badge {% if x.trend == 'Uptrend' %}b-up{% elif x.trend == 'Downtrend' %}b-down{% else %}b-mixed{% endif %}">{{ x.trend }}</span></td>
+      <td class="n {{ x.px_vs_ma200|sign_class }}">{{ x.px_vs_ma200|spct }}</td>
+      <td class="n {% if x.rsi >= 70 or x.rsi <= 30 %}neg{% endif %}">{{ x.rsi|num:0 }}</td>
+      <td class="small">{% if x.next_earnings %}{{ x.next_earnings_short }}{% if x.earnings_in_days <= 14 %} <b class="neg">({{ x.earnings_in_days }}d)</b>{% endif %}{% else %}–{% endif %}</td>
+    </tr>
+    {% endfor %}
+    {% if r.stocks.benchmark %}{% with b=r.stocks.benchmark %}
+    <tr class="total"><td class="tk">{{ r.meta.benchmark }}</td><td class="muted small">benchmark</td><td class="n">{{ b.price|num }}</td><td class="n {{ b.ret_1w|sign_class }}">{{ b.ret_1w|spct }}</td><td class="n {{ b.ret_1m|sign_class }}">{{ b.ret_1m|spct }}</td><td class="n {{ b.ret_3m|sign_class }}">{{ b.ret_3m|spct }}</td><td class="n {{ b.ret_ytd|sign_class }}">{{ b.ret_ytd|spct }}</td><td class="n">{{ b.vol|pct:0 }}</td><td class="n">1.00</td><td class="n neg">{{ b.dd_from_high|pct:0 }}</td><td><span class="badge {% if b.trend == 'Uptrend' %}b-up{% elif b.trend == 'Downtrend' %}b-down{% else %}b-mixed{% endif %}">{{ b.trend }}</span></td><td class="n">{{ b.px_vs_ma200|spct }}</td><td class="n">{{ b.rsi|num:0 }}</td><td></td></tr>
+    {% endwith %}{% endif %}
+    </tbody>
+  </table>
+  <p class="small muted">Vol = annualised, fast-reacting. Trend: Uptrend = above the 50-day average with the 50-day above the 200-day; Downtrend = the reverse. "vs 200d" is the distance from the 200-day average that drives the long signal. RSI above 70 is stretched up, below 30 stretched down. Earnings within 14 days are flagged.</p>
+</section>
+
+<!-- ===================================================== PAGE 2: THE PROOF -->
+<section class="page">
+  <div class="grid g55">
+    <div>
+      <h2>How the names move together</h2>
+      <div id="c-corr" class="chart corr"></div>
+      <p class="small muted">Average correlation {{ r.correlation.avg_corr|num }} over six months, {{ r.correlation.avg_corr_1m|num }} over the last month. The {{ r.meta.tickers|length }} names behave like {{ r.correlation.enb_equal|num:1 }} independent bets.{% if r.correlation.pairs %} Pairs above 0.70: {% for p in r.correlation.pairs %}{{ p.a }}/{{ p.b }} ({{ p.corr|num }}){% if not forloop.last %}, {% endif %}{% endfor %}.{% endif %}</p>
+    </div>
+    <div>
+      {% if r.risk %}
+      <h2>Mandate check</h2>
+      <table>
+        <thead><tr><th>Rule</th><th class="n">Now</th><th class="n">Limit</th><th>Status</th></tr></thead>
+        <tbody>{% for l in r.risk.limits %}<tr><td>{{ l.label }}</td><td class="n">{{ l.display_value }}</td><td class="n">{% if l.operator == 'lte' %}≤{% else %}≥{% endif %} {{ l.display_threshold }}</td><td><span class="badge b-{{ l.status }}">{{ l.status }}</span></td></tr>{% endfor %}</tbody>
+      </table>
+      <h2>If it goes wrong: worst cases for this book</h2>
+      <table>
+        <thead><tr><th>Scenario</th><th class="n">Book</th><th class="n">$</th></tr></thead>
+        <tbody>{% for d in r.stress_worst %}<tr><td>{{ d.name }} <span class="muted small">({{ d.kind }})</span></td><td class="n neg">{{ d.pnl|spct }}</td><td class="n">{{ d.dollar|money }}</td></tr>{% endfor %}</tbody>
+      </table>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="grid g46">
+    <div>
+      <h2>Reference weightings</h2>
+      <table>
+        <thead><tr><th>Name</th>{% for o in r.construction.objectives %}<th class="n">{{ o.label|cut:"Minimum "|cut:"Max " }}</th>{% endfor %}<th class="n" style="border-left:1.5px solid var(--ink)">House</th></tr></thead>
+        <tbody>
+        {% for t in r.meta.tickers %}<tr><td class="tk">{{ t }}</td>{% for o in r.construction.objectives %}<td class="n">{{ o.weights|get_item:t|pct:0 }}</td>{% endfor %}<td class="n" style="border-left:1.5px solid var(--ink)"><b>{% for h in r.construction.house.rows %}{% if h.ticker == t %}{{ h.weight|spct:0 }}{% endif %}{% endfor %}</b></td></tr>{% endfor %}
+        <tr class="total"><td>Volatility</td>{% for o in r.construction.objectives %}<td class="n">{{ o.vol|pct:0 }}</td>{% endfor %}<td class="n" style="border-left:1.5px solid var(--ink)">{{ r.construction.house.vol|pct:0 }}</td></tr>
+        <tr class="total"><td>Sharpe</td>{% for o in r.construction.objectives %}<td class="n">{{ o.sharpe|num }}</td>{% endfor %}<td class="n" style="border-left:1.5px solid var(--ink)">–</td></tr>
+        </tbody>
+      </table>
+      <p class="small muted">Five textbook long-only weightings of the same names for comparison with the house book ({{ r.construction.cap|pct:0 }} cap per name; {{ r.construction.mu_note_short }}).</p>
+    </div>
+    <div>
+      <h2>Does the rule earn its keep? {{ r.evidence.years|floatformat:0 }}-year walk-forward test</h2>
+      <div id="c-bt" class="chart bt"></div>
+      <table>
+        <thead><tr><th>Strategy</th><th class="n">Ann. return</th><th class="n">Vol</th><th class="n">Sharpe</th><th class="n">Max DD</th><th class="n">Worst year</th></tr></thead>
+        <tbody>{% for b in r.evidence.rows %}<tr {% if forloop.first %}style="font-weight:600"{% endif %}><td>{{ b.label|cut:" (long-only)"|cut:" (buy and hold)" }}</td><td class="n">{{ b.ann_return|spct }}</td><td class="n">{{ b.ann_vol|pct:0 }}</td><td class="n">{{ b.sharpe|num }}</td><td class="n neg">{{ b.max_dd|pct:0 }}</td><td class="n {{ b.worst_year|sign_class }}">{{ b.worst_year|spct:0 }} <span class="muted">({{ b.worst_year_label }})</span></td></tr>{% endfor %}</tbody>
+      </table>
+      <p class="small muted">Each week the rule sees only past data, sets weights and pays {{ r.evidence.cost_bps }} bps on what it trades. It lags a fully invested basket in a bull market; its value is a controlled drawdown and holding up when the names roll over.</p>
+    </div>
+  </div>
+
+  <div class="grid g55">
+    <div>
+      <h2>Watch list</h2>
+      {% if r.watch_top %}<ul class="small">{% for w in r.watch_top %}<li><span class="tk">{{ w.ticker }}</span> {{ w.text }}</li>{% endfor %}</ul>{% else %}<p class="small muted">Nothing on watch this week.</p>{% endif %}
+    </div>
+    <div>
+      {% if r.commentary.allocation and not r.commentary.allocation_is_draft %}<h2>Analyst notes</h2><p class="small">{{ r.commentary.allocation }}</p>{% endif %}
+      {% if r.commentary.stocks %}<ul class="small">{% for t, note in r.commentary.stocks.items %}<li><span class="tk">{{ t }}</span> {{ note }}</li>{% endfor %}</ul>{% endif %}
+    </div>
+  </div>
+  <div class="foot">Method: daily adjusted prices (Yahoo Finance); six-month window with recent days weighted more; VaR is the historical 1-in-100-day loss of today's book, one-week figures scale by √5; risk shares by Euler decomposition; weightings by convex optimisation. Generated {{ r.meta.generated }} by RiskDesk. An analytical opinion, not investment advice; simulated results do not guarantee future results.</div>
+</section>
+
+</div>
+{{ charts|json_script:"charts" }}
+<script>{{ rd_js|safe }}</script>
+<script>
+(function () {
+  const d = JSON.parse(document.getElementById("charts").textContent);
+  RD.heatmap("c-corr", d.corr.labels, d.corr.labels, d.corr.z, { showText: true });
+  if (d.rc) RD.groupedBar("c-rc", d.rc.labels, [{ name: "Risk share", values: d.rc.pct, color: "#f28e2b" }, { name: "Weight", values: d.rc.weight }], {});
+  const curves = Object.keys(d.backtest.curves).map((k, i) => ({ name: k.replace(" (long-only)", "").replace(" (buy and hold)", ""), x: d.backtest.curves[k].x, y: d.backtest.curves[k].y, color: RD.palette[i], width: i === 0 ? 2.2 : 1.3, dash: k === "{{ r.meta.benchmark }}" ? "dot" : undefined }));
+  RD.line("c-bt", curves);
+})();
+</script>
+</body>
+</html>

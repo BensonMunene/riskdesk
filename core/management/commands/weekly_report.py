@@ -74,7 +74,11 @@ def html_to_pdf(html_path: Path, pdf_path: Path, stdout=None) -> bool:
     with sync_playwright() as pw:
         browser = pw.chromium.launch()
         page = browser.new_page(viewport={"width": 900, "height": 1200})
-        page.goto(html_path.resolve().as_uri())
+        try:
+            page.goto(html_path.resolve().as_uri(), wait_until="load", timeout=90000)
+        except Exception:  # noqa: BLE001 - a slow external resource must not block the PDF
+            if stdout:
+                stdout.write("  warning: the page took too long to load; printing what rendered")
         try:
             page.wait_for_function(
                 "Array.from(document.querySelectorAll('.chart')).every(c => c.querySelector('.plot-container'))", timeout=30000)
@@ -99,6 +103,8 @@ class Command(BaseCommand):
         parser.add_argument("--client", required=True, help="Path to the client config JSON")
         parser.add_argument("--date", help="Report as-of date (YYYY-MM-DD); default = latest price date")
         parser.add_argument("--out", default="reports", help="Output root folder")
+        parser.add_argument("--format", choices=["brief", "full"], default="brief",
+                            help="brief = two pages (default); full = the seven-page version")
         parser.add_argument("--no-pdf", action="store_true")
         parser.add_argument("--no-events", action="store_true", help="Skip the earnings-date lookup (no network)")
         parser.add_argument("--no-fetch", action="store_true", help="Do not download prices for missing tickers")
@@ -135,7 +141,11 @@ class Command(BaseCommand):
             self.stdout.write(self.style.WARNING(f"  warning: {w}"))
 
         rd_js = (settings.BASE_DIR / "static" / "js" / "riskdesk.js").read_text(encoding="utf-8")
-        html = render_to_string("report/weekly.html", {"r": report, "rd_js": rd_js, "charts": report["charts"]})
+        # Inline the chart library so the HTML is one self-contained file (opens offline, prints reliably)
+        plotly_path = settings.BASE_DIR / "static" / "vendor" / "plotly-2.35.2.min.js"
+        plotly_js = plotly_path.read_text(encoding="utf-8") if plotly_path.exists() else ""
+        template = "report/weekly_brief.html" if opts["format"] == "brief" else "report/weekly.html"
+        html = render_to_string(template, {"r": report, "rd_js": rd_js, "plotly_js": plotly_js, "charts": report["charts"]})
         html_path = out_dir / "report.html"
         html_path.write_text(html, encoding="utf-8")
         (out_dir / "state.json").write_text(json.dumps(report["state"], indent=1), encoding="utf-8")

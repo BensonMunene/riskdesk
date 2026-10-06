@@ -159,11 +159,13 @@ def build_weekly_report(cfg: dict, close: pd.DataFrame, volume: pd.DataFrame | N
     for t, r in snap.iterrows():
         ev = (events or {}).get(t) or {}
         row = {k: _f(v) if not isinstance(v, (str, bool)) else v for k, v in r.items()}
+        ne = ev.get("next_earnings")
         row.update({
             "ticker": t, "name": str(meta["name"].get(t, t)) if "name" in meta.columns else t,
             "sector": str(meta["sector"].get(t, "")) if "sector" in meta.columns else "",
             "sparkline": sparkline_svg(close[t].iloc[-lookback:]),
-            "next_earnings": ev.get("next_earnings"),
+            "next_earnings": ne,
+            "next_earnings_short": pd.Timestamp(ne).strftime("%d %b") if ne else None,
             "earnings_in_days": ev.get("days"),
             "prev_trend": (prev.get("stocks", {}).get(t, {}) or {}).get("trend"),
             "prev_vol": (prev.get("stocks", {}).get(t, {}) or {}).get("vol"),
@@ -215,9 +217,11 @@ def build_weekly_report(cfg: dict, close: pd.DataFrame, volume: pd.DataFrame | N
         premium = float(model.get("equity_premium", 0.05))
         mu = pd.Series({t: rf + float(snap.loc[t, "beta"]) * premium if not np.isnan(snap.loc[t, "beta"]) else rf + premium for t in tickers})
         mu_note = f"Expected returns are CAPM-style: {rf:.0%} cash plus beta times a {premium:.0%} equity premium."
+        mu_note_short = f"expected returns = {rf:.0%} cash + beta × {premium:.0%} premium"
     else:
         mu = opt.expected_returns(rets, return_model, market=bench_rets, rf=rf)
         mu_note = "Expected returns are six-month averages shrunk halfway toward the cross-sectional mean."
+        mu_note_short = "expected returns = shrunk six-month averages"
     cap = float(model.get("objective_max_weight", 0.25))
     cons = opt.Constraints(long_only=True, w_max=cap)
     objectives = []
@@ -253,8 +257,18 @@ def build_weekly_report(cfg: dict, close: pd.DataFrame, volume: pd.DataFrame | N
         d = w_new - w_old
         dollars = d * nav
         shares = int(np.trunc(dollars / float(last_px[t]))) if float(last_px[t]) > 0 else 0  # truncate so a cap is never exceeded
+        ma200 = snap.loc[t, "ma200"]
+        gap200 = (float(last_px[t]) / float(ma200) - 1.0) if ma200 and not np.isnan(ma200) and ma200 > 0 else None
+        if w_new > 0:
+            short_reason = f"uptrend, {gap200:+.0%} vs 200-day" if gap200 is not None else "uptrend"
+        elif w_new < 0:
+            short_reason = f"downtrend, {gap200:+.0%} vs 200-day" if gap200 is not None else "downtrend"
+        else:
+            short_reason = (f"below 200-day ({gap200:+.0%}), no short signal" if gap200 is not None and gap200 < 0 else "no signal")
+        if t in (cfg.get("house_overrides") or {}):
+            short_reason = "analyst override"
         row = {"ticker": t, "direction": "Long" if w_new > 0 else ("Short" if w_new < 0 else "Flat"),
-               "reason": house["reasons"].get(t, ""), "weight": w_new, "prev_weight": w_old, "delta": d,
+               "reason": house["reasons"].get(t, ""), "reason_short": short_reason, "weight": w_new, "prev_weight": w_old, "delta": d,
                "dollars": w_new * nav, "trade_dollars": dollars, "trade_shares": shares, "price": _f(last_px[t]),
                "trend": str(snap.loc[t, "trend"]), "vol": _f(snap.loc[t, "vol"])}
         house_rows.append(row)
@@ -337,6 +351,8 @@ def build_weekly_report(cfg: dict, close: pd.DataFrame, volume: pd.DataFrame | N
         wk = (r.equity - 1.0).resample("W-FRI").last().dropna()
         curves[label] = {"x": [d.strftime("%Y-%m-%d") for d in wk.index], "y": [_f(v) for v in wk.values]}
         yearly[label] = {str(y): _f(v) for y, v in r.returns.groupby(r.returns.index.year).apply(lambda s: (1 + s).prod() - 1).items()}
+        wy = min(yearly[label].items(), key=lambda kv: kv[1] if kv[1] is not None else 0)
+        bt_rows[-1]["worst_year"], bt_rows[-1]["worst_year_label"] = wy[1], wy[0]
         idx = r.returns.index if idx is None else idx
     if bench_rets is not None and idx is not None:
         b = bench_rets.reindex(idx).fillna(0.0)
@@ -348,13 +364,20 @@ def build_weekly_report(cfg: dict, close: pd.DataFrame, volume: pd.DataFrame | N
                         "ann_vol": _f(bs["ann_vol"]), "sharpe": _f(bs["sharpe"]), "sortino": _f(bs.get("sortino")), "max_dd": _f(bs["max_drawdown"]),
                         "beta": 1.0, "turnover": 0.0, "avg_gross": 1.0, "worst_day": _f(bs["worst_day"]), "hit_rate": _f(bs.get("hit_rate"))})
         yearly[bench_label] = {str(y): _f(v) for y, v in b.groupby(b.index.year).apply(lambda s: (1 + s).prod() - 1).items()}
+        wy = min(yearly[bench_label].items(), key=lambda kv: kv[1] if kv[1] is not None else 0)
+        bt_rows[-1]["worst_year"], bt_rows[-1]["worst_year_label"] = wy[1], wy[0]
     years_list = sorted({y for d in yearly.values() for y in d})
 
     # ---------------------------------------------------------------- 7. watch list
     watch = []
+    h = float(rule_cfg.get("hysteresis", 0.05))
+    long_ma = int(rule_cfg.get("long_ma", 200))
     for x in stock_rows:
-        if x["px_vs_ma50"] is not None and abs(x["px_vs_ma50"]) < 0.03:
-            watch.append({"ticker": x["ticker"], "kind": "trend", "text": f"within {_pct(abs(x['px_vs_ma50']))} of its 50-day average; the direction signal could flip"})
+        gap = x.get("px_vs_ma200") if long_ma == 200 else x.get("px_vs_ma50")
+        if gap is not None and abs(gap) < h:
+            side = "above" if gap >= 0 else "below"
+            watch.append({"ticker": x["ticker"], "kind": "trend",
+                          "text": f"only {_pct(abs(gap))} {side} its {long_ma}-day average; a {_pct(h, 0)} move through it changes the signal"})
         if x["rsi"] is not None and x["rsi"] >= 70:
             watch.append({"ticker": x["ticker"], "kind": "momentum", "text": f"RSI {x['rsi']:.0f}: overbought, short-term pullback risk"})
         if x["rsi"] is not None and x["rsi"] <= 30:
@@ -369,6 +392,16 @@ def build_weekly_report(cfg: dict, close: pd.DataFrame, volume: pd.DataFrame | N
         var_lim = next((l for l in risk["limits"] if l["metric"] == "var"), None)
         if var_lim and var_lim.get("utilization") and var_lim["utilization"] > 0.8:
             watch.append({"ticker": "Book", "kind": "risk", "text": f"VaR is at {var_lim['utilization'] * 100:.0f}% of its limit"})
+
+    priority = {"event": 0, "risk": 1, "regime": 2, "trend": 3, "momentum": 4, "volatility": 5}
+    watch_top = sorted(watch, key=lambda x: priority.get(x["kind"], 9))[:6]
+    stress_worst = []
+    if risk:
+        hist_cases = [{"name": d["name"], "pnl": _f(d["total_pnl"]), "dollar": _f(d["total_dollar"]), "kind": "replay"}
+                      for d in a.stress_historical if d.get("available")]
+        shock_cases = [{"name": d["name"], "pnl": _f(d["total_pnl"]), "dollar": _f(d["total_dollar"]), "kind": "shock"}
+                       for d in a.stress_hypothetical]
+        stress_worst = sorted(hist_cases + shock_cases, key=lambda d: d["pnl"] if d["pnl"] is not None else 0)[:4]
 
     # ---------------------------------------------------------------- 8. deltas vs last week and draft commentary
     prev_m = prev.get("metrics") or {}
@@ -449,13 +482,16 @@ def build_weekly_report(cfg: dict, close: pd.DataFrame, volume: pd.DataFrame | N
         "stocks": {"rows": stock_rows, "benchmark": to_jsonable({k: _f(v) if not isinstance(v, (str, bool)) else v for k, v in bench_snap.items()}) if bench_snap is not None else None},
         "correlation": {"avg_corr": _f(avg_corr), "avg_corr_1m": _f(avg_corr_1m), "prev_avg_corr": prev_avg_corr, "enb_equal": _f(enb_equal),
                         "pairs": to_jsonable(pairs), "diversifiers": diversifiers},
-        "construction": {"objectives": objectives, "cap": cap, "mu_note": mu_note, "house": {"rows": house_rows, "steps": house["steps"], "vol": _f(house["vol"]),
+        "construction": {"objectives": objectives, "cap": cap, "mu_note": mu_note, "mu_note_short": mu_note_short,
+                         "house": {"rows": house_rows, "steps": house["steps"], "vol": _f(house["vol"]),
                          "gross": _f(house["gross"]), "net": _f(house["net"]), "n_long": house["n_long"], "n_short": house["n_short"],
                          "turnover": turnover, "trades": trades, "overrides": cfg.get("house_overrides") or {}}},
         "risk": risk,
         "evidence": {"rows": bt_rows, "start": start, "years": years, "rebalance": bt_cfg.get("rebalance", "W"), "cost_bps": bt_cfg.get("cost_bps", 10),
                      "yearly": yearly, "years_list": years_list},
         "watch": watch,
+        "watch_top": watch_top,
+        "stress_worst": stress_worst,
         "actions": actions,
         "deltas": {"risk": risk_deltas},
         "commentary": commentary,

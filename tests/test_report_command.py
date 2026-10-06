@@ -23,6 +23,7 @@ class WeeklyReportCommandTests(TestCase):
                 for f in ("report.html", "state.json", "data.json"):
                     self.assertTrue((d / f).exists(), f"{d / f} missing")
             html = (second / "report.html").read_text(encoding="utf-8")
-            self.assertIn("Changes vs 2026-09-08", html)
+            self.assertIn("vs 2026-09-08", html)
             self.assertIn("Recommended book", html)
+            self.assertEqual(html.count('<section class="page">'), 2)
             self.assertNotIn("Traceback", html)

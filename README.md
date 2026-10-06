@@ -1091,7 +1091,7 @@ The cog in the top bar opens Django's built-in administration site, where users,
 
 ## 3.22 The weekly client report (PDF and HTML)
 
-**What it is for.** Some clients do not want software. They send a list of the names they are trading and want an expert's view back every week, in a few pages they can read over coffee and forward to colleagues. The weekly report is that document. One command turns a client's ticker list into a seven-page PDF and an identical interactive HTML page, using every engine described above, and leaves three clearly marked slots for the analyst's own words.
+**What it is for.** Some clients do not want software. They send a list of the names they are trading and want an expert's view back every week, in a couple of pages they can read in five minutes and forward to colleagues. The weekly brief is that document. One command turns a client's ticker list into a two-page PDF and an identical interactive HTML page, using every engine described above, and leaves clearly marked slots for the analyst's own words. A seven-page long form with the full stress, factor and drawdown detail is available with `--format full`.
 
 **The weekly routine**, three commands on Monday morning:
 
@@ -1101,7 +1101,7 @@ python manage.py weekly_report --client clients/<client>.json
 # review reports/<client>/<date>/report.html, write the commentary in the config, re-run, send the PDF
 ```
 
-The output lands in `reports/<client>/<date>/`: `report.pdf`, `report.html`, `state.json` (what next week compares against) and `data.json` (every number, for audit). Add `--date 2026-09-08` to re-create a past week, `--no-pdf` to skip the browser step, `--no-events` to skip the earnings-date lookup.
+The output lands in `reports/<client>/<date>/`: `report.pdf`, `report.html`, `state.json` (what next week compares against) and `data.json` (every number, for audit). Add `--date 2026-09-08` to re-create a past week, `--format full` for the long version, `--no-pdf` to skip the browser step, `--no-events` to skip the earnings-date lookup.
 
 ### The client config
 
@@ -1117,33 +1117,17 @@ One JSON file per client in `clients/`. Start by copying `data/sample/weekly_cli
 | `house_overrides` | Exact weights the analyst wants to force for named tickers, e.g. `{"TSLA": 0}` to stay out of a name |
 | `commentary` | The three analyst slots: `house_view`, `allocation`, and per-stock notes. While they are empty the report prints a draft generated from the numbers, clearly labelled as a draft |
 
-### The seven pages
+### The two pages
 
-**Page 1, Summary and actions.** The house view, six headline numbers for the recommended book, the actions for the week as a trade list in shares and dollars, what changed since last week, and the recommended weights with their change versus last week.
+**Page 1 is the decision.** The house view in three sentences; six headline numbers (gross and net exposure, volatility, one-day and one-week VaR, beta, mandate status) with last week's value underneath; the recommended book as one table that doubles as the trade sheet (side, weight, change, the exact buy or sell in shares and dollars, and a short reason per name); a chart of where the risk sits; and the stock table (sparkline, returns, volatility, beta, distance from the high, trend, distance from the 200-day average that drives the signal, RSI, and the next earnings date flagged when within two weeks).
 
-![Weekly report page 1](docs/guide/report_p1.png)
+![Weekly brief page 1](docs/guide/report_p1.png)
 
-**Page 2, The names this week.** One row per stock with a six-month sparkline, returns over one week to one year, volatility and its weekly change, beta, distance from the 12-month high, trend state, distance from the 50-day average, RSI, and the next earnings date with a red flag when it falls within two weeks. The benchmark gets the same row. A bullet list says what moved and why.
+**Page 2 is the proof.** The correlation heat map with the average correlation and the effective number of bets; the mandate check with every rule's status; the four worst stress cases in percent and dollars; five textbook weightings of the same names beside the house book; the six-year walk-forward test as a chart and a five-row table (annual return, volatility, Sharpe, max drawdown, worst year); and a watch list of at most six items ranked by urgency, earnings first. A two-line footer states the method and the disclaimer.
 
-![Weekly report page 2](docs/guide/report_p2.png)
+![Weekly brief page 2](docs/guide/report_p2.png)
 
-**Page 3, How the names move together.** Six-month and one-month average correlation, effective number of bets, the correlation matrix, the best diversifiers, any pairs that behave as one bet, and a chart of the one-month correlation over the last six months so a change of regime is visible.
-
-![Weekly report page 3](docs/guide/report_p3.png)
-
-**Page 4, Construction.** Five reference long-only objectives side by side (equal weight, minimum variance, risk parity, maximum diversification, maximum Sharpe) with their return, volatility, Sharpe, largest position and effective bets, then the house allocation: each name's side, the reason in words, the weight, last week's weight, and the trade.
-
-![Weekly report page 4](docs/guide/report_p4.png)
-
-**Page 5, Risk of the recommended book.** Volatility, one-day and one-week VaR and Expected Shortfall, beta, drawdown, where the risk sits by name, factor exposures, the stress tests, the mandate check with every limit's status, and the findings from the insight engine.
-
-![Weekly report page 5](docs/guide/report_p5.png)
-
-**Page 6, Evidence and watch list.** A six-year walk-forward test of the house rule against equal weight, risk parity and the benchmark, with year-by-year returns, followed by the watch list (names near a signal flip, overbought or oversold, volatility spikes, earnings within two weeks, correlation regime, VaR near its limit) and the standing rules.
-
-![Weekly report page 6](docs/guide/report_p6.png)
-
-**Page 7, Appendix.** The mandate in one table, the method in six short paragraphs, the house rule in full, and a glossary, so the document stands on its own.
+Everything else that the engines compute (factor exposures, all sixteen stress scenarios, drawdown history, the insight list, year-by-year returns, the full rule text and glossary) is in the `--format full` version and in `data.json`.
 
 ### The house rule, and why these settings
 

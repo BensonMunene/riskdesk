@@ -106,6 +106,7 @@ def stock_snapshot(close: pd.DataFrame, volume: pd.DataFrame | None, tickers: li
             "adv_dollar": adv,
             "ma20": ma20, "ma50": ma50, "ma200": ma200,
             "px_vs_ma50": px / ma50 - 1.0 if ma50 else float("nan"),
+            "px_vs_ma200": px / ma200 - 1.0 if ma200 and not np.isnan(ma200) else float("nan"),
             "ma50_vs_ma200": ma50 / ma200 - 1.0 if ma200 else float("nan"),
             "trend": trend_state(px, ma50, ma200),
             "trend_prev": trend_state(px_prev, ma50_prev, float(s.rolling(200).mean().iloc[-6]) if len(s) >= 206 else float("nan")),

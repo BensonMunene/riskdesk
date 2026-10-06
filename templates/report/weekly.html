@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <title>{{ r.meta.client }} · Weekly portfolio report · {{ r.meta.as_of }}</title>
-<script src="https://cdn.plot.ly/plotly-2.35.2.min.js" charset="utf-8"></script>
+{% if plotly_js %}<script>{{ plotly_js|safe }}</script>{% else %}<script src="https://cdn.plot.ly/plotly-2.35.2.min.js" charset="utf-8"></script>{% endif %}
 <style>
   :root { --ink:#1c2330; --muted:#6b7686; --line:#e3e7ee; --accent:#0d6efd; --soft:#f4f6f9; }
   * { box-sizing: border-box; }
